@@ -1,0 +1,43 @@
+---
+title: "MCredd - package creation steps"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{app-generation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+#library(MCredd)
+```
+
+
+
+This page shows the different steps to create the package and the main function which is a shiny app, as well as how the app is loaded to shinyapp.io.
+
+Main source for info:
+
+- https://r-pkgs.org/
+- https://rtask.thinkr.fr/building-a-shiny-app-as-a-package/
+- https://mastering-shiny.org/scaling-packaging.html
+
+
+## Inital setup:
+
+1. Create a Github repository.
+1. Create a R project from Github (See https://happygitwithr.com/ on linking Github repos to Rstudio).
+1. Create a package structure inside he project: 
+    - `usethis::create_package("PATH/MCredd")` with PATH the path to the project folder set during the project creation.
+1. Add vignettes and pkgdown setup:
+    - `usethis::use_pkgdown()`
+    - `usethis::use_vignette("app-generation", "MCredd - package creation steps")`
+
+
+

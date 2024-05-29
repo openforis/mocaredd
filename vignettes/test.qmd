@@ -1,6 +1,6 @@
 ---
 title: "Test"
-format: rmarkdown::html_vignette
+format: gfm
 editor: visual
 ---
 

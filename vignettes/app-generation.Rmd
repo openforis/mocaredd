@@ -37,7 +37,10 @@ Main source for info:
     - `usethis::create_package("PATH/MCredd")` with PATH the path to the project folder set during the project creation.
 1. Add vignettes and pkgdown setup:
     - `usethis::use_pkgdown()`
-    - `usethis::use_vignette("app-generation", "MCredd - package creation steps")`
+    - `usethis::use_vignette("app-generation", title = "MCredd - package creation steps")`
 
+
+
+## Barebone app
 
 

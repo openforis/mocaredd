@@ -17,3 +17,21 @@ Suggests:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://r-mcredd.github.io/MCredd/
+Imports: 
+    bslib,
+    dplyr,
+    ggplot2,
+    magrittr,
+    purrr,
+    readr,
+    readxl,
+    rlang,
+    sf,
+    shiny,
+    shiny.i18n,
+    shinyjs,
+    shinyWidgets,
+    stringr,
+    terra,
+    tidyselect,
+    units

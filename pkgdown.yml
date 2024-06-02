@@ -2,10 +2,10 @@ pandoc: 3.1.11
 pkgdown: 2.0.9
 pkgdown_sha: ~
 articles:
-  app-description: app-description.html
-  app-generation: app-generation.html
+  app-build: app-build.html
+  app-desc: app-desc.html
   test: test.html
-last_built: 2024-05-30T06:58Z
+last_built: 2024-06-02T22:18Z
 urls:
   reference: https://r-mcredd.github.io/MCredd/reference
   article: https://r-mcredd.github.io/MCredd/articles

@@ -11,7 +11,7 @@
   )
 }
 
-## Remove path to images fior the shiny app when package is not loaded
+## Remove path to images for the shiny app when package is not loaded
 .onUnload <- function(libname, pkgname) {
   shiny::removeResourcePath("assets")
 }

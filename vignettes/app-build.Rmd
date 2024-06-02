@@ -87,5 +87,9 @@ usethis::use_package("units")
 devtools::document()
 devtools::load_all()
 shiny_run_MCredd()
+
+devtools::install()
+library(MCredd)
+shiny_run_MCredd()
 ```
 

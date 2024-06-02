@@ -1,0 +1,16 @@
+{
+  "cultural_date_format": "%d-%m-%Y",
+  "languages": ["en", "fr", "sp"],
+  "translation": [
+    {
+      "en": "I am module 1",
+      "fr": "Je suis le module 1",
+      "sp": "Soy el modulo 1"
+    },
+    {
+      "en": "I am module 2",
+      "fr": "Je suis le module 2",
+      "sp": "Soy el modulo 2"
+    }
+   ]
+}

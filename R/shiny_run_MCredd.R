@@ -69,8 +69,9 @@ shiny_run_MCredd <- function(...) {
       title = div(
         tags$a(
           href = "https://openforis.org/solutions/arena/",
-          alt = "arena-helpers",
-          img(src="assets/arena-helpers3.png", height = '60px')
+          #alt = "arena-helpers",
+          tags$img(src="assets/arena-helpers3.png", height = '60px'),
+          .noWS = "before-end"
           ),
         #img(src="assets/arena-helpers3.png", height = '60px'),
         i18n$t("Monte Carlo for REDD+"),

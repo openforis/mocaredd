@@ -89,14 +89,21 @@ shiny_run_MCredd <- function(...) {
           ),
         code_font = font_google("Fira Code"),
         heading_font = font_google("Lato", wght = 700),
-        primary = rgb(68,141,182, maxColorValue = 255),
-        secondary = rgb(119,171,22, maxColorValue = 255),
+        primary = "#4991B0",
+        secondary = "#77AB16",
       ),
       fillable = "portal",
       bg = "#f8f9fa",
       inverse = FALSE,
 
       ## ++ Panels +++++
+      nav_panel(
+        title = i18n$t("Info"), #OR title = "I am module 1"
+        value = "mod1",
+        icon = icon("info"),
+        mod_info_UI("tab_info_UI") ## See R/mod1_UI.R
+      ),
+
       nav_panel(
         title = i18n$t("I am module 1"), #OR title = "I am module 1"
         value = "mod1",

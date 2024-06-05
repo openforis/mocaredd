@@ -14,23 +14,25 @@ mod_info_UI <- function(id){
 
   card_left <- card(
     h1("Welcome"),
+
+    h4("What is ", tags$code("arena-helpers")),
     p(
       "This app is part of of a collection of tools designed to support Forest inventory related
-      activities and grouped under ", tags$code("arena-helpers").
+      activities and grouped under ", tags$code("arena-helpers")
       ),
     br(),
+    h4("Open Foris Arena ", tags$img(src="assets/Arena-Logo.png", height = '30px')),
     p(
       "They aim to provide additional functionality to ",
       tags$a(
         href = "https://openforis.org/solutions/arena/",
         #alt = "arena-helpers",
         "Open Foris Arena ",
-        tags$img(src="assets/Arena-Logo.png", height = '20px'),
         bsicons::bs_icon("box-arrow-up-right", class = "text-primary"),
         .noWS = "before-end"
       ),
-      " in particular support data analysis parts that are cannot be embedded directly
-      to "
+      " in particular support data analysis parts that cannot be embedded directly
+      to OF Arena "
     )
   )
 

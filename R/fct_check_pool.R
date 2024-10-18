@@ -23,18 +23,32 @@
 #' library(dplyr)
 #'
 #' cs    <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
-#' c_lu  <- cs |> filter(lu_id == LU_init)
+#' c_lu  <- cs |> filter(lu_id == "ev_wet_closed")
 #'
-#' fct_check_pool(.c_lu = c_lu, .c_unit = "C")
+#' fct_check_pool(.c_lu = c_lu, .c_unit = "C", .c_fraction = NA)
 #'
 #' @export
-fct_check_pool <- function(.c_lu, .c_unit){
+fct_check_pool <- function(.c_lu, .c_unit, .c_fraction){
+
+  ## !! FOR TESTING ONLY
+  # .c_lu    <- .cs |> filter(lu_id == "dg_ev_wet_closed")
+  # .c_unit <- "C"
+  # .c_fraction <- NA
+  ## !!
 
   ## Get pools for the input data subset
-  #.c_lu   <- .cs |> filter(lu_id == LU_init)
   c_pool  <- .c_lu |> pull(c_pool) |> sort()
   lu_id   <- .c_lu |> pull(lu_id) |> unique()
   lu_name <- .c_lu |> pull(lu_name) |> unique()
+
+  ## V1.0, DG ratio and pools used for degradation need to be added to C_stock table,
+  ##       means duplicating the intact forest information but no way around for now since
+  ##       the tool is based on C stock difference between land uses.
+  ##       Hence commenting code below as not needed for now.
+  # c_status <- .c_lu$c_status |> unique()
+  # if (length(c_status) != 1) flag_cstatus <- T else flag_cstatus <- F
+  # if (!(c_status %in% c("Intact", "Degraded", "Non-forest"))) flag_cstatus <- T else flag_cstatus <- F
+  # if (flag_cstatus) return("c_status in carbon tab contains error, not unique for each land use or not in limited choice list: 'Intact','Degraded', 'Non-forest'")
 
   has_AG <- if ("AGB" %in% c_pool) T else F
   has_BG <- if ("BGB" %in% c_pool) T else F
@@ -43,7 +57,8 @@ fct_check_pool <- function(.c_lu, .c_unit){
   has_LI <- if ("LI"  %in% c_pool) T else F
   has_SO <- if ("SOC" %in% c_pool) T else F
   has_AL <- if ("ALL" %in% c_pool) T else F
-  has_CF <- if ("CF"  %in% c_pool) T else F
+  has_CF <- if (is.numeric(.c_fraction)) T else F
+  has_DG <- if ("DG_ratio" %in% c_pool) T else F
 
   ## Checks
   if(has_BG & has_RS) {
@@ -51,14 +66,9 @@ fct_check_pool <- function(.c_lu, .c_unit){
     message("trans_id: ", lu_name, ", has both BGB and RS in the data, using BGB only.")
   }
 
-  if(.c_unit == "DM" & !has_CF) {
-    flag_miss_CF <- T
-    message("Cstock unit is dry matter (DM) but no carbon fraction provided")
-  } else {
-    flag_miss_CF <- F
-  }
+  if(.c_unit == "DM" & !has_CF) return("Cstock unit is dry matter (DM) but no carbon fraction provided")
 
-  out <- data.frame(
+  data.frame(
     lu_id   = lu_id,
     lu_name = lu_name,
     has_AG  = has_AG,
@@ -69,7 +79,7 @@ fct_check_pool <- function(.c_lu, .c_unit){
     has_SO  = has_SO,
     has_AL  = has_AL,
     has_CF  = has_CF,
-    flag_miss_CF = flag_miss_CF
+    has_DG  = has_DG
   )
 
 }

@@ -22,29 +22,39 @@
 #' library(dplyr)
 #'
 #' cs    <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
-#' c_lu  <- cs |> filter(lu_id == LU_init)
+#' c_lu  <- cs |> filter(lu_id == "dg_ev_wet_closed")
 #'
-#' c_check <- fct_check_pool(.c_lu = c_lu, .c_unit = "C")
+#' c_check <- fct_check_pool(.c_lu = c_lu, .c_unit = "C", .c_fraction = NA)
 #'
 #' fct_make_formula(.c_check = c_check, .c_unit = "C")
 #'
 #' @export
 fct_make_formula <- function(.c_check, .c_unit){
 
-  c_eq <- c("(", "(",  "AGB", " + ", "BGB", ")", " * ", "CF", " + ", "DW", " + ", "LI", " + ", "SOC", ")", " * ", "44/12")
-  names(c_eq) <- c("mol_(", "cf_(", "AGB", "plus_bgb", "BGB", "cf_)", "times_cf", "CF", "plus_dw", "DW", "plus_li", "LI", "plus_soc", "SOC", "mol_)", "times_mol", "mol")
+  c_eq <- c("(", "(",  "AGB", " + ", "BGB", ")", " * ", "CF", " + ", "DW", " + ", "LI", " + ", "SOC", ")", " * ", "DG_ratio", " * ", "44/12")
+  names(c_eq) <- c("all_(", "cf_(", "AGB", "plus_bgb", "BGB", "cf_)", "times_cf", "CF", "plus_dw", "DW", "plus_li", "LI", "plus_soc", "SOC", "all_)", "times_dg", "dg_ratio", "times_mol", "mol")
 
   ## Handle C unit
   if (.c_unit == "DM"){
-    c_eq_out <- c_eq
+    c_eq1 <- c_eq
   } else if (.c_unit == "C") {
-    c_eq_out <- c_eq[!(names(c_eq) %in% c("cf_(", "cf_)", "times_cf", "CF"))]
+    c_eq1 <- c_eq[!(names(c_eq) %in% c("cf_(", "cf_)", "times_cf", "CF"))]
     # V1.0 CO2 not allowed, just a constant value and nobody reporting directly CO2
     # } else if (.c_unit == "CO2") {
     #   c_eq_out <- c_eq[!(names(c_eq) %in% c("cf_(", "cf_)", "times_cf", "CF", "mol_(", "mol_)", "times_mol", "mol"))]
+  } else {
+    return("Wrong unit for carbon, should be either 'DM' or 'C'.")
+  }
+
+  ## Handle dg_ratio
+  if (.c_check$has_DG) {
+    c_eq2 <- c_eq1
+  } else {
+    c_eq2 <- c_eq1[!names(c_eq1) %in% c("times_dg", "dg_ratio")]
   }
 
   ## Handle pools
+  c_eq_out <- c_eq2
   if (.c_check$has_RS) {
     c_eq_out["BGB"] <- "AGB*RS"
   } else if (!.c_check$has_BG){
@@ -61,6 +71,10 @@ fct_make_formula <- function(.c_check, .c_unit){
 
   if (!.c_check$has_SO){
     c_eq_out <- c_eq_out[!(names(c_eq_out) %in% c("plus_soc", "SOC"))]
+  }
+
+  if (.c_check$has_AL){
+    c_eq_out <- "C_all * 44/12"
   }
 
   ## Output

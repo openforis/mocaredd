@@ -16,34 +16,39 @@
 #' cs <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
 #' ad <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "AD_lu_transitions", na = "NA")
 #'
-#' fct_check_data(.ad = ad, .cs = cs)
+#'.init <- init <- list(
+#'   c_pools = c("AGB", "BGB", "RS", "DW", "LI", "SOC", "ALL", "DG_ratio"),
+#'   redd_acti = c("DF", "DG", "EN", "EN_AF", "EN_RE")
+#' )
+#'
+#' fct_check_data(.ad = ad, .cs = cs, .init = init)
 #'
 #' @export
-fct_check_data <- function(.ad, .cs){
+fct_check_data <- function(.ad, .cs, .init){
 
   ## Unique IDs
-  flag_trans_id <- !(length(unique(.ad$trans_id)) == nrow(.ad))
-  flag_c_id     <- !(length(unique(.cs$c_id)) == nrow(.cs))
+  pass_trans_id <- length(unique(.ad$trans_id)) == nrow(.ad)
+  pass_c_id     <- length(unique(.cs$c_id)) == nrow(.cs)
 
   ## .cs conformity
-  flag_pool <- !all(unique(.cs$c_pool) %in% c("AGB", "BGB", "DW", "LI", "SOC", "ALL", "CF", "RS"))
+  pass_pool <- all(unique(.cs$c_pool) %in% .init$c_pools)
 
   ## V1.0, can only handle one type of unit
-  # flag_unit <- unique(.cs$c_unit) %in% c("DM", "C", "CO2") |> all()
+  # pass_unit <- unique(.cs$c_unit) %in% c("DM", "C", "CO2") |> all()
 
   ## AD conformity
-  flag_acti <- !all(unique(.ad$redd_activity) %in% c("DF", "DG", "E", "E_AF", "E_RE"))
+  pass_acti <- all(unique(.ad$redd_activity) %in% .init$redd_acti)
 
   ## Matching landuse
-  flag_lu_no <- !(length(unique(c(.ad$lu_initial_id, .ad$lu_final_id))) == length(unique(.cs$lu_id)))
+  pass_lu_no <- length(unique(c(.ad$lu_initial_id, .ad$lu_final_id))) == length(unique(.cs$lu_id))
 
   data.frame(
-    flag_trans_id = flag_trans_id,
-    flag_c_id = flag_c_id,
-    flag_pool = flag_pool,
-    # flag_unit = flag_unit,
-    flag_acti = flag_acti,
-    flag_lu_no = flag_lu_no
+    pass_trans_id = pass_trans_id,
+    pass_c_id = pass_c_id,
+    pass_pool = pass_pool,
+    # pass_unit = pass_unit,
+    pass_acti = pass_acti,
+    pass_lu_no = pass_lu_no
     )
 
 }

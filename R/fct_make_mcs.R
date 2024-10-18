@@ -1,20 +1,25 @@
-
-## TO BE CHECK IF WORTH MAKING THIS CODE INTO A FUNCTION
-
-# if (ad_x$trans_pdf == "normal") {
-#   sim_mean <- ad_x$trans_area
-#   sim_se   <- ad_x$trans_se
-#   SIMS <- rnorm(n = usr$n_iter, mean = sim_mean, sd = sim_se)
-#   min(SIMS)
-#   median(SIMS)
-#   mean(SIMS)
-#   if (usr$trunc_pdf) SIMS[SIMS < 0] <- 0
-#   median(SIMS)
-#   mean(SIMS)
-#   AD <- SIMS
-# }
-
-fct_make_mcs <- function(.n_iter = 10000, .pdf, .mean, .se, .a = NULL, .b = NULL, .c = NULL, .d = NULL, .trunc = FALSE){
+#' Generate Monte Carlo Simulations for a given PDF
+#'
+#' @description TBD
+#'
+#' @param .n_iter Number of iterations of the Monte Carlo simulations
+#' @param .pdf Probability Distribution Function name, supported distributions so far: "normal", "beta".
+#' @param .mean Mean value if PDF parameters are mean and sd
+#' @param .se Standard deviation of the mean value if PDF parameters are mean and sd
+#' @param .params Vector pf parameters for other PDFs (NOT IMPLEMENTED YET)
+#' @param .trunc TRUE or FALSE, should simulations be truncated to allow only values
+#'                above 0 where negative values are impossible
+#'
+#' @return a vector of N simulation with N, the number of iterations (.n_iter)
+#'
+#' @examples
+#' library(mocaredd)
+#'
+#' tt <- fct_make_mcs(.pdf = "normal", .mean = 0, .se = 1)
+#' hist(tt)
+#'
+#' @export
+fct_make_mcs <- function(.n_iter = 10000, .pdf, .mean = NA, .se = NA, .params = NULL, .trunc = FALSE){
 
   pdf_mean <- substitute(.mean)
   pdf_se <- substitute(.se)
@@ -23,12 +28,11 @@ fct_make_mcs <- function(.n_iter = 10000, .pdf, .mean, .se, .a = NULL, .b = NULL
     SIMS <- rnorm(n = usr$n_iter, mean = .mean, sd = .se)
     if (.trunc) SIMS[SIMS < 0] <- 0
     SIMS
+  } else if (.pdf == "beta") {
+    SIMS <- rbeta(n = usr$n_iter, shape1 = .params[1], shape2 = .params[2])
+    SIMS
   }
 
 }
 
 
-tt <- fct_make_mcs(.n_iter = usr$n_iter, .pdf = 'normal', .mean = ad_x$trans_area, .se = ad_x$trans_se, .a = NULL, .b = NULL, .c = NULL, .d = NULL, .trunc = FALSE)
-min(tt)
-median(tt)
-mean(tt)

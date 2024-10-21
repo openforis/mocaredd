@@ -25,11 +25,11 @@ fct_make_mcs <- function(.n_iter = 10000, .pdf, .mean = NA, .se = NA, .params = 
   pdf_se <- substitute(.se)
 
   if (.pdf == "normal") {
-    SIMS <- rnorm(n = usr$n_iter, mean = .mean, sd = .se)
+    SIMS <- rnorm(n = .n_iter, mean = .mean, sd = .se)
     if (.trunc) SIMS[SIMS < 0] <- 0
     SIMS
   } else if (.pdf == "beta") {
-    SIMS <- rbeta(n = usr$n_iter, shape1 = .params[1], shape2 = .params[2])
+    SIMS <- rbeta(n = .n_iter, shape1 = .params[1], shape2 = .params[2])
     SIMS
   }
 

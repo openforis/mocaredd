@@ -74,7 +74,7 @@ fct_make_formula <- function(.c_check, .c_unit){
   }
 
   if (.c_check$has_AL){
-    c_eq_out <- "C_all * 44/12"
+    c_eq_out <- "ALL * 44/12"
   }
 
   ## Output

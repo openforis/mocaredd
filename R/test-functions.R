@@ -55,11 +55,11 @@ walk(ls_f, function(x){ source(x, local = F) })
 ##
 
 ## !! FOR TESTING INSIDE FUNCTIONS ONLY
-.ad <- ad
-.cs <- cs
-.usr <- usr
-.time <- time
-.c_lu <- cs |> filter(lu_id == "dg_ev_wet_closed")
+# .ad <- ad
+# .cs <- cs
+# .usr <- usr
+# .time <- time
+# .c_lu <- cs |> filter(lu_id == "dg_ev_wet_closed")
 ## !!
 
 ## test fct_check_data()

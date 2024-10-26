@@ -45,7 +45,7 @@ fct_combine_mcs_all <- function(.ad, .cs, .init, .usr){
   mcs_trans <- map(ad$trans_id, function(x){
 
     ## !! FOR TESTING ONLY
-    # x = "T1_DF_ev_wet_closed"
+    # x = "T1_DG_ev_wet_closed"
     ## !!
 
     ad_x <- .ad |> filter(trans_id == x)
@@ -89,25 +89,24 @@ fct_combine_mcs_all <- function(.ad, .cs, .init, .usr){
     ## If degradation is ratio, using .usr$dg_pool to calculate C_all_f
     if (redd_x == "DG" & length(.usr$dg_pool) > 0) {
 
-      dg_pool <- str_split(.usr$dg_pool, pattern = ",") |> map(str_trim) |> unlist() |> paste0("_i")
+      dg_pool <- str_split(.usr$dg_pool, pattern = ",") |> map(str_trim) |> unlist()
+      dg_pool_i <- paste0(dg_pool, "_i")
 
       combi <- combi |>
         rowwise() |>
-        mutate(C_all_f = C_all_f * sum(!!!syms(dg_pool)) * 44/12) |>
+        mutate(C_all_f = DG_ratio_f * sum(!!!syms(dg_pool_i)) * 44/12) |>
         ungroup()
 
-    }
+      ## If degradation has unaffected pools, we identify them by difference and
+      ## exclude them from EF formula
+      if (redd_x == "DG" & .usr$dg_expool) {
+        dg_expool <- paste0(setdiff(c_i$c_pool, dg_pool), "_i")
+        combi <- combi |>
+          rowwise() |>
+          mutate(C_all_f = C_all_f + sum(!!!syms(dg_expool)) )|>
+          ungroup()
+      }
 
-    ## If degradation has unaffected pools, we identify them by difference and
-    ## exclude them from EF formula
-    if (redd_x == "DG" & .usr$dg_expool) {
-
-      dg_expool <- paste0(setdiff(c_i$c_pool, c_f$c_pool), "_i")
-
-      combi <- combi |>
-        rowwise() |>
-        mutate(C_all_f = C_all_f + sum(!!!syms(dg_expool)) )|>
-        ungroup()
     }
 
     combi

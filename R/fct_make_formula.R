@@ -31,8 +31,11 @@
 #' @export
 fct_make_formula <- function(.c_check, .c_unit){
 
-  c_eq <- c("(", "(",  "AGB", " + ", "BGB", ")", " * ", "CF", " + ", "DW", " + ", "LI", " + ", "SOC", ")", " * ", "DG_ratio", " * ", "44/12")
-  names(c_eq) <- c("all_(", "cf_(", "AGB", "plus_bgb", "BGB", "cf_)", "times_cf", "CF", "plus_dw", "DW", "plus_li", "LI", "plus_soc", "SOC", "all_)", "times_dg", "dg_ratio", "times_mol", "mol")
+  c_eq <- c("(", "(",  "AGB", " + ", "BGB", ")", " * ", "CF", " + ", "DW", " + ", "LI", " + ", "SOC", ")", " * ", "44/12")
+  names(c_eq) <- c("all_(", "cf_(", "AGB", "plus_bgb", "BGB", "cf_)", "times_cf", "CF", "plus_dw", "DW", "plus_li", "LI", "plus_soc", "SOC", "all_)", "times_mol", "mol")
+
+  ## Handle dg_ratio
+  if (.c_check$has_DG) return("DG_ratio")
 
   ## Handle C unit
   if (.c_unit == "DM"){
@@ -46,15 +49,9 @@ fct_make_formula <- function(.c_check, .c_unit){
     return("Wrong unit for carbon, should be either 'DM' or 'C'.")
   }
 
-  ## Handle dg_ratio
-  if (.c_check$has_DG) {
-    c_eq2 <- c_eq1
-  } else {
-    c_eq2 <- c_eq1[!names(c_eq1) %in% c("times_dg", "dg_ratio")]
-  }
-
   ## Handle pools
-  c_eq_out <- c_eq2
+  c_eq_out <- c_eq1
+
   if (.c_check$has_RS) {
     c_eq_out["BGB"] <- "AGB*RS"
   } else if (!.c_check$has_BG){

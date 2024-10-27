@@ -118,10 +118,10 @@ fct_combine_mcs_all <- function(.ad, .cs, .init, .usr){
   mcs_trans2 <- mcs_trans |>
     mutate(
       EF = C_all_i - C_all_f,
-      E_trans  = AD * EF
+      E_sim  = AD * EF
     ) |>
     select(
-      sim_no, redd_activity, time_period = trans_period, trans_id, AD, EF, E_trans, C_form_i, C_all_i, C_form_f, C_all_f, everything()
+      sim_no, redd_activity, time_period = trans_period, trans_id, AD, EF, E_sim, C_form_i, C_all_i, C_form_f, C_all_f, everything()
     )
 
 }

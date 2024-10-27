@@ -96,23 +96,92 @@ message("CSTOCK sims working: ", all(check_cstock$flag_cstock))
 ## Test fct_combine_mcs_all()
 sim_trans <- fct_combine_mcs_all(.ad = ad, .cs = cs, .init = init, .usr = usr)
 
+## NOT A FUNCTION:
 res_trans <- sim_trans |>
-  group_by(time_period, redd_activity, trans_id) |>
+  group_by(trans_id) |>
   summarise(
-    E = round(median(E_trans)),
-    E_ciupper = quantile(E_trans, 1 - ci_alpha/2),
-    E_cilower = quantile(E_trans, ci_alpha/2),
+    E = round(median(E_sim)),
+    E_ciupper = round(quantile(E_sim, 1 - ci_alpha/2)),
+    E_cilower = round(quantile(E_sim, ci_alpha/2)),
     .groups = "drop"
   ) |>
   mutate(
-    E_ME  = (E_ciupper - E_cilower) / 2,
+    E_ME  = round((E_ciupper - E_cilower) / 2),
     E_U   = round(E_ME / E * 100),
   ) |>
-  select(time_period, redd_activity, trans_id, E, E_U, E_ciupper, E_cilower, E_ME)
+  select(trans_id, E, E_U, E_ME, E_cilower, E_ciupper)
 
 res_trans
 
 write_csv(res_trans, "tests/res_trans.csv")
+
+
+## ADD graph to table
+library(gt)
+library(gtExtras)
+
+E_range <- c(min(res_trans$E_cilower), max(res_trans$E_ciupper))
+
+gt_trans <- res_trans |>
+  select(-E_ME) |>
+  mutate(
+    E_distribution = trans_id,
+    E_cilower = if_else(E_cilower == 0, NA_integer_, E_cilower),
+    E_ciupper = if_else(E_ciupper == 0, NA_integer_, E_cilower)
+    ) |>
+  gt() |>
+  cols_label(
+    trans_id = "Land use transition code",
+    E = "E (tCO2/y)",
+    E_U = "U (%)",
+    E_cilower = "CI (90%)",
+    E_distribution = ""
+  ) |>
+  cols_merge(
+    columns = c(E_cilower, E_ciupper),
+    pattern = "<<({1}>> - <<{2})>>",
+  ) |>
+  tab_spanner(
+    label = "MCS results",
+    columns = starts_with("E")
+  ) |>
+  fmt_number(decimals = 0) |>
+  fmt_percent(columns = "E_U", scale_values = F, decimals = 0) |>
+  sub_missing(
+    columns = "E_U",
+    missing_text = "-"
+    ) |>
+  text_transform(
+    locations = cells_body(columns = 'E_distribution'),
+    fn = function(column) {
+      map(column, function(x){
+
+        ## !! FOR TESTING ONLY
+        # x = "T1_DF_ev_moist_closed"
+        # column = res_trans$trans_id
+        ## !!
+
+        res_trans |>
+          filter(trans_id == x) |>
+          ggplot() +
+          geom_point(aes(x = E, y = trans_id), size = 40) +
+          geom_segment(aes(x = E_cilower, xend = E_ciupper, y = trans_id, yend = trans_id), linewidth = 12) +
+          geom_vline(xintercept = 0, linetype = "dotted", linewidth = 8) +
+          geom_vline(xintercept = min(res_trans$E_cilower), linewidth = 4) +
+          geom_vline(xintercept = max(res_trans$E_ciupper), linewidth = 4) +
+          theme_minimal() +
+          scale_y_discrete(breaks = NULL) +
+          scale_x_continuous(breaks = NULL) +
+          theme(axis.text = element_text(size = 120)) +
+          labs(x = element_blank(), y = element_blank()) +
+          coord_cartesian(xlim = E_range)
+
+      }) |>
+        ggplot_image(height = px(30), aspect_ratio = 5)
+    }
+  )
+
+gtsave(gt_trans, filename = "tests/gt_trans.png")
 
 
 ##
@@ -122,11 +191,89 @@ write_csv(res_trans, "tests/res_trans.csv")
 ## trans to redd+ acti
 sim_redd <- sim_trans |>
   group_by(sim_no, redd_activity, time_period) |>
-  summarize(E_redd = sum(E), .groups = "drop")
+  summarize(E_sim = sum(E_sim), .groups = "drop")
 
 sim_redd |> filter(sim_no == 1)
 
-res_redd <-
+res_redd <- sim_redd |>
+  group_by(time_period, redd_activity) |>
+  summarise(
+    E = round(median(E_sim)),
+    E_ciupper = round(quantile(E_sim, 1 - ci_alpha/2)),
+    E_cilower = round(quantile(E_sim, ci_alpha/2)),
+    .groups = "drop"
+  ) |>
+  mutate(
+    E_ME  = round((E_ciupper - E_cilower) / 2),
+    E_U   = round(E_ME / E * 100),
+  ) |>
+  select(time_period, redd_activity, E, E_U, E_ME, E_cilower, E_ciupper)
+
+E_range <- c(min(res_redd$E_cilower), max(res_redd$E_ciupper))
+
+gt_trans <- res_redd |>
+  select(-E_ME) |>
+  mutate(
+    E_distribution = trans_id,
+    E_cilower = if_else(E_cilower == 0, NA_integer_, E_cilower),
+    E_ciupper = if_else(E_ciupper == 0, NA_integer_, E_cilower)
+  ) |>
+  gt() |>
+  cols_label(
+    time_period = "Period code",
+    redd_activity = "REDD+ activity code",
+    E = "E (tCO2/y)",
+    E_U = "U (%)",
+    E_cilower = "CI (90%)",
+    E_distribution = ""
+  ) |>
+  cols_merge(
+    columns = c(E_cilower, E_ciupper),
+    pattern = "<<({1}>> - <<{2})>>",
+  ) |>
+  tab_spanner(
+    label = "MCS results",
+    columns = starts_with("E")
+  ) |>
+  fmt_number(decimals = 0) |>
+  fmt_percent(columns = "E_U", scale_values = F, decimals = 0) |>
+  sub_missing(
+    columns = "E_U",
+    missing_text = "-"
+  ) |>
+  text_transform(
+    locations = cells_body(columns = 'E_distribution'),
+    fn = function(column) {
+      map(column, function(x){
+
+        ## !! FOR TESTING ONLY
+        # x = "T1_DF_ev_moist_closed"
+        # column = res_trans$trans_id
+        ## !!
+
+        res_trans |>
+          ## NEED UNIQUE ID
+          filter(trans_id == x) |>
+          ggplot() +
+          geom_point(aes(x = E, y = redd_activity), size = 40) +
+          geom_segment(aes(x = E_cilower, xend = E_ciupper, y = redd_activity, yend = redd_activity), linewidth = 12) +
+          geom_vline(xintercept = 0, linetype = "dotted", linewidth = 8) +
+          geom_vline(xintercept = min(res_trans$E_cilower), linewidth = 4) +
+          geom_vline(xintercept = max(res_trans$E_ciupper), linewidth = 4) +
+          theme_minimal() +
+          scale_y_discrete(breaks = NULL) +
+          scale_x_continuous(breaks = NULL) +
+          theme(axis.text = element_text(size = 120)) +
+          labs(x = element_blank(), y = element_blank()) +
+          coord_cartesian(xlim = gg_E_range)
+
+      }) |>
+        ggplot_image(height = px(30), aspect_ratio = 5)
+    }
+  )
+
+gtsave(gt_trans, filename = "tests/gt_trans.png")
+
 
 ## redd+ acti to time period
 sim_period <- sim_redd |>

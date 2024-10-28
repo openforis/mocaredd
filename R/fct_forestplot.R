@@ -22,16 +22,7 @@
 #' @importFrom dplyr mutate, select, if_else
 #'
 #' @examples
-#' library(mocaredd)
-#' library(readxl)
-#' library(dplyr)
-#'
-#' cs    <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
-#' c_lu  <- cs |> filter(lu_id == "dg_ev_wet_closed")
-#'
-#' c_check <- fct_check_pool(.c_lu = c_lu, .c_unit = "C", .c_fraction = NA)
-#'
-#' fct_make_formula(.c_check = c_check, .c_unit = "C")
+#' ## TBD
 #'
 #' @export
 fct_forestplot <- function(
@@ -46,18 +37,19 @@ fct_forestplot <- function(
     .filename
     ){
 
-  ## Wrap around col names to avoid typing characters
+  ## Defuse col names to avoid input characters
   col_id    <- rlang::enquo(.id)
   col_value <- rlang::enquo(.value)
   col_uperc <- rlang::enquo(.uperc)
   col_cilo  <- rlang::enquo(.cilower)
   col_ciup  <- rlang::enquo(.ciupper)
 
-
+  ## data range for the plot
   E_min <- eval(substitute(min(.data$.cilower)))
   E_max <- eval(substitute(max(.data$.ciupper)))
   E_range <- c(E_min, E_max)
 
+  ## Output
   gt_out <- .data |>
     dplyr::select(!!col_id, !!col_value, !!col_uperc, !!col_cilo, !!col_ciup) |>
     dplyr::mutate(
@@ -121,6 +113,7 @@ fct_forestplot <- function(
       }
     )
 
+  ## Save the table as img is path specified
   if (is.character(.filename)) gtsave(gt_out, filename = .filename)
 
   gt_out

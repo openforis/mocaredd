@@ -127,7 +127,7 @@ gt_trans <- res_trans |>
     .ciupper = E_ciupper,
     .id_colname = "Land use<br>transition code",
     .conflevel = "90%",
-    .filename = "tests/gt_trans2.png"
+    .filename = "tests/gt_trans.png"
   )
 
 ##
@@ -158,79 +158,54 @@ res_redd <- sim_redd |>
   ) |>
   select(redd_id, E, E_U, E_ME, E_cilower, E_ciupper)
 
-E_min <- min(res_redd$E_cilower)
-E_max <- max(res_redd$E_ciupper)
-E_range <- c(E_min, E_max)
+gt_redd <- fct_forestplot(
+  .data = res_redd,
+  .id = redd_id,
+  .value = E,
+  .uperc = E_U,
+  .cilower = E_cilower,
+  .ciupper = E_ciupper,
+  .id_colname = "REDD+ activity<br>per time period",
+  .conflevel = "90%",
+  .filename = "tests/gt_redd.png"
+)
 
-gt_redd <- res_redd |>
-  select(-E_ME) |>
-  mutate(
-    E_distribution = redd_id,
-    E_cilower = if_else(E_cilower == 0, NA_integer_, E_cilower),
-    E_ciupper = if_else(E_ciupper == 0, NA_integer_, E_ciupper)
-  ) |>
-  gt() |>
-  cols_label(
-    redd_id = md("REDD+ activity<br>per time period"),
-    E = "E (tCO2/y)",
-    E_U = "U (%)",
-    E_cilower = "CI (90%)",
-    E_distribution = ""
-  ) |>
-  cols_merge(
-    columns = c(E_cilower, E_ciupper),
-    pattern = "<<({1}>> - <<{2})>>",
-  ) |>
-  tab_spanner(
-    label = "MCS results",
-    columns = starts_with("E")
-  ) |>
-  fmt_number(decimals = 0) |>
-  fmt_percent(columns = "E_U", scale_values = F, decimals = 0) |>
-  sub_missing(
-    columns = "E_U",
-    missing_text = "-"
-  ) |>
-  text_transform(
-    locations = cells_body(columns = 'E_distribution'),
-    fn = function(column) {
-      map(column, function(x){
-
-        ## !! FOR TESTING ONLY
-        # x = "T1_DF_ev_moist_closed"
-        # column = res_trans$trans_id
-        ## !!
-
-        res_redd |>
-          ## NEED UNIQUE ID
-          filter(redd_id == x) |>
-          ggplot() +
-          geom_point(aes(x = E, y = redd_id), size = 40) +
-          geom_segment(aes(x = E_cilower, xend = E_ciupper, y = redd_id, yend = redd_id), linewidth = 12) +
-          geom_vline(xintercept = 0, linetype = "dotted", linewidth = 8) +
-          geom_vline(xintercept = E_min, linewidth = 4) +
-          geom_vline(xintercept = E_max, linewidth = 4) +
-          theme_minimal() +
-          scale_y_discrete(breaks = NULL) +
-          scale_x_continuous(breaks = NULL) +
-          theme(axis.text = element_text(size = 120)) +
-          labs(x = element_blank(), y = element_blank()) +
-          coord_cartesian(xlim = gg_E_range)
-
-      }) |>
-        ggplot_image(height = px(30), aspect_ratio = 5)
-    }
-  )
-
-gtsave(data = gt_redd, filename = "tests/gt_redd.png")
-
+gt_redd
 
 ## redd+ acti to time period
 sim_period <- sim_redd |>
   group_by(sim_no, time_period) |>
-  summarise(E_period = sum(E_redd), .groups = "drop")
+  summarise(E_sim = sum(E_sim), .groups = "drop")
 
-res_period |> filter(sim_no == 1)
+sim_period |> filter(sim_no == 1)
+
+res_period <- sim_period |>
+  group_by(time_period) |>
+  summarise(
+    E = round(median(E_sim)),
+    E_ciupper = round(quantile(E_sim, 1 - ci_alpha/2)),
+    E_cilower = round(quantile(E_sim, ci_alpha/2)),
+    .groups = "drop"
+  ) |>
+  mutate(
+    E_ME  = round((E_ciupper - E_cilower) / 2),
+    E_U   = round(E_ME / E * 100),
+  ) |>
+  select(time_period, E, E_U, E_ME, E_cilower, E_ciupper)
+
+gt_period <- res_period |>
+  fct_forestplot(
+    .id = time_period,
+    .value = E,
+    .uperc = E_U,
+    .cilower = E_cilower,
+    .ciupper = E_ciupper,
+    .id_colname = "Time period",
+    .conflevel = "90%",
+    .filename = "tests/gt_period.png"
+  )
+
+gt_period
 
 ## aggregate redd+ periods for the reference level
 time_ref   <- time |> filter(period_type == "reference")

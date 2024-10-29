@@ -45,9 +45,14 @@ fct_forestplot <- function(
   col_ciup  <- rlang::enquo(.ciupper)
 
   ## data range for the plot
-  E_min <- eval(substitute(min(.data$.cilower)))
-  E_max <- eval(substitute(max(.data$.ciupper)))
+  E_min <- eval(substitute(min(.data$.cilower, 0)))
+  E_max <- eval(substitute(max(.data$.ciupper, 0)))
   E_range <- c(E_min, E_max)
+
+  ## Extend range to 5% of the data range to make it look nicer
+  plot_min <- E_min - ((E_max - E_min) * 0.05)
+  plot_max <- E_max + ((E_max - E_min) * 0.05)
+  plot_range <- c(plot_min, plot_max)
 
   ## Output
   gt_out <- .data |>
@@ -99,14 +104,14 @@ fct_forestplot <- function(
               linewidth = 12
               ) +
             geom_vline(xintercept = 0, linetype = "dotted", linewidth = 8) +
-            geom_vline(xintercept = E_min, linewidth = 4) +
-            geom_vline(xintercept = E_max, linewidth = 4) +
+            geom_vline(xintercept = plot_min, linewidth = 4) +
+            geom_vline(xintercept = plot_max, linewidth = 4) +
             theme_minimal() +
             scale_y_discrete(breaks = NULL) +
             scale_x_continuous(breaks = NULL) +
             theme(axis.text = element_text(size = 120)) +
             labs(x = element_blank(), y = element_blank()) +
-            coord_cartesian(xlim = E_range)
+            coord_cartesian(xlim = plot_range)
 
         }) |>
           ggplot_image(height = px(30), aspect_ratio = 5)
@@ -114,7 +119,12 @@ fct_forestplot <- function(
     )
 
   ## Save the table as img is path specified
-  if (is.character(.filename)) gtsave(gt_out, filename = .filename)
+  if (is.character(.filename)) {
+    gtsave(gt_out, filename = .filename)
+
+    ## Workaround gtsave not working on linux/macos
+    f <- chromote::default_chromote_object(); f$close()
+  }
 
   gt_out
 

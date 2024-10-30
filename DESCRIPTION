@@ -1,4 +1,4 @@
-Package: MCredd
+Package: mocaredd
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
@@ -16,7 +16,7 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-URL: https://r-mcredd.github.io/MCredd/
+URL: https://github.com/openforis/mocaredd
 Imports: 
     bslib,
     dplyr,
@@ -34,4 +34,5 @@ Imports:
     stringr,
     terra,
     tidyselect,
-    units
+    units,
+    gt

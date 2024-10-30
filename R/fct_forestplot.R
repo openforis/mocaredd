@@ -1,4 +1,4 @@
-#' MAke a forest plot to show Monte Carlo simulation results
+#' Make a forest plot to show Monte Carlo simulation results
 #'
 #' @description Produce a [gt] table with the median and confidence interval of
 #'              Monte Carlo simulations for each category of a level of the analysis

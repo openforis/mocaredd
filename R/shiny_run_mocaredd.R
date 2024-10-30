@@ -15,12 +15,12 @@
 #' @examples
 #' if (interactive()) {
 #'
-#' shiny_run_MCredd()
+#' shiny_run_mocaredd()
 #'
 #' }
 #'
 #' @export
-shiny_run_MCredd <- function(...) {
+shiny_run_mocaredd <- function(...) {
 
   ## GLOBAL ####################################################################
   ## Initiate translation

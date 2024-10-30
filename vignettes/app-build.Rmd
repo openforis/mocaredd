@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-#library(MCredd)
+#library(mocaredd)
 ```
 
 
@@ -35,7 +35,7 @@ Main source for info:
 1. Create a Github repository.
 1. Create a R project from Github (See https://happygitwithr.com/ on linking Github repos to Rstudio).
 1. Create a package structure inside he project: 
-    - `usethis::create_package("PATH/MCredd")` with PATH the path to the project folder set during the project creation.
+    - `usethis::create_package("PATH/mocaredd")` with PATH the path to the project folder set during the project creation.
 1. Add vignettes and pkgdown setup:
     - `usethis::use_pkgdown()`
     - `usethis::use_vignette("app-generation", title = "MCredd - package creation steps")`

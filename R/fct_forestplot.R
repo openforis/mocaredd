@@ -6,14 +6,14 @@
 #'              showing the median and CI together.
 #'
 #' @param .data a data frame containing the simulation aggregated results
-#' @param .id the ID column of the data frame
-#' @param .value the value column of the data frame (i.e median of the simulations)
-#' @param .uperc the percentage uncertainty of the simulations
-#' @param .cilower the lower end of confidence interval
-#' @param .ciupper the higher end of the confidence interval
+#' @param .id the name of the ID column of the data frame
+#' @param .value the name of the value column of the data frame (i.e median of the simulations)
+#' @param .uperc the name of the percentage uncertainty of the simulations
+#' @param .cilower the name of the lower end of confidence interval
+#' @param .ciupper the name of the higher end of the confidence interval
 #' @param .id_colname character text for the ID column names. goes to [gt::md()] in [gt::cols_label()]
-#' @param .conflevel character text to specify what confidence level was used
-#' @param .filename path to save the table as png or NA.
+#' @param .conflevel character text to specify what confidence level was used, ex. "90%".
+#' @param .filename path to save the table or NA.
 #'
 #' @return A character value with the formula for calculating total carbon stock for a specific land use.
 #'

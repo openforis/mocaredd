@@ -18,12 +18,12 @@
 #' cs <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
 #' ad <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "AD_lu_transitions", na = "NA")
 #'
-#' res <- fct_combine_mcs_all(.ad = ad, .cs = cs)
+#' res <- fct_combine_mcs_E(.ad = ad, .cs = cs)
 #'
 #' ## ADD HISTOGRAM FOR ONE SET OF SIMULATIONS
 #'
 #' @export
-fct_combine_mcs_all <- function(.ad, .cs, .init, .usr){
+fct_combine_mcs_E <- function(.ad, .cs, .init, .usr){
 
   ## CHECK THE INPUT DATA CONFORMITY
   flag_all <- fct_check_data(.ad = ad, .cs = cs, .init = init)
@@ -73,12 +73,12 @@ fct_combine_mcs_all <- function(.ad, .cs, .init, .usr){
     ## EF - Emissions Factors decomposed for each carbon pool
     ## Carbon stock of initial land use
     c_i     <- .cs |> filter(lu_id == ad_x$lu_initial_id)
-    SIMS_CI <- fct_combine_mcs_cstock(.c_sub = c_i, .c_unit = .usr$c_unit, .n_iter = .usr$n_iter)
+    SIMS_CI <- fct_combine_mcs_C(.c_sub = c_i, .c_unit = .usr$c_unit, .n_iter = .usr$n_iter)
 
     names(SIMS_CI) <- c("sim_no", paste0(setdiff(names(SIMS_CI), "sim_no"), "_i"))
 
     c_f     <- .cs |> filter(lu_id == ad_x$lu_final_id)
-    SIMS_CF <- fct_combine_mcs_cstock(.c_sub = c_f, .c_unit = .usr$c_unit, .n_iter = .usr$n_iter)
+    SIMS_CF <- fct_combine_mcs_C(.c_sub = c_f, .c_unit = .usr$c_unit, .n_iter = .usr$n_iter)
 
     names(SIMS_CF) <- c("sim_no", paste0(setdiff(names(SIMS_CF), "sim_no"), "_f"))
 

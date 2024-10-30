@@ -82,8 +82,8 @@ hist(sims)
 median(sims)
 c_sims$c_value
 
-## test fct_combine_mcs_cstock()
-res <- fct_combine_mcs_cstock(.n_iter = 10000, .c_sub = c_lu, .c_unit = "C", .c_fraction = NA)
+## test fct_combine_mcs_C()
+res <- fct_combine_mcs_C(.n_iter = 10000, .c_sub = c_lu, .c_unit = "C", .c_fraction = NA)
 
 check_cstock <- res |>
   mutate(
@@ -94,28 +94,13 @@ check_cstock <- res |>
 message("CSTOCK sims working: ", all(check_cstock$flag_cstock))
 
 
-## Test fct_combine_mcs_all()
-sim_trans <- fct_combine_mcs_all(.ad = ad, .cs = cs, .init = init, .usr = usr)
+## Test fct_combine_mcs_E()
+sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .init = init, .usr = usr)
 
-## NOT A FUNCTION:
-res_trans <- sim_trans |>
-  group_by(trans_id) |>
-  summarise(
-    E = round(median(E_sim)),
-    E_ciupper = round(quantile(E_sim, 1 - ci_alpha/2)),
-    E_cilower = round(quantile(E_sim, ci_alpha/2)),
-    .groups = "drop"
-  ) |>
-  mutate(
-    E_ME  = round((E_ciupper - E_cilower) / 2),
-    E_U   = round(E_ME / E * 100),
-  ) |>
-  select(trans_id, E, E_U, E_ME, E_cilower, E_ciupper)
-
-res_trans
+## Test fct_calc_res()
+res_trans <- fct_calc_res(.data = sim_trans, .id = trans_id, .sim = E_sim, .ci_alpha = ci_alpha)
 
 write_csv(res_trans, "tests/res_trans.csv")
-
 
 ## Test fct_forestplot()
 gt_trans <- res_trans |>
@@ -130,6 +115,48 @@ gt_trans <- res_trans |>
     .filename = "tests/gt_trans.png"
   )
 
+gt_trans
+
+
+## test chain of combine MCS
+sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .init = init, .usr = usr)
+
+sim_FREL <- fct_combine_mcs_P(
+  .data = sim_trans,
+  .time = time,
+  .period_type = "reference",
+  .ad_annual = usr$ad_annual
+)
+
+res_FREL <- sim_FREL |>
+  mutate(period_id = "FREL") |>
+  fct_calc_res(.id = period_id, .sim = E_sim, .ci_alpha = ci_alpha)
+
+message("FREL is: ", res_FREL$E, " ± ", res_FREL$E_U, "%")
+
+## Comparison arithmetic mean
+## Arithmetic mean
+ad2 <- ad |> mutate(trans_se = 0)
+cs2 <- cs |>
+  mutate(
+    c_se = 0,
+    c_pdf = if_else(c_pdf != "normal" & !is.na(c_value), "normal", c_pdf)
+  )
+sim_trans <- fct_combine_mcs_all(.ad = ad2, .cs = cs2, .init = init, .usr = usr)
+
+sim_FREL <- fct_combine_mcs_P(
+  .data = sim_trans,
+  .time = time,
+  .period_type = "reference",
+  .ad_annual = usr$ad_annual
+)
+
+res_FREL <- sim_FREL |>
+  mutate(period_id = "FREL") |>
+  fct_calc_res(.id = period_id, .sim = E_sim, .ci_alpha = ci_alpha)
+
+message("FREL is: ", res_FREL$E, " ± ", res_FREL$E_U, "%")
+
 ##
 ## TEST NO FUNCTION
 ##
@@ -139,24 +166,9 @@ sim_redd <- sim_trans |>
   group_by(sim_no, redd_activity, time_period) |>
   summarize(E_sim = sum(E_sim), .groups = "drop")
 
-sim_redd |> filter(sim_no == 1)
-
 res_redd <- sim_redd |>
-  mutate(
-    redd_id = paste0(time_period, " - ", redd_activity)
-  ) |>
-  group_by(redd_id) |>
-  summarise(
-    E = round(median(E_sim)),
-    E_ciupper = round(quantile(E_sim, 1 - ci_alpha/2)),
-    E_cilower = round(quantile(E_sim, ci_alpha/2)),
-    .groups = "drop"
-  ) |>
-  mutate(
-    E_ME  = round((E_ciupper - E_cilower) / 2),
-    E_U   = round(E_ME / E * 100),
-  ) |>
-  select(redd_id, E, E_U, E_ME, E_cilower, E_ciupper)
+  mutate(redd_id = paste0(time_period, " - ", redd_activity)) |>
+  fct_calc_res(.id = redd_id, .sim = E_sim, .ci_alpha = ci_alpha)
 
 gt_redd <- fct_forestplot(
   .data = res_redd,
@@ -176,8 +188,6 @@ gt_redd
 sim_period <- sim_redd |>
   group_by(sim_no, time_period) |>
   summarise(E_sim = sum(E_sim), .groups = "drop")
-
-sim_period |> filter(sim_no == 1)
 
 res_period <- sim_period |>
   group_by(time_period) |>
@@ -207,59 +217,26 @@ gt_period <- res_period |>
 
 gt_period
 
-## aggregate redd+ periods for the reference level
-time_ref   <- time |> filter(period_type == "reference")
-nb_ref     <- length(unique(time_ref$period_combinations))
-length_ref <- sum(time_ref$nb_years)
 
-if (nrow(time_ref) == 1) {
+sim_FREL <- fct_combine_mcs_P(
+  .data = sim_trans,
+  .time = time,
+  .period_type = "reference",
+  .ad_annual = usr$ad_annual
+  )
 
-  ## Extract the sims of the period if only one period
-  FREL_SIMS <- res_period |>
-    filter(time_period == time_ref$period_no) |>
-    select(sim_no, E = E_period)
+res_FREL <- sim_FREL |>
+  mutate(period_id = "FREL") |>
+  fct_calc_res(.id = period_id, .sim = E_sim, .ci_alpha = ci_alpha)
 
-} else if (nrow(time_ref) > 1 & usr$ad_annual) {
+message("FREL is: ", res_FREL$E, " ± ", res_FREL$E_U, "%")
 
-  ## Weighted average of the sims from the reference sub-periods
-  ## Get the volume per period then divide by total length of reference period
-  FREL_SIMS <- res_period |>
-    filter(time_period %in% time_ref$period_no) |>
-    left_join(time_ref, by = join_by(time_period == period_no)) |>
-    group_by(sim_no) |>
-    summarise(E = sum(E_period * nb_years) / length_ref, .groups = "drop")
-
-
-} else if (nrow(time_ref) > 1 & !usr$ad_annual) {
-  ## Divide the volume of E over the reference period by the total length of the reference period
-  FREL_SIMS <- res_period |>
-    filter(time_period %in% time_ref$period_no) |>
-    group_by(sim_no) |>
-    summarise(E = sum(E_period) / length_ref, .groups = "drop")
-
-} else {
-
-  ## Something wrong
-  return("Issues while aggregating Emissions over sub-periods.")
-
-}
-
-
-SIMS <- FREL_SIMS$E
-
-FREL <- round(median(SIMS))
-FREL
-
-FREL_ME <- as.numeric((quantile(SIMS, 1 - ci_alpha/2) - quantile(SIMS, ci_alpha/2)) / 2)
-FREL_U  <- round(FREL_ME / FREL * 100, 0)
-
-message("FREL is: ", FREL, " ± ", FREL_U, "%")
 
 ## Arithmetic mean
 ad2 <- ad |> mutate(trans_se = 0)
 cs2 <- cs |> mutate(c_se = 0)
 res_trans <- fct_combine_mcs_all(.ad = ad2, .cs = cs2, .init = init, .usr = usr)
-
+res_redd  <- res_trans
 
 
 ##

@@ -19,7 +19,7 @@
 #' res
 #'
 #' @export
-fct_combine_mcs_cstock <- function(.c_sub, .c_unit, .c_fraction = NA, .n_iter){
+fct_combine_mcs_C <- function(.c_sub, .c_unit, .c_fraction = NA, .n_iter){
 
   ## !! FOR TESTING ONLY
   # .c_sub      <- cs |> filter(lu_id == "postdef_open") ## "dg_ev_wet_closed"

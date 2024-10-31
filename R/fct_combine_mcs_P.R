@@ -26,40 +26,34 @@ fct_combine_mcs_P <- function(
 
   ## aggregate redd+ periods for the reference level
   time_ref   <- .time |> filter(period_type == .period_type)
-  nb_ref     <- length(unique(time_ref$period_combinations))
+  nb_ref     <- length(unique(time_ref$period_no))
   length_ref <- sum(time_ref$nb_years)
 
-  if (nrow(time_ref) == 1) {
 
-    ## Extract the sims of the period if only one period
-    sim_FREL <- .data |>
-      filter(time_period == time_ref$period_no) |>
-      group_by(sim_no) |>
-      summarise(E_sim = sum(E_sim))
-
-  } else if (nrow(time_ref) > 1 & .ad_annual) {
+if (.ad_annual) {
 
     ## Weighted average of the sims from the reference sub-periods
     ## Get the volume per period then divide by total length of reference period
-    sim_FREL <- .data |>
-      filter(time_period %in% time_ref$period_no) |>
-      left_join(time_ref, by = join_by(time_period == period_no)) |>
-      group_by(sim_no) |>
-      summarise(E_sim = sum(E_sim * nb_years) / length_ref, .groups = "drop")
-
-
-  } else if (nrow(time_ref) > 1 & !.ad_annual) {
-    ## Divide the volume of E over the reference period by the total length of the reference period
-    sim_FREL <- .data |>
-      filter(time_period %in% time_ref$period_no) |>
-      group_by(sim_no) |>
-      summarise(E_sim = sum(E_sim) / length_ref, .groups = "drop")
+    out <- map(unique(time_ref$period_type), function(x){
+      .data |>
+        left_join(time_ref, by = join_by(time_period == period_no)) |>
+        filter(period_type == x) |>
+        group_by(sim_no, period_type) |>
+        summarise(E_sim = sum(E_sim * nb_years) / length_ref, .groups = "drop")
+    }) |> list_rbind()
 
   } else {
-
-    ## Something wrong
-    return("Issues while aggregating Emissions over sub-periods.")
+    ## Divide the volume of E over the reference period by the total length of the reference period
+    out <- map(unique(time_ref$period_type), function(x){
+      .data |>
+        left_join(time_ref, by = join_by(time_period == period_no)) |>
+        filter(period_type == x) |>
+        group_by(sim_no, period_type) |>
+        summarise(E_sim = sum(E_sim) / length_ref, .groups = "drop")
+    }) |> list_rbind()
 
   }
+
+  out
 
 }

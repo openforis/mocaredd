@@ -22,6 +22,8 @@ time <- readxl::read_xlsx(.path, sheet = "time_periods", na = "NA")
 #   c_unit    = "C"
 # )
 
+
+
 ##
 ## INITAL CALCULATIONS ######
 ##
@@ -35,6 +37,8 @@ time <- time |> mutate(nb_years = year_end - year_start + 1)
 ## alpha
 ci_alpha <- 1 - usr$conf_level
 
+
+
 ##
 ## IN SHINY: Initiation lists ######
 ##
@@ -43,6 +47,8 @@ init <- list(
   c_pools = c("AGB", "BGB", "RS", "DW", "LI", "SOC", "ALL", "DG_ratio"),
   redd_acti = c("DF", "DG", "EN", "EN_AF", "EN_RE")
 )
+
+
 
 ##
 ## Load functions ######
@@ -93,7 +99,6 @@ check_cstock <- res |>
 
 message("CSTOCK sims working: ", all(check_cstock$flag_cstock))
 
-
 ## Test fct_combine_mcs_E()
 sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .init = init, .usr = usr)
 
@@ -118,13 +123,18 @@ gt_trans <- res_trans |>
 gt_trans
 
 
-## test chain of combine MCS
+
+##
+## test whole calculation chain ######
+##
+
 sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .init = init, .usr = usr)
 
+## FREL
 sim_FREL <- fct_combine_mcs_P(
   .data = sim_trans,
   .time = time,
-  .period_type = "reference",
+  .period_type = "REF",
   .ad_annual = usr$ad_annual
 )
 
@@ -134,8 +144,58 @@ res_FREL <- sim_FREL |>
 
 message("FREL is: ", res_FREL$E, " ± ", res_FREL$E_U, "%")
 
-## Comparison arithmetic mean
-## Arithmetic mean
+## Monitoring
+moni_type <- time |>
+  filter(period_type != "REF") |>
+  pull(period_type) |>
+  unique()
+
+sim_moni <- map(moni_type, function(x){
+  fct_combine_mcs_P(
+    .data = sim_trans,
+    .time = time,
+    .period_type = x,
+    .ad_annual = usr$ad_annual
+  )
+}) |> list_rbind()
+
+res_moni <- sim_moni |>
+  fct_calc_res(.id = period_type, .sim = E_sim, .ci_alpha = ci_alpha)
+
+# sim_ER <- sim_FREL |>
+#   bind_rows(sim_moni)
+
+ER_combi <- time |>
+  filter(period_type != "REF") |>
+  pull(period_type) |>
+  unique()
+
+
+sim_ER <- map(ER_combi, function(x){
+
+  out <- sim_moni |>
+    filter(period_type == x) |>
+    inner_join(sim_FREL, by = join_by(sim_no), suffix = c("_M", "_R")) |>
+    mutate(
+      ER_sim = E_sim_R - E_sim_M
+    )
+
+}) |> list_rbind()
+
+res_ER <- sim_ER |>
+  fct_calc_res(.id = period_type_M, .sim = ER_sim, .ci_alpha = ci_alpha)
+
+tmp_ER <- time |>
+  group_by(period_type) |>
+  summarise(
+
+  )
+
+
+##
+## Comparison to arithmetic mean ######
+##
+
 ad2 <- ad |> mutate(trans_se = 0)
 cs2 <- cs |>
   mutate(
@@ -144,6 +204,8 @@ cs2 <- cs |>
   )
 sim_trans <- fct_combine_mcs_all(.ad = ad2, .cs = cs2, .init = init, .usr = usr)
 
+res_trans <- sim_trans |> select(-sim_no) |> distinct()
+
 sim_FREL <- fct_combine_mcs_P(
   .data = sim_trans,
   .time = time,
@@ -151,14 +213,16 @@ sim_FREL <- fct_combine_mcs_P(
   .ad_annual = usr$ad_annual
 )
 
-res_FREL <- sim_FREL |>
+mean_FREL <- sim_FREL |>
   mutate(period_id = "FREL") |>
   fct_calc_res(.id = period_id, .sim = E_sim, .ci_alpha = ci_alpha)
 
-message("FREL is: ", res_FREL$E, " ± ", res_FREL$E_U, "%")
+message("Arithmetic FREL is: ", mean_FREL$E, " ± ", mean_FREL$E_U, "%")
+
+
 
 ##
-## TEST NO FUNCTION
+## TEST NO FUNCTION ######
 ##
 
 ## trans to redd+ acti

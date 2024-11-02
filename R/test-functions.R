@@ -165,13 +165,13 @@ res_moni <- sim_moni |>
 # sim_ER <- sim_FREL |>
 #   bind_rows(sim_moni)
 
-ER_combi <- time |>
+moni_combi <- time |>
   filter(period_type != "REF") |>
   pull(period_type) |>
   unique()
 
 
-sim_ER <- map(ER_combi, function(x){
+sim_ER <- map(moni_combi, function(x){
 
   out <- sim_moni |>
     filter(period_type == x) |>
@@ -195,46 +195,18 @@ tmp_ER <- time |>
 
 res_ER2 <- tmp_ER |> inner_join(res_ER, by = join_by(period_type))
 
-gt_ER <- res_ER |> fct_forestplot(.id = period_type, .value = E, .uperc = E_U, .cilower = E_cilower, .ciupper = E_ciupper, .id_colname = "Monitoring period", .conflevel = "90%", .filename = "tests/gt_ER.png")
+gt_ER <- res_ER |> fct_forestplot(
+  .id = period_type,
+  .value = E,
+  .uperc = E_U,
+  .cilower = E_cilower,
+  .ciupper = E_ciupper,
+  .id_colname = "Monitoring period",
+  .conflevel = "90%",
+  .filename = NA
+  )
 
-gg_ER <- map(moni_combi, function(x){
-
-  dat <- sim_ER |> filter(period_type == x)
-  res <- res_ER |> filter(period_type == x)
-  lab <- data.frame(
-    x = c(res$E_cilower, res$E, res$E_ciupper),
-    y = rep(0, 3)
-    )
-
-  ggplot(dat, aes(x = ER_sim)) +
-    geom_histogram(fill = "lightpink", color = "forestgreen") +
-    geom_vline(xintercept = res$E, color = "red", linewidth = 0.6) +
-    geom_vline(xintercept = res$E_cilower, color = "lightblue", linewidth = 0.6) +
-    geom_vline(xintercept = res$E_ciupper, color = "lightblue", linewidth = 0.6) +
-    geom_label(data = lab, aes(x, y, label = x), nudge_y = 0) +
-    labs(
-      x = "simulation value",
-      y = "simulation count",
-      caption = "median in red \nconfindence interval in light blue"
-    ) +
-    theme_bw()
-
-})
-
-names(gg_ER) <- moni_combi
-
-gg_ER
-
-df <- data.frame(
-  x = c(1, 1, 2, 2, 1.5),
-  y = c(1, 2, 1, 2, 1.5),
-  text = c("bottom-left", "top-left", "bottom-right", "top-right", "center")
-)
-ggplot(df, aes(x, y)) +
-  geom_text(aes(label = text))
-ggplot(df, aes(x, y)) +
-  geom_text(aes(label = text), vjust = "inward", hjust = "inward")
-
+gg_ER <- fct_histogram(.dat = sim_ER, .res = res_ER, .id = period_type, .value = ER_sim, .value_type = "ER", period_type == "M1")
 
 
 

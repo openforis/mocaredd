@@ -14,7 +14,7 @@
 #' @return A tibble with simulation results per category if ID column: estimated mean,
 #'         percentage uncertainty, margin of error, lower and upper bound of confidence interval.
 #'
-#' @importFrom dplyr group_by, summarise, mutate, select
+#' @importFrom dplyr group_by summarise mutate select
 #'
 #' @examples
 #' ## TBD

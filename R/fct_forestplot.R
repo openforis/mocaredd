@@ -17,9 +17,9 @@
 #'
 #' @return A character value with the formula for calculating total carbon stock for a specific land use.
 #'
-#' @import ggplot
+#' @import ggplot2
 #' @import gt
-#' @importFrom dplyr mutate, select, if_else
+#' @importFrom dplyr mutate select if_else
 #'
 #' @examples
 #' ## TBD

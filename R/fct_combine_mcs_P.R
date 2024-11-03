@@ -11,7 +11,7 @@
 #'
 #' @return A tibble with simulations at the final estimate per type of period.
 #'
-#' @importFrom dplyr filter, left_join, join_by, group_by, summarise, mutate, select
+#' @importFrom dplyr filter left_join join_by group_by summarise mutate select
 #'
 #' @examples
 #' ## TBD

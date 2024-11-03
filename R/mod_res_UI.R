@@ -1,7 +1,7 @@
 
 
 
-mod1_UI <- function(id){
+mod_res_UI <- function(id){
 
   ## From https://shiny.rstudio.com/articles/modules.html
   # `NS(id)` returns a namespace function, which was save as `ns` and will
@@ -13,7 +13,7 @@ mod1_UI <- function(id){
   ##
 
   card_left <- card(
-    h1("Welcome"),
+    h4("WELCOME TO MODULE 2"),
     p(
       bsicons::bs_icon("1-circle", class = "text-primary"),
       "More text."),
@@ -27,11 +27,11 @@ mod1_UI <- function(id){
 
   ## Emission factors ----------------------------------------------------------
   card_right_sub1 <- card(
-    p("Placeholder for content"),
+    p("Placeholder for module 2 content"),
   )
 
   card_right_sub2 <- card(
-    p("placeholder for content")
+    p("placeholder for module 2 content")
   )
 
   card_right_top <- card(

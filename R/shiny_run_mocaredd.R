@@ -77,7 +77,7 @@ shiny_run_mocaredd <- function(...) {
         i18n$t("Monte Carlo for REDD+"),
         style = "display:inline;font-color: black !important"
         ),
-      window_title = "Monte Carlo for REDD+",
+      window_title = "{mocaredd}",
       theme = bs_theme(
         version = 5,
         bootswatch = "minty",
@@ -99,23 +99,30 @@ shiny_run_mocaredd <- function(...) {
       ## ++ Panels +++++
       nav_panel(
         title = i18n$t("Info"), #OR title = "I am module 1"
-        value = "mod1",
+        value = "info",
         icon = icon("info"),
         mod_info_UI("tab_info_UI") ## See R/mod1_UI.R
       ),
 
       nav_panel(
-        title = i18n$t("I am module 1"), #OR title = "I am module 1"
-        value = "mod1",
+        title = i18n$t("Data upload"), #OR title = "I am module 1"
+        value = "upload",
         icon = icon("campground"),
-        mod1_UI("tab_mod1_UI") ## See R/mod1_UI.R
+        mod_upload_UI("tab_upload_UI") ## See R/mod1_UI.R
       ),
 
       nav_panel(
-        title = i18n$t("I am module 2"), #OR title = "I am module 2"
-        value = "mod2",
+        title = i18n$t("MCS results"), #OR title = "I am module 2"
+        value = "res",
         icon = icon("chart-line"),
-        mod2_UI("tab_mod2_UI") ## See R/mod2_UI.R
+        mod_res_UI("tab_res_UI") ## See R/mod2_UI.R
+      ),
+
+      nav_panel(
+        title = i18n$t("Sensitivity analysis"), #OR title = "I am module 2"
+        value = "sensitivity",
+        icon = icon("chart-line"),
+        mod_sensitivity_UI("tab_sensitivity_UI") ## See R/mod2_UI.R
       ),
 
       nav_spacer(),

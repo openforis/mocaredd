@@ -101,7 +101,7 @@ shiny_run_mocaredd <- function(...) {
         title = i18n$t("Info"), #OR title = "I am module 1"
         value = "info",
         icon = icon("info"),
-        mod_info_UI("tab_info_UI") ## See R/mod1_UI.R
+        mod_home_UI("tab_home_UI") ## See R/mod1_UI.R
       ),
 
       nav_panel(

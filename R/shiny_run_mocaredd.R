@@ -28,7 +28,7 @@ shiny_run_mocaredd <- function(...) {
   ## !!! In a package the translation folder needs to be directed to the package location
   #i18n <- shiny.i18n::Translator$new(translation_json_path = 'assets/translations.json')
   i18n <- shiny.i18n::Translator$new(
-    translation_json_path = system.file("assets/translations.json", package = "MCredd")
+    translation_json_path = system.file("assets/translations.json", package = "mocaredd")
     )
   # i18n <- shiny.i18n::Translator$new(translation_csvs_path = "assets/translation")
   i18n$set_translation_language('en')
@@ -62,7 +62,7 @@ shiny_run_mocaredd <- function(...) {
     # tags$head(includeHTML("ga-tracker-draft-head.html")),
     # leafletjs,
     ## UI elements -------------------------------------------------------------
-    page_navbar(
+    bslib::page_navbar(
       id = "navbar",
       ## ++ Styling ++++++
       #title = div(img(src="assets/Arena-Logo.png", width = '100%'), i18n$t("Timor Leste REDD+ Geoportal"), style = "display:inline;"),
@@ -98,16 +98,16 @@ shiny_run_mocaredd <- function(...) {
 
       ## ++ Panels +++++
       nav_panel(
-        title = i18n$t("Info"), #OR title = "I am module 1"
-        value = "info",
-        icon = icon("info"),
-        mod_home_UI("tab_home_UI") ## See R/mod1_UI.R
+        title = i18n$t("Home"), #OR title = "I am module 1"
+        value = "home",
+        icon = icon("campground"),
+        mod_home_UI("tab_home_UI", i18n = i18n) ## See R/mod1_UI.R
       ),
 
       nav_panel(
         title = i18n$t("Data upload"), #OR title = "I am module 1"
         value = "upload",
-        icon = icon("campground"),
+        icon = icon("info"),
         mod_upload_UI("tab_upload_UI") ## See R/mod1_UI.R
       ),
 
@@ -116,6 +116,13 @@ shiny_run_mocaredd <- function(...) {
         value = "res",
         icon = icon("chart-line"),
         mod_res_UI("tab_res_UI") ## See R/mod2_UI.R
+      ),
+
+      nav_panel(
+        title = i18n$t("Sensitivity analysis"), #OR title = "I am module 2"
+        value = "sensitivity",
+        icon = icon("chart-line"),
+        mod_sensitivity_UI("tab_sensitivity_UI") ## See R/mod2_UI.R
       ),
 
       nav_panel(

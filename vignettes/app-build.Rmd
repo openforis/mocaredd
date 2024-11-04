@@ -86,10 +86,10 @@ usethis::use_package("units")
 ```{r}
 devtools::document()
 devtools::load_all()
-shiny_run_MCredd()
+shiny_run_mocaredd()
 
 devtools::install()
-library(MCredd)
-shiny_run_MCredd()
+library(mocaredd)
+shiny_run_mocaredd()
 ```
 

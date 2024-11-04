@@ -3,4 +3,4 @@
 # Or use the blue button on top of this file
 
 pkgload::load_all(export_all = FALSE, helpers = FALSE, attach_testthat = FALSE)
-MCredd::shiny_run_MCredd()
+mocaredd::shiny_run_mocaredd()

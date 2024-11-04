@@ -3,6 +3,11 @@
   "languages": ["en", "fr", "sp"],
   "translation": [
     {
+      "en": "Welcome to {mocaredd}",
+      "fr": "Bienvenue dans {mocaredd}",
+      "sp": "Welcome to {mocaredd}"
+    },
+    {
       "en": "I am module 1",
       "fr": "Je suis le module 1",
       "sp": "Soy el modulo 1"

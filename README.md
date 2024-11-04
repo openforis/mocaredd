@@ -5,42 +5,59 @@
 
 # {mocaredd}:  Monte Carlo Simulations for REDD+ uncertainty analysis
 
+Contains functions and a shiny app to run Monte Carlo Simulations for producing improved estimates of and confidence intervals around greenhouse gas emissions and emission reductions from the forestry sector.
 
-Monte Carlo simulations for estimating the uncertainty of REDD+ greenhouse gas emissions, removals and emission reduction from forest changes.
+The apps takes an input XLSX file following a specific template meant to harmonize reporting of areas of land use transitions and associated carbon stocks. It then provides simulations, medians, percentage uncertainties and confidence intervals at various stages of aggregation from emissions related land use transitions to REDD+ activities and emission reductions between reference and monitoring periods.
 
 \  
 
-## Workflow:
+### Workflow
 
-1. Input Monte Carlo model input variables and their characteristics (or raw data and aggregation factors, see v2.0 roadmap)
-1. Chose number of repetitions
-1. Choose or add custom formulas between input variables.
-1. Run Simulations
-
-The app simulate the desired number of repetitions and calculate uncertainty of calculated variables. 
+1. Input XSLX filled following provided template. (Note for v2.0, accept separated CSV files, other format tbd).
+1. Checks are run to ensure the entity codes are unique and matching between tables. 
+1. Simulations are produced and results can be seen as forest plots, simulations densities and comparison between simulations and arithmetic means for the final emission reductions.
+1. Sensitivity analysis shows the impact of AE vs EF, REDD+ activities, time periods.
 
 
-## Template
-
-input_category / input_name / input_error_type / input_distribution / fixed_value / normal_mu / normal_sigma / others 
-
-
-
-## Input options
-
-### Option 1: Input a list of variables and their distribution characteristics:
-
-Ex. 
-
-var 1 / normal / mu / sigma / 
-var 2 / normal / mu / sigma /
-var 3 / fixed  / mu /     0 /
-
-### Option 2: Input raw data and distribution automatically assigned (for v2.0, distrubution might be better using biological characteristics than stats)
-
-### Option 3: Raw data, include tree AGB allometric equations uncertainty
-
-
-## Road map 
+### Calculation steps
 
 TBD
+
+### Template
+
+(ADD Link to template from github here)
+
+The template includes 4 tabs:
+
+#### User inputs (user_inputs)
+They help offering great flexibility with a minimum number of parameters.
+
+- **trunc_pdf**: use truncated PDF to avoid negative simulated values were illogical (for ex. areas.). (Note for v2.0, currently only works for normal distributions).
+- **n_iter**: number of iterations. Most standards require 10,000 simulations.
+- **ran_seed**: rand seed for the simulation. If note specified, the first run sets a random seed and reports it for reproducing the same results. 
+- Carbon stocks are reported following many different methods and pools, to allow flexibility the next user inputs provide ways to customize what is reported and how. 
+    - **c_unit**: for AGB abd BGB, is the unit dry matter (DM) or carbon (C)?
+    - **dg_pool**: If degradation is a ratio of intact forest Cstock, list of pools separated by coma to which the ratio applies.
+    - **dg_expool**: (experimental) Pools that are excluded from degradation process (may be redundant).
+- **ad_annual**: Is Activity Data reported annual or as a sum over the time period considered? (TRUE or FALSE).
+- **conf_level**: Confidence level (1 - alpha) for the uncertainty calculations.
+
+#### Time periods (time_periods)
+
+TBD
+
+#### land use transitions (AD_lu_transitions)
+
+TBD
+
+#### Carbon stocks (c_stocks)
+
+TBD
+
+
+### Road map of future developements
+
+1. load input as csv 
+1. Include various soil organic carbon method
+1. Include removals
+

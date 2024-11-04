@@ -1,5 +1,5 @@
 ---
-title: "MCredd - package creation steps"
+title: "mocaredd - package creation steps"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{app-generation}

@@ -1,7 +1,12 @@
-# MCredd:  Monte Carlo uncertainty for Forest and REDD+ related estimations
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/openforis/mocaredd/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/openforis/mocaredd/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 
 
-MonteCarlo simulations for estimating the uncertainty of REDD+ greenhouse gas emissions and removals from forest changes.
+# {mocaredd}:  Monte Carlo Simulations for REDD+ uncertainty analysis
+
+
+Monte Carlo simulations for estimating the uncertainty of REDD+ greenhouse gas emissions, removals and emission reduction from forest changes.
 
 \  
 
@@ -15,11 +20,9 @@ MonteCarlo simulations for estimating the uncertainty of REDD+ greenhouse gas em
 The app simulate the desired number of repetitions and calculate uncertainty of calculated variables. 
 
 
-
 ## Template
 
 input_category / input_name / input_error_type / input_distribution / fixed_value / normal_mu / normal_sigma / others 
-
 
 
 

@@ -93,3 +93,15 @@ library(mocaredd)
 shiny_run_mocaredd()
 ```
 
+## Checks
+
+
+```{r}
+devtools::check()
+
+usethis::use_testthat()
+
+usethis::use_r("fct_check_data")
+usethis::use_test("fct_check_data")
+```
+

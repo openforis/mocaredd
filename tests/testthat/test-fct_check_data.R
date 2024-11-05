@@ -1,8 +1,4 @@
 
-# library(testthat)
-# library(mocaredd)
-
-
 cs <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
 ad <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "AD_lu_transitions", na = "NA")
 
@@ -13,6 +9,6 @@ init <- list(
 
 
 
-test_that("all checks pass", {
-  expect_equal(all(fct_check_data(.ad = ad, .cs = cs, .init = init)), TRUE)
+testthat::test_that("all checks pass", {
+  testthat::expect_equal(all(fct_check_data(.ad = ad, .cs = cs, .init = init)), TRUE)
 })

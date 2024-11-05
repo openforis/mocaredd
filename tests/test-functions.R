@@ -73,10 +73,6 @@
 # # .c_lu <- cs |> filter(lu_id == "dg_ev_wet_closed")
 # ## !!
 #
-# ## test fct_check_data()
-# flag_all <- fct_check_data(.ad = ad, .cs = cs, .init = init)
-# message("All checks passed: ", all(flag_all))
-#
 # ## test fct_check_pool() and fct_make_formula()
 # c_lu <- cs |> filter(lu_id == "ev_wet_closed")
 #

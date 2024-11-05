@@ -11,7 +11,7 @@ res <- fct_combine_mcs_E(.ad = ad_clean, .cs = cs_clean, .usr = usr)
 test_res <- round(median(res$E_sim))
 
 
-test_that("multiplication works", {
-  expect_equal(test_res, 75830)
+testthat::test_that("Works", {
+  testthat::expect_equal(test_res, 75830)
 
 })

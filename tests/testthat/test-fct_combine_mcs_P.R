@@ -17,7 +17,6 @@ sim_FREL <- fct_combine_mcs_P(
   .ad_annual = usr$ad_annual
 )
 
-hist(sim_FREL$E_sim)
 test_res <- round(median(sim_FREL$E_sim))
 
 testthat::test_that("function doesn't work :P", {

@@ -20,6 +20,6 @@ set.seed(1)
 res <- fct_combine_mcs_C(.c_sub = c_sub, .usr = usr)
 test_res <- round(median(res$C_all))
 
-test_that("fct_combine_mcs_C works on example1", {
-  expect_equal(test_res, 451)
+testthat::test_that("fct_combine_mcs_C works on example1", {
+  testthat::expect_equal(test_res, 451)
 })

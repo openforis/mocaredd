@@ -1,33 +1,23 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://r-mcredd.github.io/MCredd/404.html</loc>
-  </url>
-  <url>
-    <loc>https://r-mcredd.github.io/MCredd/articles/app-build.html</loc>
-  </url>
-  <url>
-    <loc>https://r-mcredd.github.io/MCredd/articles/app-desc.html</loc>
-  </url>
-  <url>
-    <loc>https://r-mcredd.github.io/MCredd/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://r-mcredd.github.io/MCredd/articles/test.html</loc>
-  </url>
-  <url>
-    <loc>https://r-mcredd.github.io/MCredd/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://r-mcredd.github.io/MCredd/index.html</loc>
-  </url>
-  <url>
-    <loc>https://r-mcredd.github.io/MCredd/reference/hello.html</loc>
-  </url>
-  <url>
-    <loc>https://r-mcredd.github.io/MCredd/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://r-mcredd.github.io/MCredd/reference/shiny_run_MCredd.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://openforis.github.io/mocaredd/404.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/LICENSE-text.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/LICENSE.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/articles/app-build.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/articles/app-desc.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/articles/index.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/authors.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/index.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/reference/fct_calc_res.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/reference/fct_check_data.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/reference/fct_check_pool.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/reference/fct_combine_mcs_C.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/reference/fct_combine_mcs_E.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/reference/fct_combine_mcs_P.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/reference/fct_forestplot.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/reference/fct_histogram.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/reference/fct_make_formula.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/reference/fct_make_mcs.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/reference/index.html</loc></url>
+<url><loc>https://openforis.github.io/mocaredd/reference/shiny_run_mocaredd.html</loc></url>
 </urlset>
+

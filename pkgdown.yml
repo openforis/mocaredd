@@ -1,12 +1,10 @@
 pandoc: 3.1.11
-pkgdown: 2.0.9
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   app-build: app-build.html
   app-desc: app-desc.html
-  test: test.html
-last_built: 2024-06-27T09:57Z
+last_built: 2024-11-05T18:21Z
 urls:
-  reference: https://r-mcredd.github.io/MCredd/reference
-  article: https://r-mcredd.github.io/MCredd/articles
-
+  reference: https://openforis.github.io/mocaredd/reference
+  article: https://openforis.github.io/mocaredd/articles

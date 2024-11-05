@@ -1,4 +1,4 @@
-^MCredd\.Rproj$
+^mocaredd\.Rproj$
 ^\.Rproj\.user$
 
 
@@ -8,3 +8,5 @@
 ^pkgdown$
 ^\.github$
 ^LICENSE\.md$
+
+^app.R$

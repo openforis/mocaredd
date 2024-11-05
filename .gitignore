@@ -1,7 +1,6 @@
 ## Custom gitignore
 .DS_Store
 ~$*
-tests/*.png
 
 # History files
 .Rhistory

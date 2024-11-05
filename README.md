@@ -5,7 +5,7 @@
 
 # {mocaredd}:  Monte Carlo Simulations for REDD+ uncertainty analysis
 
-Contains functions and a shiny app to run Monte Carlo Simulations for producing improved estimates of and confidence intervals around greenhouse gas emissions and emission reductions from the forestry sector.
+Contains functions and a shiny app for (1) setting up, (2) running Monte Carlo Simulations and (3) producing improved estimates of and confidence intervals around greenhouse gas emissions and emission reductions from the forestry sector.
 
 The apps takes an input XLSX file following a specific template meant to harmonize reporting of areas of land use transitions and associated carbon stocks. It then provides simulations, medians, percentage uncertainties and confidence intervals at various stages of aggregation from emissions related land use transitions to REDD+ activities and emission reductions between reference and monitoring periods.
 

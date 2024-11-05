@@ -1,10 +1,19 @@
 Package: mocaredd
-Title: What the Package Does (One Line, Title Case)
+Title: Monte Carlo Simulation for REDD+ uncertainty analysis
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
+Authors@R: c(
+    person("Gael", "Sola", , "gaso.ella@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID")),
+    person("Javier", "Garcia Perez", , "doctorgamarra@gmail.com", role = c("aut"),
+          comment = c(ORCID = "YOUR-ORCID-ID")),
+    person("Jimena", "Saucedo Miranda", , "jimenasaucedomiranda@gmail.com", role = c("aut"),
+           comment = c(ORCID = "YOUR-ORCID-ID")),
+    person("Lauri", "Vesa", , "lauri.vesa@gmail.com", role = c("aut"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    )
+Description: functions and a shiny app for (1) setting up, (2) running Monte Carlo 
+    Simulations and (3) producing improved estimates of and confidence intervals around 
+    greenhouse gas emissions and emission reductions from the forestry sector.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -17,6 +26,9 @@ Suggests:
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://github.com/openforis/mocaredd, https://openforis.github.io/mocaredd/
+BugReports: https://github.com/openforis/mocaredd/issues
+Depends:
+    R (>= 4.1.0)
 Imports: 
     bslib,
     bsicons,

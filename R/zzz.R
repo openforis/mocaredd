@@ -6,7 +6,7 @@
     prefix = "assets",
     directoryPath = system.file(
       "assets",
-      package = "MCredd"
+      package = "mocaredd"
     )
   )
 }

@@ -5,33 +5,33 @@ Authors@R:
     person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: What the package does (one paragraph).
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Suggests: 
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    readxl
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 URL: https://github.com/openforis/mocaredd
 Imports: 
     bslib,
+    bsicons,
     dplyr,
     ggplot2,
     magrittr,
     purrr,
-    readr,
-    readxl,
     rlang,
-    sf,
     shiny,
     shiny.i18n,
     shinyjs,
     shinyWidgets,
+    htmltools,
     stringr,
-    terra,
-    tidyselect,
-    units,
-    gt
+    gt,
+    stats,
+    chromote,
+    scales

@@ -39,8 +39,10 @@ Main source for info:
 1. Add vignettes and pkgdown setup:
     - `usethis::use_pkgdown()`
     - `usethis::use_vignette("app-generation", title = "MCredd - package creation steps")`
-
-
+1. Add tests architecture:
+    - `usethis::use_testthat()` 
+1. Add license:
+    - `usethis::use_mit_license()` 
 
 ## Barebone app
 
@@ -99,9 +101,11 @@ shiny_run_mocaredd()
 ```{r}
 devtools::check()
 
-usethis::use_testthat()
+## Run one time 
+# usethis::use_testthat()
 
 usethis::use_r("fct_check_data")
 usethis::use_test("fct_check_data")
+usethis::use_test("fct_combine_mcs_P")
 ```
 

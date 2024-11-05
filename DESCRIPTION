@@ -16,7 +16,7 @@ Suggests:
     readxl
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-URL: https://github.com/openforis/mocaredd
+URL: https://github.com/openforis/mocaredd, https://openforis.github.io/mocaredd/
 Imports: 
     bslib,
     bsicons,

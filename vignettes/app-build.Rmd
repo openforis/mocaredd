@@ -45,6 +45,7 @@ Main source for info:
     - `usethis::use_mit_license()` 
 1. Add R CMD check as Github action:
     - `usethis::use_github_action()` 
+    - More advanced workflow: `usethis::use_github_action("check-full")`
 1. (optional) Add a fork repo in personnal github
     - `usethis::create_from_github("openforis/mocaredd", fork = TRUE, destdir = "/Users/gaelsola/Github-repos")`
 ## Barebone app
@@ -112,3 +113,10 @@ usethis::use_test("fct_check_data")
 usethis::use_test("fct_combine_mcs_P")
 ```
 
+
+## Build pkgdown website
+
+```{r}
+#pkgdown::build_site() 
+usethis::use_pkgdown_github_pages()
+```

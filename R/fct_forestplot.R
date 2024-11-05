@@ -17,12 +17,7 @@
 #'
 #' @return A character value with the formula for calculating total carbon stock for a specific land use.
 #'
-#' @import ggplot2
-#' @import gt
 #' @importFrom dplyr mutate select if_else
-#'
-#' @examples
-#' ## TBD
 #'
 #' @export
 fct_forestplot <- function(
@@ -62,33 +57,33 @@ fct_forestplot <- function(
       !!col_cilo := dplyr::if_else(!!col_cilo == 0, NA_integer_, !!col_cilo),
       !!col_ciup := dplyr::if_else(!!col_ciup == 0, NA_integer_, !!col_ciup)
     ) |>
-    gt() |>
-    cols_label(
+    gt::gt() |>
+    gt::cols_label(
       !!col_id := md(.id_colname),
       !!col_value := "E (tCO2/y)",
       !!col_uperc := "U (%)",
       !!col_cilo  := paste0("CI (", .conflevel, ")"),
       plot = ""
     ) |>
-    cols_merge(
+    gt::cols_merge(
       columns = c(!!col_cilo, !!col_ciup),
       pattern = "<<({1}>> - <<{2})>>",
     ) |>
-    tab_spanner(
+    gt::tab_spanner(
       label = "MCS results",
       columns = c(!!col_value, !!col_uperc, !!col_cilo, !!col_ciup, plot)
       #columns = starts_with("E")
     ) |>
-    fmt_number(decimals = 0) |>
-    fmt_percent(columns = rlang::as_name(col_uperc), scale_values = F, decimals = 0) |>
-    sub_missing(
+    gt::fmt_number(decimals = 0) |>
+    gt::fmt_percent(columns = rlang::as_name(col_uperc), scale_values = F, decimals = 0) |>
+    gt::sub_missing(
       columns = "E_U",
       missing_text = "-"
     ) |>
-    text_transform(
-      locations = cells_body(columns = 'plot'),
+    gt::text_transform(
+      locations = gt::cells_body(columns = 'plot'),
       fn = function(column) {
-        map(column, function(x){
+        purrr::map(column, function(x){
 
           ## !! FOR TESTING ONLY
           # x = "T1_DF_ev_moist_closed"
@@ -96,7 +91,7 @@ fct_forestplot <- function(
           ## !!
 
           .data |>
-            filter(!!col_id == x) |>
+            dplyr::filter(!!col_id == x) |>
             ggplot() +
             geom_point(aes(x = !!col_value, y = !!col_id), size = 40) +
             geom_segment(
@@ -120,7 +115,7 @@ fct_forestplot <- function(
 
   ## Save the table as img is path specified
   if (is.character(.filename)) {
-    gtsave(gt_out, filename = .filename)
+    gt::gtsave(gt_out, filename = .filename)
 
     ## Workaround gtsave not working on linux/macos
     f <- chromote::default_chromote_object(); f$close()

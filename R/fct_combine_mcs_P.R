@@ -14,7 +14,46 @@
 #' @importFrom dplyr filter left_join join_by group_by summarise mutate select
 #'
 #' @examples
-#' ## TBD
+#' library(readxl)
+#' library(dplyr)
+#' library(mocaredd)
+#'
+#' cs <- read_xlsx(
+#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
+#'   sheet = "c_stock",
+#'   na = "NA"
+#'   )
+#' ad <- read_xlsx(
+#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
+#'   sheet = "AD_lu_transitions",
+#'   na = "NA"
+#'   )
+#' usr <- read_xlsx(
+#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
+#'   sheet = "user_inputs",
+#'   na = "NA"
+#'   )
+#' time <- read_xlsx(
+#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
+#'   sheet = "time_periods",
+#'   na = "NA"
+#'   )
+#'
+#' ad_clean <- ad |> dplyr::filter(!is.na(trans_area) | !is.na(trans_pdf_a))
+#' cs_clean <- cs |> dplyr::filter(!is.na(c_value) | !is.na(c_pdf_a))
+#' time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
+#'
+#' sim_trans <- fct_combine_mcs_E(.ad = ad_clean, .cs = cs_clean, .usr = usr)
+#'
+#' sim_FREL <- fct_combine_mcs_P(
+#'   .data = sim_trans,
+#'   .time = time_clean,
+#'   .period_type = "REF",
+#'   .ad_annual = usr$ad_annual
+#' )
+#'
+#' hist(sim_FREL$E_sim)
+#' round(median(sim_FREL$E_sim))
 #'
 #' @export
 fct_combine_mcs_P <- function(
@@ -25,7 +64,7 @@ fct_combine_mcs_P <- function(
 ){
 
   ## aggregate redd+ periods for the reference level
-  time_ref   <- .time |> filter(period_type == .period_type)
+  time_ref   <- .time |> dplyr::filter(period_type == .period_type)
   nb_ref     <- length(unique(time_ref$period_no))
   length_ref <- sum(time_ref$nb_years)
 
@@ -34,23 +73,23 @@ if (.ad_annual) {
 
     ## Weighted average of the sims from the reference sub-periods
     ## Get the volume per period then divide by total length of reference period
-    out <- map(unique(time_ref$period_type), function(x){
+    out <- purrr::map(unique(time_ref$period_type), function(x){
       .data |>
-        left_join(time_ref, by = join_by(time_period == period_no)) |>
-        filter(period_type == x) |>
-        group_by(sim_no, period_type) |>
-        summarise(E_sim = sum(E_sim * nb_years) / length_ref, .groups = "drop")
-    }) |> list_rbind()
+        dplyr::left_join(time_ref, by = dplyr::join_by(time_period == period_no)) |>
+        dplyr::filter(period_type == x) |>
+        dplyr::group_by(sim_no, period_type) |>
+        dplyr::summarise(E_sim = sum(E_sim * nb_years) / length_ref, .groups = "drop")
+    }) |> purrr::list_rbind()
 
   } else {
     ## Divide the volume of E over the reference period by the total length of the reference period
-    out <- map(unique(time_ref$period_type), function(x){
+    out <- purrr::map(unique(time_ref$period_type), function(x){
       .data |>
-        left_join(time_ref, by = join_by(time_period == period_no)) |>
-        filter(period_type == x) |>
-        group_by(sim_no, period_type) |>
-        summarise(E_sim = sum(E_sim) / length_ref, .groups = "drop")
-    }) |> list_rbind()
+        dplyr::left_join(time_ref, by = dplyr::join_by(time_period == period_no)) |>
+        dplyr::filter(period_type == x) |>
+        dplyr::group_by(sim_no, period_type) |>
+        dplyr::summarise(E_sim = sum(E_sim) / length_ref, .groups = "drop")
+    }) |> purrr::list_rbind()
 
   }
 

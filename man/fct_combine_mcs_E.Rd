@@ -4,12 +4,16 @@
 \alias{fct_combine_mcs_E}
 \title{Generate and propagate Monte Carlo Simulations based on a template input file.}
 \usage{
-fct_combine_mcs_E(.ad, .cs, .init, .usr)
+fct_combine_mcs_E(.ad, .cs, .usr)
 }
 \arguments{
 \item{.ad}{Activity Data input table for the shiny app (AD_lu_transitions)}
 
 \item{.cs}{Carbon Stock input table for the shiny app (c_stock)}
+
+\item{.usr}{User inputs' table for the shiny app (user_inputs). Contains the number
+of iterations of the MCS, carbon fraction if needed and if truncated PDFs
+should be used when necessary.}
 }
 \value{
 A list of dataframes with Monte Carlo simulations for input variables, REDD+ activities CO2 emissions
@@ -19,16 +23,30 @@ and removals and emission reductions levels.
 TBD
 }
 \examples{
-library(mocaredd)
 library(readxl)
 library(dplyr)
-library(ggplot2)
+library(mocaredd)
 
-cs <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
-ad <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "AD_lu_transitions", na = "NA")
+cs <- read_xlsx(
+  system.file("extdata/example1.xlsx", package = "mocaredd"),
+  sheet = "c_stock",
+  na = "NA"
+  )
+ad <- read_xlsx(
+  system.file("extdata/example1.xlsx", package = "mocaredd"),
+  sheet = "AD_lu_transitions",
+  na = "NA"
+  )
+usr <- read_xlsx(
+  system.file("extdata/example1.xlsx", package = "mocaredd"),
+  sheet = "user_inputs",
+  na = "NA"
+  )
 
-res <- fct_combine_mcs_E(.ad = ad, .cs = cs)
+cs_clean <- cs |> filter(!is.na(c_value) | !is.na(c_pdf_a))
 
-## ADD HISTOGRAM FOR ONE SET OF SIMULATIONS
+res <- fct_combine_mcs_E(.ad = ad, .cs = cs_clean, .usr = usr)
+hist(res$E_sim)
+round(median(res$E_sim))
 
 }

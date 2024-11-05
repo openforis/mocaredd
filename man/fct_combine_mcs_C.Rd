@@ -4,27 +4,44 @@
 \alias{fct_combine_mcs_C}
 \title{Generate Monte Carlo Simulations and calculate carbon stock for all pools}
 \usage{
-fct_combine_mcs_C(.c_sub, .c_unit, .c_fraction = NA, .n_iter)
+fct_combine_mcs_C(.c_sub, .usr)
 }
 \arguments{
-\item{.cs}{Subset with one land use from the carbon stock input table for the shiny app (c_stock)}
+\item{.c_sub}{Subset with one land use from the carbon stock input table for the shiny app (c_stock).}
+
+\item{.usr}{User inputs' table for the shiny app (user_inputs). Contains the number
+of iterations of the MCS, carbon fraction if needed and if truncated PDFs
+should be used when necessary.}
 }
 \value{
 A data frame with N simulations of each carbon pool and associated factors and the resulting
-total carbon stock in tCO2/ha
+total carbon stock in tCO2/ha.
 }
 \description{
 TBD
 }
 \examples{
-library(mocaredd)
-library(readxl)
 library(dplyr)
-library(ggplot2)
+library(readxl)
+library(mocaredd)
 
-cs <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
-c_sub <- cs |> filter(lu_id == "ev_wet_closed")
-res <- fct_combine_mcs_cstock(.n_iter = 10000, .c_sub = c_sub, .c_unit = "C")
-res
+usr <- read_xlsx(
+  path = system.file("extdata/example1.xlsx", package = "mocaredd"),
+  sheet = "user_inputs",
+  na = "NA"
+  )
+cs <- read_xlsx(
+  system.file("extdata/example1.xlsx", package = "mocaredd"),
+  sheet = "c_stock",
+  na = "NA"
+  )
+
+cs_clean <- cs |> filter(!(is.na(c_value) & is.na(c_pdf_a)))
+c_sub <- cs_clean |> filter(lu_id == "ev_wet_closed")
+
+res <- fct_combine_mcs_C(.c_sub = c_sub, .usr = usr)
+
+hist(res$C_all)
+round(median(res$C_all))
 
 }

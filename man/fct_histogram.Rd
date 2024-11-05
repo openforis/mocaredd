@@ -28,7 +28,3 @@ aggregated results from fct_calc_res() and generate an histogram showing the
 PDF density, modeled normal distribution, simulations' median and confidence
 interval.
 }
-\examples{
-## TBD
-
-}

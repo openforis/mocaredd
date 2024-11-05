@@ -2,52 +2,70 @@
 #'
 #' @description TBD
 #'
-#' @param .cs Subset with one land use from the carbon stock input table for the shiny app (c_stock)
+#' @param .c_sub Subset with one land use from the carbon stock input table for the shiny app (c_stock).
+#' @param .usr User inputs' table for the shiny app (user_inputs). Contains the number
+#'             of iterations of the MCS, carbon fraction if needed and if truncated PDFs
+#'             should be used when necessary.
 #'
-#' @return A data frame with N simulations of each carbon pool and associated factors and the resulting
-#'         total carbon stock in tCO2/ha
+#' @return
+#' A data frame with N simulations of each carbon pool and associated factors and the resulting
+#' total carbon stock in tCO2/ha.
+#'
+#' @importFrom rlang .data
+#' @importFrom magrittr %>%
 #'
 #' @examples
-#' library(mocaredd)
-#' library(readxl)
 #' library(dplyr)
-#' library(ggplot2)
+#' library(readxl)
+#' library(mocaredd)
 #'
-#' cs <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
-#' c_sub <- cs |> filter(lu_id == "ev_wet_closed")
-#' res <- fct_combine_mcs_cstock(.n_iter = 10000, .c_sub = c_sub, .c_unit = "C")
-#' res
+#' usr <- read_xlsx(
+#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
+#'   sheet = "user_inputs",
+#'   na = "NA"
+#'   )
+#' cs <- read_xlsx(
+#'   system.file("extdata/example1.xlsx", package = "mocaredd"),
+#'   sheet = "c_stock",
+#'   na = "NA"
+#'   )
+#'
+#' cs_clean <- cs |> filter(!(is.na(c_value) & is.na(c_pdf_a)))
+#' c_sub <- cs_clean |> filter(lu_id == "ev_wet_closed")
+#'
+#' res <- fct_combine_mcs_C(.c_sub = c_sub, .usr = usr)
+#'
+#' hist(res$C_all)
+#' round(median(res$C_all))
 #'
 #' @export
-fct_combine_mcs_C <- function(.c_sub, .c_unit, .c_fraction = NA, .n_iter){
+fct_combine_mcs_C <- function(.c_sub, .usr){
 
   ## !! FOR TESTING ONLY
-  # .c_sub      <- cs |> filter(lu_id == "postdef_open") ## "dg_ev_wet_closed"
-  # .c_unit     <- usr$c_unit
-  # .c_fraction <- usr$c_fraction
-  # .n_iter     <- 10
+  # .c_sub  <- cs |> filter(lu_id == "postdef_open") ## "dg_ev_wet_closed"
+  # .usr    <- usr
   ## !!
 
   c_pools <- unique(.c_sub$c_pool)
-  c_check <- fct_check_pool(.c_lu = .c_sub, .c_unit = .c_unit, .c_fraction = .c_fraction)
-  c_form  <- fct_make_formula(.c_check = c_check, .c_unit = .c_unit)
+  c_check <- fct_check_pool(.c_lu = .c_sub, .c_unit = .usr$c_unit, .c_fraction = .usr$c_fraction)
+  c_form  <- fct_make_formula(.c_check = c_check, .c_unit = .usr$c_unit)
 
   ## Create named list with simulations for all pools
-  SIMS <- map(c_pools, function(x){
+  SIMS <- purrr::map(c_pools, function(x){
 
     ## !! FOR TESTING ONLY
     ## x = 'AGB'
     ## !!
 
-    params <- .c_sub |> filter(c_pool == x)
+    params <- .c_sub %>% dplyr::filter(.data$c_pool == x)
 
     sims <- fct_make_mcs(
-      .n_iter = .n_iter,
+      .n_iter = .usr$n_iter,
       .pdf    = params$c_pdf,
       .mean   = params$c_value,
       .se     = params$c_se,
       .params = c(params$c_pdf_a, params$c_pdf_b, params$c_pdf_c),
-      .trunc  = usr$trunc_pdf
+      .trunc  = .usr$trunc_pdf
     )
 
     out <- as.data.frame(sims)
@@ -55,29 +73,29 @@ fct_combine_mcs_C <- function(.c_sub, .c_unit, .c_fraction = NA, .n_iter){
 
     out
 
-  }) |> list_cbind() |> as_tibble()
+  }) |> purrr::list_cbind() |> dplyr::as_tibble()
   ## End map()
 
   ## ADD CF if needed
   if (c_check$has_CF) {
-    params <- .c_sub |> filter(c_pool == "CF")
+    params <- .c_sub %>% dplyr::filter(.data$c_pool == "CF")
     SIMS$CF <- fct_make_mcs(
-      .n_iter = .n_iter,
+      .n_iter = .usr$n_iter,
       .pdf    = params$c_pdf,
       .mean   = params$c_value,
       .se     = params$c_se,
       .params = c(params$c_pdf_a, params$c_pdf_b, params$c_pdf_c),
-      .trunc  = usr$trunc_pdf
+      .trunc  = .usr$trunc_pdf
     )
   }
 
   SIMS |>
-    mutate(
+    dplyr::mutate(
       C_form = c_form,
       C_all = eval(parse(text=c_form), SIMS),
-      sim_no = 1:.n_iter
+      sim_no = 1:.usr$n_iter
     ) |>
-    select(sim_no, everything())
+    dplyr::select(.data$sim_no, dplyr::everything())
 
 }
 

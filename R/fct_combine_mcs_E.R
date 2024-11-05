@@ -5,30 +5,48 @@
 #'
 #' @param .ad Activity Data input table for the shiny app (AD_lu_transitions)
 #' @param .cs Carbon Stock input table for the shiny app (c_stock)
+#' @param .usr User inputs' table for the shiny app (user_inputs). Contains the number
+#'             of iterations of the MCS, carbon fraction if needed and if truncated PDFs
+#'             should be used when necessary.
 #'
 #' @return A list of dataframes with Monte Carlo simulations for input variables, REDD+ activities CO2 emissions
 #'         and removals and emission reductions levels.
 #'
+#' @importFrom rlang .data
+#' @importFrom magrittr %>%
+#'
 #' @examples
-#' library(mocaredd)
 #' library(readxl)
 #' library(dplyr)
-#' library(ggplot2)
+#' library(mocaredd)
 #'
-#' cs <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
-#' ad <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "AD_lu_transitions", na = "NA")
+#' cs <- read_xlsx(
+#'   system.file("extdata/example1.xlsx", package = "mocaredd"),
+#'   sheet = "c_stock",
+#'   na = "NA"
+#'   )
+#' ad <- read_xlsx(
+#'   system.file("extdata/example1.xlsx", package = "mocaredd"),
+#'   sheet = "AD_lu_transitions",
+#'   na = "NA"
+#'   )
+#' usr <- read_xlsx(
+#'   system.file("extdata/example1.xlsx", package = "mocaredd"),
+#'   sheet = "user_inputs",
+#'   na = "NA"
+#'   )
 #'
-#' res <- fct_combine_mcs_E(.ad = ad, .cs = cs)
+#' cs_clean <- cs |> filter(!is.na(c_value) | !is.na(c_pdf_a))
 #'
-#' ## ADD HISTOGRAM FOR ONE SET OF SIMULATIONS
+#' res <- fct_combine_mcs_E(.ad = ad, .cs = cs_clean, .usr = usr)
+#' hist(res$E_sim)
+#' round(median(res$E_sim))
 #'
 #' @export
-fct_combine_mcs_E <- function(.ad, .cs, .init, .usr){
+fct_combine_mcs_E <- function(.ad, .cs, .usr){
 
-  ## CHECK THE INPUT DATA CONFORMITY
-  flag_all <- fct_check_data(.ad = ad, .cs = cs, .init = init)
-
-  #n_trans <- nrow(.ad)
+  ## CHECK THE INPUT DATA CONFORMITY - done outside function
+  # flag_all <- fct_check_data(.ad = ad, .cs = cs, .init = init)
 
   ## Seed for random simulation
   if (!is.na(.usr$ran_seed)){
@@ -41,14 +59,15 @@ fct_combine_mcs_E <- function(.ad, .cs, .init, .usr){
   }
 
   ## START LOOP
+  vec_trans <- unique(.ad$trans_id)
   ## For each transition, calculate simulations for each element of the calculation chain
-  mcs_trans <- map(ad$trans_id, function(x){
+  mcs_trans <- purrr::map(vec_trans, function(x){
 
     ## !! FOR TESTING ONLY
     # x = "T1_DG_ev_wet_closed"
     ## !!
 
-    ad_x <- .ad |> filter(trans_id == x)
+    ad_x <- .ad %>% dplyr::filter(.data$trans_id == x)
 
     redd_x <- ad_x$redd_activity
 
@@ -62,7 +81,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .init, .usr){
       .trunc  = .usr$trunc_pdf
       )
 
-    SIMS_AD <- tibble(
+    SIMS_AD <- dplyr::tibble(
       sim_no = 1:.usr$n_iter,
       redd_activity = ad_x$redd_activity,
       trans_id = ad_x$trans_id,
@@ -72,56 +91,58 @@ fct_combine_mcs_E <- function(.ad, .cs, .init, .usr){
 
     ## EF - Emissions Factors decomposed for each carbon pool
     ## Carbon stock of initial land use
-    c_i     <- .cs |> filter(lu_id == ad_x$lu_initial_id)
-    SIMS_CI <- fct_combine_mcs_C(.c_sub = c_i, .c_unit = .usr$c_unit, .n_iter = .usr$n_iter)
+    c_i     <- .cs %>% dplyr::filter(.data$lu_id == ad_x$lu_initial_id)
+    SIMS_CI <- fct_combine_mcs_C(.c_sub = c_i, .usr = .usr)
 
     names(SIMS_CI) <- c("sim_no", paste0(setdiff(names(SIMS_CI), "sim_no"), "_i"))
 
-    c_f     <- .cs |> filter(lu_id == ad_x$lu_final_id)
-    SIMS_CF <- fct_combine_mcs_C(.c_sub = c_f, .c_unit = .usr$c_unit, .n_iter = .usr$n_iter)
+    c_f     <- .cs %>% dplyr::filter(.data$lu_id == ad_x$lu_final_id)
+    SIMS_CF <- fct_combine_mcs_C(.c_sub = c_f, .usr = .usr)
 
     names(SIMS_CF) <- c("sim_no", paste0(setdiff(names(SIMS_CF), "sim_no"), "_f"))
 
     combi <- SIMS_AD |>
-      left_join(SIMS_CI, by = join_by(sim_no)) |>
-      left_join(SIMS_CF, by = join_by(sim_no))
+      dplyr::left_join(SIMS_CI, by = "sim_no") |>
+      dplyr::left_join(SIMS_CF, by = "sim_no")
 
     ## If degradation is ratio, using .usr$dg_pool to calculate C_all_f
     if (redd_x == "DG" & length(.usr$dg_pool) > 0) {
 
-      dg_pool <- str_split(.usr$dg_pool, pattern = ",") |> map(str_trim) |> unlist()
+      dg_pool <- stringr::str_split(.usr$dg_pool, pattern = ",") |> purrr::map(stringr::str_trim) |> unlist()
       dg_pool_i <- paste0(dg_pool, "_i")
 
-      combi <- combi |>
-        rowwise() |>
-        mutate(C_all_f = DG_ratio_f * sum(!!!syms(dg_pool_i)) * 44/12) |>
-        ungroup()
+      combi <- combi %>%
+        dplyr::rowwise() %>%
+        dplyr::mutate(C_all_f = .data$DG_ratio_f * sum(!!!rlang::syms(dg_pool_i)) * 44/12) %>%
+        dplyr::ungroup()
 
       ## If degradation has unaffected pools, we identify them by difference and
       ## exclude them from EF formula
-      if (redd_x == "DG" & .usr$dg_expool) {
+      if (.usr$dg_expool) {
         dg_expool <- paste0(setdiff(c_i$c_pool, dg_pool), "_i")
-        combi <- combi |>
-          rowwise() |>
-          mutate(C_all_f = C_all_f + sum(!!!syms(dg_expool)) )|>
-          ungroup()
+        combi <- combi %>%
+          dplyr::rowwise() %>%
+          dplyr::mutate(C_all_f = .data$C_all_f + sum(!!!rlang::syms(dg_expool))) %>%
+          dplyr::ungroup()
       }
 
     }
 
     combi
 
-  }) |> list_rbind()
+  }) |> purrr::list_rbind()
   ## END LOOP
 
   ## Re-arrange columns and add EF and E (emissions at transition level)
-  mcs_trans2 <- mcs_trans |>
-    mutate(
-      EF = C_all_i - C_all_f,
-      E_sim  = AD * EF
-    ) |>
-    select(
-      sim_no, redd_activity, time_period = trans_period, trans_id, AD, EF, E_sim, C_form_i, C_all_i, C_form_f, C_all_f, everything()
+  mcs_trans2 <- mcs_trans %>%
+    dplyr::mutate(
+      EF = .data$C_all_i - .data$C_all_f,
+      E_sim  = .data$AD * .data$EF
+    ) %>%
+    dplyr::select(
+      .data$sim_no, .data$redd_activity, time_period = .data$trans_period, .data$trans_id,
+      .data$AD, .data$EF, .data$E_sim, .data$C_form_i, .data$C_all_i, .data$C_form_f,
+      .data$C_all_f, dplyr::everything()
     )
 
 }

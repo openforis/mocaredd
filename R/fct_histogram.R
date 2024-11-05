@@ -15,9 +15,6 @@
 #'
 #' @return a ggplot or a named list of ggplots
 #'
-#' @examples
-#' ## TBD
-#'
 #' @export
 fct_histogram <- function(.data, .res, .id, .value, .value_type, ...){
 

@@ -44,7 +44,3 @@ Monte Carlo simulations for each category of a level of the analysis
 (land use transition, REDD+ activity, time period) and a forest plot
 showing the median and CI together.
 }
-\examples{
-## TBD
-
-}

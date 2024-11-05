@@ -43,7 +43,10 @@ Main source for info:
     - `usethis::use_testthat()` 
 1. Add license:
     - `usethis::use_mit_license()` 
-
+1. Add R CMD check as Github action:
+    - `usethis::use_github_action()` 
+1. (optional) Add a fork repo in personnal github
+    - `usethis::create_from_github("openforis/mocaredd", fork = TRUE, destdir = "/Users/gaelsola/Github-repos")`
 ## Barebone app
 
 Add dependencies to DESCRIPTION:

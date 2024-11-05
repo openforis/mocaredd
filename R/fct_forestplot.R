@@ -17,7 +17,11 @@
 #'
 #' @return A character value with the formula for calculating total carbon stock for a specific land use.
 #'
-#' @importFrom dplyr mutate select if_else
+#' @importFrom rlang .data :=
+#' @importFrom magrittr %>%
+#' @importFrom ggplot2 ggplot aes geom_point geom_segment geom_vline theme_minimal
+#'             scale_y_discrete scale_x_continuous theme element_text labs
+#'             element_blank coord_cartesian
 #'
 #' @export
 fct_forestplot <- function(
@@ -59,7 +63,7 @@ fct_forestplot <- function(
     ) |>
     gt::gt() |>
     gt::cols_label(
-      !!col_id := md(.id_colname),
+      !!col_id := gt::md(.id_colname),
       !!col_value := "E (tCO2/y)",
       !!col_uperc := "U (%)",
       !!col_cilo  := paste0("CI (", .conflevel, ")"),
@@ -109,7 +113,7 @@ fct_forestplot <- function(
             coord_cartesian(xlim = plot_range)
 
         }) |>
-          ggplot_image(height = px(30), aspect_ratio = 5)
+          gt::ggplot_image(height = gt::px(30), aspect_ratio = 5)
       }
     )
 

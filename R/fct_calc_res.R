@@ -14,7 +14,8 @@
 #' @return A tibble with simulation results per category if ID column: estimated mean,
 #'         percentage uncertainty, margin of error, lower and upper bound of confidence interval.
 #'
-#' @importFrom dplyr group_by summarise mutate select
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #'
 #' @examples
 #' ## TBD
@@ -30,17 +31,18 @@ fct_calc_res <- function(
   col_id <- rlang::enquo(.id)
   col_sim <- rlang::enquo(.sim)
 
-  .data |>
-    group_by(!!col_id) |>
-    summarise(
-      E = round(median(!!col_sim)),
-      E_cilower = round(quantile(!!col_sim, .ci_alpha/2)),
-      E_ciupper = round(quantile(!!col_sim, 1 - .ci_alpha/2)),
+  .data %>%
+    dplyr::group_by(!!col_id) %>%
+    dplyr::summarise(
+      E = round(stats::median(!!col_sim)),
+      E_cilower = round(stats::quantile(!!col_sim, .ci_alpha/2)),
+      E_ciupper = round(stats::quantile(!!col_sim, 1 - .ci_alpha/2)),
       .groups = "drop"
-    ) |>
-    mutate(
-      E_ME  = round((E_ciupper - E_cilower) / 2),
-      E_U   = round(E_ME / E * 100),
-    ) |>
-    select(!!col_id, E, E_U, E_ME, E_cilower, E_ciupper)
+    ) %>%
+    dplyr::mutate(
+      E_ME  = round((.data$E_ciupper - .data$E_cilower) / 2),
+      E_U   = round(.data$E_ME / .data$E * 100),
+    ) %>%
+    dplyr::select(!!col_id, .data$E, .data$E_U, .data$E_ME, .data$E_cilower, .data$E_ciupper)
+
 }

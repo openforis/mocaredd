@@ -15,14 +15,20 @@
 #'
 #' @return a ggplot or a named list of ggplots
 #'
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
+#' @importFrom ggplot2 ggplot aes geom_histogram geom_vline stat_function labs
+#'             scale_x_continuous theme theme_classic coord_cartesian element_text
+#'             element_blank
+#'
 #' @export
 fct_histogram <- function(.data, .res, .id, .value, .value_type, ...){
 
   id    <- rlang::enquo(.id)
   value <- rlang::enquo(.value)
 
-  dat <- .data |> filter(...)
-  res <- .res |> filter(...)
+  dat <- .data |> dplyr::filter(...)
+  res <- .res |> dplyr::filter(...)
 
   ## Extend plot range to 5% of the simulated values' range
   sim_min <- min(.data[[rlang::as_name(value)]], 0)
@@ -33,13 +39,13 @@ fct_histogram <- function(.data, .res, .id, .value, .value_type, ...){
 
   ## Get iterations for map()
   iter <- res |>
-    pull(!!id) |>
+    dplyr::pull(!!id) |>
     unique()
 
-  gg_ER <- map(iter, function(x){
+  gg_ER <-purrr::map(iter, function(x){
 
-    dat2 <- dat |> filter(!!id == x)
-    res2 <- res |> filter(!!id == x)
+    dat2 <- dat |> dplyr::filter(!!id == x)
+    res2 <- res |> dplyr::filter(!!id == x)
     brk <- c(res2$E_cilower, res2$E, res2$E_ciupper)
 
     if (.value_type == "ER") {
@@ -52,13 +58,13 @@ fct_histogram <- function(.data, .res, .id, .value, .value_type, ...){
 
 
     ggplot(dat2, aes(x = !!value)) +
-      geom_histogram(aes(y = ..density..), fill = cols[1], color = cols[2]) +
+      geom_histogram(aes(y = .data$..density..), fill = cols[1], color = cols[2]) +
       stat_function(
-        fun = dnorm,
+        fun = stats::dnorm,
         colour = cols[3],
         args = list(
           mean = mean(dat2[[rlang::as_name(value)]], na.rm = TRUE),
-          sd = sd(dat2[[rlang::as_name(value)]], na.rm = TRUE)
+          sd = stats::sd(dat2[[rlang::as_name(value)]], na.rm = TRUE)
         )
       ) +
       geom_vline(xintercept = res2$E, color = "darkred", linewidth = 0.8) +

@@ -11,7 +11,8 @@
 #'
 #' @return A tibble with simulations at the final estimate per type of period.
 #'
-#' @importFrom dplyr filter left_join join_by group_by summarise mutate select
+#' @importFrom magrittr %>%
+#' @importFrom rlang .data
 #'
 #' @examples
 #' library(readxl)
@@ -64,7 +65,7 @@ fct_combine_mcs_P <- function(
 ){
 
   ## aggregate redd+ periods for the reference level
-  time_ref   <- .time |> dplyr::filter(period_type == .period_type)
+  time_ref   <- .time %>% dplyr::filter(.data$period_type == .period_type)
   nb_ref     <- length(unique(time_ref$period_no))
   length_ref <- sum(time_ref$nb_years)
 
@@ -74,21 +75,22 @@ if (.ad_annual) {
     ## Weighted average of the sims from the reference sub-periods
     ## Get the volume per period then divide by total length of reference period
     out <- purrr::map(unique(time_ref$period_type), function(x){
-      .data |>
-        dplyr::left_join(time_ref, by = dplyr::join_by(time_period == period_no)) |>
-        dplyr::filter(period_type == x) |>
-        dplyr::group_by(sim_no, period_type) |>
-        dplyr::summarise(E_sim = sum(E_sim * nb_years) / length_ref, .groups = "drop")
+      .data %>%
+        dplyr::left_join(time_ref, by = c("time_period" = "period_no")) %>%
+        dplyr::filter(.data$period_type == x) %>%
+        dplyr::group_by(.data$sim_no, .data$period_type) %>%
+        dplyr::summarise(E_sim = sum(.data$E_sim * .data$nb_years) / length_ref, .groups = "drop")
     }) |> purrr::list_rbind()
 
   } else {
+
     ## Divide the volume of E over the reference period by the total length of the reference period
     out <- purrr::map(unique(time_ref$period_type), function(x){
-      .data |>
-        dplyr::left_join(time_ref, by = dplyr::join_by(time_period == period_no)) |>
-        dplyr::filter(period_type == x) |>
-        dplyr::group_by(sim_no, period_type) |>
-        dplyr::summarise(E_sim = sum(E_sim) / length_ref, .groups = "drop")
+      .data %>%
+        dplyr::left_join(time_ref, by = c("time_period" = "period_no")) %>%
+        dplyr::filter(.data$period_type == x) %>%
+        dplyr::group_by(.data$sim_no, .data$period_type) %>%
+        dplyr::summarise(E_sim = sum(.data$E_sim) / length_ref, .groups = "drop")
     }) |> purrr::list_rbind()
 
   }

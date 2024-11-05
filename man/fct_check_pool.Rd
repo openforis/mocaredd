@@ -10,6 +10,8 @@ fct_check_pool(.c_lu, .c_unit, .c_fraction)
 \item{.c_lu}{Subset of the Carbon Stock input table (c_stock) for a unique land use}
 
 \item{.c_unit}{Unit used to report AGB (and BGB if included), from the shiny app or template user inputs.}
+
+\item{.c_fraction}{Value of carbon fraction, only if dry matter reported}
 }
 \value{
 A dataframe with TRUE or FALSE for each pool and factor in the app's carbon stock input data for a given land use.
@@ -30,8 +32,12 @@ library(mocaredd)
 library(readxl)
 library(dplyr)
 
-cs    <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
-c_lu  <- cs |> filter(lu_id == "ev_wet_closed")
+cs <- read_xlsx(
+  path = system.file("extdata/example1.xlsx", package = "mocaredd"),
+  sheet = "c_stock",
+  na = "NA"
+  )
+c_lu <- cs |> filter(lu_id == "ev_wet_closed")
 
 fct_check_pool(.c_lu = c_lu, .c_unit = "C", .c_fraction = NA)
 

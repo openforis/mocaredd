@@ -21,7 +21,11 @@
 #' library(readxl)
 #' library(dplyr)
 #'
-#' cs    <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
+#' cs    <- read_xlsx(
+#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
+#'   sheet = "c_stock",
+#'   na = "NA"
+#'   )
 #' c_lu  <- cs |> filter(lu_id == "dg_ev_wet_closed")
 #'
 #' c_check <- fct_check_pool(.c_lu = c_lu, .c_unit = "C", .c_fraction = NA)

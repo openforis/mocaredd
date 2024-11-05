@@ -10,6 +10,9 @@ fct_check_data(.ad, .cs, .init)
 \item{.ad}{Activity Data input table for the shiny app (AD_lu_transitions)}
 
 \item{.cs}{Carbon Stock input table for the shiny app (c_stock)}
+
+\item{.init}{initial list of coded variables for carbon pools and REDD+ activity
+to check the imported data against.}
 }
 \value{
 A dataframe with TRUE or FALSE for each flag, (TRUE meaning the flag is raised and an issue was detected).
@@ -21,8 +24,16 @@ TBD
 library(mocaredd)
 library(readxl)
 
-cs <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stock", na = "NA")
-ad <- read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "AD_lu_transitions", na = "NA")
+cs <- read_xlsx(
+  path = system.file("extdata/example1.xlsx", package = "mocaredd"),
+   sheet = "c_stock",
+   na = "NA"
+   )
+ad <- read_xlsx(
+  path = system.file("extdata/example1.xlsx", package = "mocaredd"),
+  sheet = "AD_lu_transitions",
+  na = "NA"
+  )
 
 .init <- init <- list(
   c_pools = c("AGB", "BGB", "RS", "DW", "LI", "SOC", "ALL", "DG_ratio"),

@@ -22,19 +22,22 @@
 #' @export
 shiny_run_mocaredd <- function(...) {
 
-  ## GLOBAL ####################################################################
-  ## Initiate translation
-  ## !!! TO BE REMOVED IN PACKAGE !!!
+  ##
+  ## GLOBAL ######
+  ##
+
+  ## Initiate translation ######
   ## !!! In a package the translation folder needs to be directed to the package location
-  #i18n <- shiny.i18n::Translator$new(translation_json_path = 'assets/translations.json')
   i18n <- shiny.i18n::Translator$new(
     translation_json_path = system.file("assets/translations.json", package = "mocaredd")
     )
-  # i18n <- shiny.i18n::Translator$new(translation_csvs_path = "assets/translation")
   i18n$set_translation_language('en')
-  ## !!! END REMOVE
 
-  language_selector2 <- shinyWidgets::pickerInput(
+
+  ## UI Elements ######
+
+  ## - Dropdown list for language selection -----
+  language_selector <- shinyWidgets::pickerInput(
     inputId = "language",
     label = NULL,
     choices = c("en", "fr", "sp"),
@@ -44,10 +47,15 @@ shiny_run_mocaredd <- function(...) {
     option = shinyWidgets::pickerOptions(style = "z-index:10000;")
   )
 
-  ## UI ########################################################################
+
+
+  ##
+  ## UI ######
+  ##
+
   ui <- shiny::tagList(
 
-    ## Setup -------------------------------------------------------------------
+    ## Setup ######
     shiny::withMathJax(),
     shinyjs::useShinyjs(),
     shinyWidgets::useSweetAlert(),
@@ -61,20 +69,18 @@ shiny_run_mocaredd <- function(...) {
     ),
     # tags$head(includeHTML("ga-tracker-draft-head.html")),
     # leafletjs,
-    ## UI elements -------------------------------------------------------------
+
+    ## Layout UI elements ######
     bslib::page_navbar(
       id = "navbar",
-      ## ++ Styling ++++++
-      #title = div(img(src="assets/Arena-Logo.png", width = '100%'), i18n$t("Timor Leste REDD+ Geoportal"), style = "display:inline;"),
       title = div(
         tags$a(
-          href = "https://openforis.org/solutions/arena/",
-          #alt = "arena-helpers",
+          href = "www.openforis.github.io/arena-helpers/",
+          alt = "arena-helpers",
           tags$img(src="assets/arena-helpers3.png", height = '60px'),
           .noWS = "before-end"
           ),
-        #img(src="assets/arena-helpers3.png", height = '60px'),
-        i18n$t("Monte Carlo for REDD+"),
+        i18n$t("Monte Carlo Simulations for REDD+"),
         style = "display:inline;font-color: black !important"
         ),
       window_title = "{mocaredd}",
@@ -98,43 +104,51 @@ shiny_run_mocaredd <- function(...) {
 
       ## ++ Panels +++++
       nav_panel(
-        title = i18n$t("Home"), #OR title = "I am module 1"
+        title = i18n$t("Home"),
         value = "home",
         icon = icon("campground"),
-        mod_home_UI("tab_home_UI", i18n = i18n) ## See R/mod1_UI.R
+        mod_home_UI("tab_home_UI", i18n = i18n)
       ),
 
       nav_panel(
-        title = i18n$t("Data upload"), #OR title = "I am module 1"
-        value = "upload",
+        title = i18n$t("Tool"),
+        value = "tool",
+        icon = icon("campground"),
+        mod_tool_UI("tab_tool_UI", i18n = i18n)
+      ),
+
+      ## Panels now as tabsets in tool
+      # nav_panel(
+      #   title = i18n$t("Data upload"),
+      #   value = "upload",
+      #   icon = icon("info"),
+      #   mod_upload_UI("tab_upload_UI")
+      # ),
+      #
+      # nav_panel(
+      #   title = i18n$t("MCS results"),
+      #   value = "res",
+      #   icon = icon("chart-line"),
+      #   mod_res_UI("tab_res_UI")
+      # ),
+      #
+      # nav_panel(
+      #   title = i18n$t("Sensitivity analysis"),
+      #   value = "sensitivity",
+      #   icon = icon("chart-line"),
+      #   mod_sensitivity_UI("tab_sensitivity_UI")
+      # ),
+
+      nav_panel(
+        title = i18n$t("About"),
+        value = "about",
         icon = icon("info"),
-        mod_upload_UI("tab_upload_UI") ## See R/mod1_UI.R
-      ),
-
-      nav_panel(
-        title = i18n$t("MCS results"), #OR title = "I am module 2"
-        value = "res",
-        icon = icon("chart-line"),
-        mod_res_UI("tab_res_UI") ## See R/mod2_UI.R
-      ),
-
-      nav_panel(
-        title = i18n$t("Sensitivity analysis"), #OR title = "I am module 2"
-        value = "sensitivity",
-        icon = icon("chart-line"),
-        mod_sensitivity_UI("tab_sensitivity_UI") ## See R/mod2_UI.R
-      ),
-
-      nav_panel(
-        title = i18n$t("Sensitivity analysis"), #OR title = "I am module 2"
-        value = "sensitivity",
-        icon = icon("chart-line"),
-        mod_sensitivity_UI("tab_sensitivity_UI") ## See R/mod2_UI.R
+        mod_about_UI("tab_about_UI", i18n = i18n)
       ),
 
       nav_spacer(),
 
-      nav_item(language_selector2)
+      nav_item(language_selector)
 
     ) |> ## End page_navbar
       shiny::tagAppendAttributes(.cssSelector = "nav", class = "navbar-expand-lg")

@@ -72,7 +72,9 @@ mod_home_UI <- function(id, i18n){
 
   tagList(
 
-    h1(i18n$t("Welcome to {mocaredd}")),
+    h2(i18n$t("Welcome to {mocaredd}")),
+
+    br(),
 
     p(
       "

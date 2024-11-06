@@ -1,7 +1,7 @@
 
 
 
-mod_upload_UI <- function(id){
+submod_upload_UI <- function(id, i18n){
 
   ## From https://shiny.rstudio.com/articles/modules.html
   # `NS(id)` returns a namespace function, which was save as `ns` and will

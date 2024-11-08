@@ -116,49 +116,22 @@ path to the project folder set during the project creation.</li>
 </li>
 <li>(optional) Add a fork repo in personnal github
 <ul>
-<li>
-<code>usethis::create_from_github("openforis/mocaredd", fork = TRUE, destdir = "/Users/gaelsola/Github-repos")</code>
-## Barebone app</li>
+<li><code>usethis::create_from_github("openforis/mocaredd", fork = TRUE, destdir = "/Users/gaelsola/Github-repos")</code></li>
 </ul>
 </li>
 </ol>
+</div>
+<div class="section level2">
+<h2 id="barebone-app">Barebone app<a class="anchor" aria-label="anchor" href="#barebone-app"></a>
+</h2>
 <p>Add dependencies to DESCRIPTION:</p>
-<ul>
-<li>Analysis</li>
-</ul>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"magrittr"</span><span class="op">)</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"readr"</span><span class="op">)</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"tidyselect"</span><span class="op">)</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"ggplot2"</span><span class="op">)</span></span>
-<span><span class="co">#usethis::use_package("tibble")</span></span>
-<span><span class="co">#usethis::use_package("forcats")</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"purrr"</span><span class="op">)</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"stringr"</span><span class="op">)</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"rlang"</span><span class="op">)</span></span>
-<span><span class="co"># usethis::use_package("tidyverse", type = "depends")</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"readxl"</span><span class="op">)</span></span></code></pre></div>
-<ul>
-<li>Shiny related</li>
-</ul>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"shiny"</span><span class="op">)</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"shinyjs"</span><span class="op">)</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"shinyWidgets"</span><span class="op">)</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"bslib"</span><span class="op">)</span></span></code></pre></div>
-<ul>
-<li>Geospatial</li>
-</ul>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"sf"</span><span class="op">)</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"terra"</span><span class="op">)</span></span>
-<span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"units"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_package</span><span class="op">(</span><span class="st">"dplyr"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="run-all-the-time">Run all the time:<a class="anchor" aria-label="anchor" href="#run-all-the-time"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">document</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/shiny_run_mocaredd.html">shiny_run_mocaredd</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -170,7 +143,7 @@ path to the project folder set during the project creation.</li>
 <div class="section level2">
 <h2 id="checks">Checks<a class="anchor" aria-label="anchor" href="#checks"></a>
 </h2>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">check</span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Run one time </span></span>
@@ -183,7 +156,7 @@ path to the project folder set during the project creation.</li>
 <div class="section level2">
 <h2 id="build-pkgdown-website">Build pkgdown website<a class="anchor" aria-label="anchor" href="#build-pkgdown-website"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#pkgdown::build_site() </span></span>
 <span><span class="fu">usethis</span><span class="fu">::</span><span class="fu">use_pkgdown_github_pages</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>

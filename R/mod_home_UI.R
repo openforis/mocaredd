@@ -1,6 +1,6 @@
-
-
-
+#' Home module UI function
+#'
+#' @noRd
 mod_home_UI <- function(id, i18n){
 
   ## From https://shiny.rstudio.com/articles/modules.html
@@ -9,43 +9,16 @@ mod_home_UI <- function(id, i18n){
   ns <- NS(id)
 
 
-
   ##
   ## UI Elements ######
   ##
 
-  # card_left <- card(
-  #   h1("Welcome"),
-  #
-  #   h4("What is ", tags$code("arena-helpers")),
-  #   p(
-  #     "This app is part of of a collection of tools designed to support Forest inventory related
-  #     activities and grouped under ", tags$code("arena-helpers")
-  #     ),
-  #   br(),
-  #   h4("Open Foris Arena ", tags$img(src="assets/Arena-Logo.png", height = '30px')),
-  #   p(
-  #     "They aim to provide additional functionality to ",
-  #     tags$a(
-  #       href = "https://openforis.org/solutions/arena/",
-  #       #alt = "arena-helpers",
-  #       "Open Foris Arena ",
-  #       bsicons::bs_icon("box-arrow-up-right", class = "text-primary"),
-  #       .noWS = "before-end"
-  #     ),
-  #     " in particular support data analysis parts that cannot be embedded directly
-  #     to OF Arena "
-  #   )
-  # )
-
   card1 <- card(
-    card_header(
-      "Open Foris Arena ", tags$img(src="assets/Arena-Logo.png", height = '30px')
-    ),
-    p("More on OF Arena"),
+    card_header("Open Foris Arena"),
+    p("text"),
     tags$a(
       href = "https://openforis.org/solutions/arena/",
-      alt = "(logo)",
+      alt = "",
       "More on OF Arena",
       bsicons::bs_icon("box-arrow-up-right", class = "text-primary"),
       .noWS = "before-end"
@@ -54,15 +27,26 @@ mod_home_UI <- function(id, i18n){
 
   card2 <- card(
     card_header(tags$code("arena-helpers")),
-    p("More on arena-helpers"),
-    p("Add link to webpage")
+    p("text"),
+    tags$a(
+      href = "https://openforis.github.io/arena-helpers/",
+      alt = "",
+      "More on OF Arena",
+      bsicons::bs_icon("box-arrow-up-right", class = "text-primary"),
+      .noWS = "before-end"
+    )
   )
 
   card3 <- card(
     card_header("{mocaredd}"),
-    p("More info on mocaredd"),
-    p("link to info tab")
+    p("text"),
+    p(
+      "More on {mocaredd} in:", HTML("&nbsp;"),
+      actionButton(inputId = ns("to_about"), label = "About")
+      )
   )
+
+  cards <- list(card1, card2, card3)
 
 
 
@@ -95,9 +79,14 @@ mod_home_UI <- function(id, i18n){
 
     layout_columns(
       col_widths = c(4, 4, 4),
-      card1,
-      card2,
-      card3
+      !!!cards
+    ),
+
+    br(),
+
+    h4(
+      icon("arrow-right"), "Continue to the:", HTML("&nbsp;"),
+      actionButton(inputId = ns("to_tool"), label = "Tool")
     )
 
   ) ## END tagList

@@ -48,43 +48,15 @@ Main source for info:
     - More advanced workflow: `usethis::use_github_action("check-full")`
 1. (optional) Add a fork repo in personnal github
     - `usethis::create_from_github("openforis/mocaredd", fork = TRUE, destdir = "/Users/gaelsola/Github-repos")`
+
 ## Barebone app
 
 Add dependencies to DESCRIPTION:
 
-- Analysis 
-
 ```{r}
-usethis::use_package("magrittr")
-usethis::use_package("readr")
-usethis::use_package("tidyselect")
 usethis::use_package("dplyr")
-usethis::use_package("ggplot2")
-#usethis::use_package("tibble")
-#usethis::use_package("forcats")
-usethis::use_package("purrr")
-usethis::use_package("stringr")
-usethis::use_package("rlang")
-# usethis::use_package("tidyverse", type = "depends")
-usethis::use_package("readxl")
 ```
 
-- Shiny related
-
-```{r}
-usethis::use_package("shiny")
-usethis::use_package("shinyjs")
-usethis::use_package("shinyWidgets")
-usethis::use_package("bslib")
-```
-
-- Geospatial
-
-```{r}
-usethis::use_package("sf")
-usethis::use_package("terra")
-usethis::use_package("units")
-```
 
 
 ## Run all the time:
@@ -100,7 +72,6 @@ shiny_run_mocaredd()
 ```
 
 ## Checks
-
 
 ```{r}
 devtools::check()

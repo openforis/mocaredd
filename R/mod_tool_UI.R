@@ -1,7 +1,6 @@
-
-
-
-
+#' Tool module UI function
+#'
+#' @noRd
 mod_tool_UI <- function(id, i18n){
 
   ## From https://shiny.rstudio.com/articles/modules.html
@@ -13,30 +12,52 @@ mod_tool_UI <- function(id, i18n){
   ## UI Elements ###############################################################
   ##
 
-  card1 <- card(
-    card_header(
-      "Open Foris Arena ", tags$img(src="assets/Arena-Logo.png", height = '30px')
+  ## + Sidebar =================================================================
+
+  ac_load <- accordion_panel(
+    title = i18n$t("Upload your data"),
+    icon = bsicons::bs_icon("1-circle"),
+    value = ns("sb_load"),
+    div(
+      p(
+        "{mocaredd} only accepts XLSX files that follow a specific template.
+         Download the template here if you haven't converted you data yet.",
+      ),
+      downloadButton(
+        outputId = ns("dl_template"),
+        label = "Download the template", class = "btn-outline-secondary btn-small form-group"
+      ),
+      style = "margin-bottom: 0.5rem;"
     ),
-    p("More on OF Arena"),
-    tags$a(
-      href = "https://openforis.org/solutions/arena/",
-      alt = "(logo)",
-      "More on OF Arena",
-      bsicons::bs_icon("box-arrow-up-right", class = "text-primary"),
-      .noWS = "before-end"
-    )
-  )
-
-  card2 <- card(
-    card_header(tags$code("arena-helpers")),
-    p("More on arena-helpers"),
-    p("Add link to webpage")
-  )
-
-  card3 <- card(
-    card_header("{mocaredd}"),
-    p("More info on mocaredd"),
-    p("link to info tab")
+    div(
+      p(
+        "Once your data has converted to the app's template, you can upload your
+         data here:",
+      ),
+      shiny::fileInput(
+        inputId = ns("load_xlsx"),
+        accept = ".xlsx",
+        label = NULL
+      )
+    ),
+    div(
+      id = ns("msg_no_data"),
+      "No data uploaded.",
+      class = "text-warning",
+      style = "font-style: italic;"
+    ),
+    shinyjs::hidden(div(
+      id = ns("msg_data_tabs_ok"),
+      "Data uploaded with correct tabs.",
+      class = "text-success",
+      style = "font-style: italic;"
+      )),
+    shinyjs::hidden(div(
+      id = ns("msg_data_tabs_wrong"),
+      "Data uploaded with incorrect tabs.",
+      class = "text-danger",
+      style = "font-style: italic;"
+      )),
   )
 
 
@@ -54,16 +75,12 @@ mod_tool_UI <- function(id, i18n){
     navset_card_tab(
 
       sidebar = sidebar(
-        h4(i18n$t("Upload your data")),
-        br(),
-        shiny::fileInput(
-          inputId = "load_xlsx",
-          accept = ".xlsx",
-          label = i18n$t("Upload your data here")
+        width = "300px",
+        accordion(
+          ac_load,
+          hr()
+
         ),
-        hr(),
-        "Download a template file",
-        "Downlaod button",
         hr(),
         "Data check 1",
         "Data check 2",

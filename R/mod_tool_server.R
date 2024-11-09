@@ -22,6 +22,13 @@ mod_tool_server <- function(id, rv) {
 
     })
 
+    ## Save Run check to reactiveValues()
+    observeEvent(input$btn_run_checks, {
+
+      rv$inputs$btn_run_checks <- input$btn_run_checks
+
+    })
+
     ## + Outputs ===============================================================
 
     ## Download example 1 if needed
@@ -41,12 +48,12 @@ mod_tool_server <- function(id, rv) {
         shinyjs::hide("msg_no_data")
         shinyjs::show("msg_data_tabs_ok")
         shinyjs::hide("msg_data_tabs_wrong")
-        #shinyjs::enable("calc_cv")
+        shinyjs::enable("run_check")
       } else {
         shinyjs::hide("msg_no_data")
         shinyjs::hide("msg_data_tabs_ok")
         shinyjs::show("msg_data_tabs_wrong")
-        #shinyjs::disable("calc_cv")
+        shinyjs::disable("run_check")
       }
 
     })

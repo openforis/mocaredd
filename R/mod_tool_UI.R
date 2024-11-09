@@ -14,10 +14,13 @@ mod_tool_UI <- function(id, i18n){
 
   ## + Sidebar =================================================================
 
+  ## ++ Accordion 1: load data -------------------------------------------------
   ac_load <- accordion_panel(
     title = i18n$t("Upload your data"),
     icon = bsicons::bs_icon("1-circle"),
-    value = ns("sb_load"),
+    value = ns("ac_load"),
+
+    ## Accordion content
     div(
       p(
         "{mocaredd} only accepts XLSX files that follow a specific template.
@@ -51,19 +54,59 @@ mod_tool_UI <- function(id, i18n){
       "Data uploaded with correct tabs.",
       class = "text-success",
       style = "font-style: italic;"
-      )),
+    )),
     shinyjs::hidden(div(
       id = ns("msg_data_tabs_wrong"),
       "Data uploaded with incorrect tabs.",
       class = "text-danger",
       style = "font-style: italic;"
+    )),
+    br(),
+    div(
+      shinyjs::disabled(actionButton(
+        inputId = ns("btn_run_checks"),
+        label = "Run checks"
       )),
+      style = "margin-top: 1rem;"
+    )
+  )
+
+  ## ++ Accordion 2: Run checks ------------------------------------------------
+  ac_check <- accordion_panel(
+    title = i18n$t("Run data checks"),
+    icon = bsicons::bs_icon("2-circle"),
+    value = ns("ac_check"),
+
+    ## Content
+    h4("TEXT")
+
+  )
+
+  ## ++ Accordion 3: Run MCS ---------------------------------------------------
+  ac_mcs <-  accordion_panel(
+    title = i18n$t("Create Monte Carlo Simulations"),
+    icon = bsicons::bs_icon("3-circle"),
+    value = ns("ac_mcs"),
+
+    ## Content
+    h4("TEXT")
+
+  )
+
+  ## ++ Accordion 4: Run Sensitivity -------------------------------------------
+  ac_sens <-  accordion_panel(
+    title = i18n$t("Perform senstivity analysis"),
+    icon = bsicons::bs_icon("4-circle"),
+    value = ns("ac_sens"),
+
+    ## Content
+    h4("TEXT")
   )
 
 
 
   ##
-  ## Layout UI elements with tagList() function ######
+  ## Layout UI elements with tagList() function ################################
   ##
 
   tagList(
@@ -74,40 +117,46 @@ mod_tool_UI <- function(id, i18n){
 
     navset_card_tab(
 
+      ## + Sidebar =============================================================
+
       sidebar = sidebar(
         width = "300px",
         accordion(
           ac_load,
-          hr()
-
-        ),
-        hr(),
-        "Data check 1",
-        "Data check 2",
-        "..."
+          ac_check,
+          ac_mcs,
+          ac_sens
+          )
       ),
+
+      ## + Checks panel ========================================================
 
       nav_panel(
         title = i18n$t("Check your data"),
         value = "about",
         icon = icon("circle-check"),
-        submod_upload_UI("tab_upload_UI", i18n = i18n)
+        submod_check_UI("tab_check", i18n = i18n)
       ),
+
+      ## + MCS panel ===========================================================
 
       nav_panel(
         title = i18n$t("Results"),
         value = "res",
         icon = icon("chart-simple"),
-        submod_res_UI("tab_res_UI", i18n = i18n)
+        submod_res_UI("tab_res", i18n = i18n)
       ),
+
+      ## + Sensitivity analysis panel ============================================
 
       nav_panel(
         title = i18n$t("Sensitivity"),
         value = "sensitivity",
         icon = icon("magnifying-glass"),
-        mod_about_UI("tab_sensitivity_UI", i18n = i18n)
+        submod_sensitivity_UI("tab_sensitivity", i18n = i18n)
       )
-    )
+
+    ) ## END navset_card_tab()
 
   ) ## END tagList
 

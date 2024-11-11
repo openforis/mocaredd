@@ -80,10 +80,15 @@ mod_tool_server <- function(id, rv) {
       rv$inputs$ad   <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "AD_lu_transitions", na = "NA")
       rv$inputs$cs   <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "c_stock", na = "NA")
 
-      shinyWidgets::updateProgressBar(session = session, id = "prog_allchecks", value = 25)
+      Sys.sleep(0.5)
+
+      shinyWidgets::updateProgressBar(
+        title = "Data loaded...",
+        session = session, id = "prog_allchecks", value = 25
+        )
 
       ## ++ Run checks ---------------------------------------------------------
-      ## Check tables have at least the correct columns
+      ## +++ Check tables have at least the correct columns ----
       rv$checks$cols_ok <- all(
         rv$checklist$col_usr %in% names(rv$inputs$usr),
         rv$checklist$col_time %in% names(rv$inputs$time),
@@ -91,7 +96,7 @@ mod_tool_server <- function(id, rv) {
         rv$checklist$col_cs %in% names(rv$inputs$cs)
       )
 
-      ## Check tables dimensions
+      ## +++ Check tables dimensions ----
       if (rv$checks$cols_ok) {
         rv$checks$size_ok <- all(
           nrow(rv$inputs$usr) == 1, ## usr has only one row
@@ -99,7 +104,7 @@ mod_tool_server <- function(id, rv) {
         )
       }
 
-      ## Check data types are correct
+      ## +++ Check data types are correct ----
       if (rv$checks$size_ok) {
         ## usr tab
         rv$checks$usr_datatypes_ok <- all(
@@ -133,7 +138,7 @@ mod_tool_server <- function(id, rv) {
 
       }
 
-      ## Check category variables are correct
+      ## +++ Check category variables are correct ----
       if (rv$checks$datatypes_ok) {
 
         ## Get usr$dg_pool as vector
@@ -167,27 +172,50 @@ mod_tool_server <- function(id, rv) {
 
       }
 
+      ## +++ Check Unique IDs ----
+      rv$checks$ids_ok <- all()
+
+      ## +++ Check matching variables ----
+      rv$checks$matches_ok <- all()
 
       ## !!! NEED TO REVISE CHECK FUNCTION TO INCLUDE ALL CHECKS
-      rv$check$check_data_ok <- fct_check_data(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .init = rv$checklist)
+      # rv$check$check_data_ok <- fct_check_data(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .init = rv$checklist)
 
-      ## !!! FOR NOW ONLY, needs to be true or false based on checks
-      rv$checks$all_ok <- TRUE
+      ## +++ Recap all checks ----
+      rv$checks$all_ok <- all(
+        rv$checks$cols_ok,
+        rv$checks$size_ok,
+        rv$checks$datatypes_ok,
+        rv$checks$cats_ok,
+        rv$checks$ids_ok,
+        rv$checks$matches_ok
+      )
 
-      shinyWidgets::updateProgressBar(session = session, id = "prog_allchecks", value = 50)
+      Sys.sleep(0.5)
+
+      shinyWidgets::updateProgressBar(
+        title = "Checks  completed...",
+        session = session, id = "prog_allchecks", value = 50
+        )
 
       ## ++ Calculations -------------------------------------------------------
-      Sys.sleep(2)
+      Sys.sleep(1)
 
-      shinyWidgets::updateProgressBar(session = session, id = "prog_allchecks", value = 75)
+      shinyWidgets::updateProgressBar(
+        title = "Calculations done...",
+        session = session, id = "prog_allchecks", value = 75
+        )
 
       ## ++ Outputs ------------------------------------------------------------
       ## outputs are calculated once new data is uploaded so they are performed here
       ## instead of the render*({}) functions
 
-      Sys.sleep(2)
+      Sys.sleep(1)
 
-      shinyWidgets::updateProgressBar(session = session, id = "prog_allchecks", value = 100, status = "success")
+      shinyWidgets::updateProgressBar(
+        title = "All steps completed...",
+        session = session, id = "prog_allchecks", value = 100, status = "success"
+        )
 
       ## ++ Finalize -----------------------------------------------------------
       rv$checks$all_done <- TRUE
@@ -196,6 +224,8 @@ mod_tool_server <- function(id, rv) {
     })
 
     ## + Outputs ===============================================================
+
+    ## ++ value box content ----------------------------------------------------
     output$vb_nb_time <- renderText({
       req(rv$checks$all_ok)
       if (rv$checks$all_ok) {
@@ -236,8 +266,13 @@ mod_tool_server <- function(id, rv) {
     #   #textOutput(ns("vb_dg_method")),
     # )
 
+    ## ++ Cards content --------------------------------------------------------
 
 
+
+
+
+    ## + UI changes ============================================================
 
     ## Update show / hide panels
     observe({

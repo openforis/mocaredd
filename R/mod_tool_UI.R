@@ -167,7 +167,20 @@ mod_tool_UI <- function(id, i18n){
   ))
 
   ## ++ Cards ------------------------------------------------------------------
-  card_cat <- card(
+  ## All check types
+  # rv$checks$cols_ok,
+  # rv$checks$size_ok,
+  # rv$checks$datatypes_ok,
+  # rv$checks$cats_ok,
+  # rv$checks$ids_ok,
+  # rv$checks$matches_ok
+
+  card_cols <- card(
+    h4("Check all column names are valid"),
+      textOutput(ns("card_cols"), container = p)
+  )
+
+  card_cats <- card(
     h4("Check all categories are valid"),
     p(
       "TEXT"

@@ -91,13 +91,82 @@ mod_tool_server <- function(id, rv) {
         rv$checklist$col_cs %in% names(rv$inputs$cs)
       )
 
-      ## Check category variables are correct
-      rv$check_cats_ok <- all(
-
-      )
-
+      ## Check tables dimensions
+      if (rv$checks$cols_ok) {
+        rv$checks$size_ok <- all(
+          nrow(rv$inputs$usr) == 1, ## usr has only one row
+          nrow(rv$inputs$time) >= 2, ## at least one ref and one monitoring
+        )
+      }
 
       ## Check data types are correct
+      if (rv$checks$size_ok) {
+        ## usr tab
+        rv$checks$usr_datatypes_ok <- all(
+          is.logical(rv$inputs$usr$trunc_pdf),
+          is.integer(rv$inputs$usr$n_iter),
+          is.integer(rv$inputs$usr$ran_seed) | is.na(rv$inputs$usr$ran_seed),
+          is.character(rv$inputs$usr$c_unit),
+          #is.numeric(rv$inputs$usr$c_fraction), ## !!! C_fraction needs mean, sd if not NA, maybe better to have it in Cstock table
+          is.character(rv$inputs$usr$dg_pool) | is.na(rv$inputs$usr$dg_pool),
+          is.character(rv$inputs$usr$dg_expool) | is.na(rv$inputs$usr$dg_expool),
+          is.logical(rv$inputs$usr$ad_annual),
+          is.numeric(rv$inputs$usr$conf_level)
+        )
+
+        ## time tab
+        rv$checks$time_datatypes_ok <- all()
+
+        ## ad tab
+        rv$checks$ad_datatypes_ok <- all()
+
+        ## cs tab
+        rv$checks$cs_datatypes_ok <- all()
+
+        ## all
+        rv$checks$datatypes_ok <- all(
+          rv$checks$usr_datatypes_ok,
+          rv$checks$time_datatypes_ok,
+          rv$checks$ad_datatypes_ok,
+          rv$checks$cs_datatypes_ok
+        )
+
+      }
+
+      ## Check category variables are correct
+      if (rv$checks$datatypes_ok) {
+
+        ## Get usr$dg_pool as vector
+        ## ex. c("AGB", "BGB", "DW") %in% c("AGB", "BGB", "DW", "LI", "SOC", "ALL")
+        dg_pool <- stringr::str_split(rv$inputs$usr$dg_pool, pattern = ",") |>
+          purrr::map(stringr::str_trim) |>
+          unlist()
+
+        ### Check usr categorie variables
+        rv$checks$usr_cats_ok <- all(
+          rv$inputs$usr$c_unit %in% rv$checklist$cat_cunits,
+          all(dg_pool %in% rv$checklist$cat_cpools)
+        )
+
+        ## Check time categorie variables
+        rv$checks$time_cats_ok <- all()
+
+        ## Check ad categorie variables
+        rv$checks$ad_cats_ok <- all()
+
+        ## Check cs categorie variables
+        rv$checks$cs_cats_ok <- all()
+
+        ## Combine
+        rv$checks$cats_ok <- all(
+          rv$checks$usr_cats_ok,
+          rv$checks$time_cats_ok,
+          rv$checks$ad_cats_ok,
+          rv$checks$cs_cats_ok
+        )
+
+      }
+
 
       ## !!! NEED TO REVISE CHECK FUNCTION TO INCLUDE ALL CHECKS
       rv$check$check_data_ok <- fct_check_data(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .init = rv$checklist)

@@ -12,6 +12,15 @@ submod_check_UI <- function(id, i18n){
   ## UI Elements ###############################################################
   ##
 
+  ## + Initial msg =============================================================
+
+  div_check_init <- div(
+    id = ns("check_init_msg"),
+    bsicons::bs_icon("arrow-left"), " Start with uploading your data in the sidebar.",
+    class = "text-warning",
+    style = "font-style: italic;"
+  )
+
   ## + Progress bar ============================================================
 
   div_check_progress <- shinyjs::hidden(div(
@@ -45,7 +54,7 @@ submod_check_UI <- function(id, i18n){
   )
 
   vb_ad <- value_box(
-    title = "Land use transtions",
+    title = "Land use transitions",
     value = textOutput(ns("vb_nb_trans")),
     showcase = bsicons::bs_icon("pin-map"),
     theme = "secondary",
@@ -57,9 +66,21 @@ submod_check_UI <- function(id, i18n){
     title = "Carbon stock",
     value = textOutput(ns("vb_nb_pools")),
     showcase = bsicons::bs_icon("arrow-repeat"),
-    theme = "info",
+    theme = "warning",
     #textOutput(ns("vb_dg_method")),
   )
+
+  ## Combine value boxes
+  div_value_boxes <- shinyjs::hidden(div(
+    id = ns("check_vbs"),
+    layout_column_wrap(
+      width = "200px",
+      fill = FALSE,
+      vb_time, vb_ad, vb_cs
+    )
+  ))
+
+
 
   ## + Cards ===================================================================
 
@@ -67,7 +88,7 @@ submod_check_UI <- function(id, i18n){
     h4("Check all categories are valid"),
     p(
       "TEXT"
-    ),
+    )
   )
 
   card_lu <- card(
@@ -84,7 +105,14 @@ submod_check_UI <- function(id, i18n){
     )
   )
 
-
+  ## combine cards
+  div_cards <- shinyjs::hidden(div(
+    id = ns("check_cards"),
+    layout_column_wrap(
+      width = "200px",
+      card_cat, card_lu, card_dg
+    )
+  ))
 
   ##
   ## Layout UI elements with tagList() function ################################
@@ -93,26 +121,17 @@ submod_check_UI <- function(id, i18n){
   tagList(
 
     ## Initial msg
-    div(
-      id = ns("check_init_msg"),
-      bsicons::bs_icon("arrow-left"), " Start with uploading your data in the sidebar.",
-      class = "text-warning",
-      style = "font-style: italic;"
-    ),
+    div_check_init,
 
     ## progress bar
     div_check_progress,
     div_btn_to_check,
 
-    layout_column_wrap(
-      width = "200px",
-      vb_time, vb_ad, vb_cs
-    ),
+    div_value_boxes,
 
-    layout_column_wrap(
-      width = "200px",
-      card_cat, card_lu, card_dg
-    ),
+    br(),
+
+    div_cards
 
   ) ## END tagList
 

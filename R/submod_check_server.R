@@ -7,24 +7,31 @@ submod_check_server <- function(id, rv) {
 
     ns <- session$ns
 
+    output$vb_nb_time <- renderText({
+      req(rv$inputs$time)
+
+      paste0(nrow(rv$inputs$time), "Time periods reported")
+
+    })
+
     ##
     ## Events ##################################################################
     ##
 
     ## + Read data =============================================================
 
-    observeEvent(rv$inputs$btn_run_checks, {
-
-      rv$inputs$time <- readxl::read_xlsx(input$load_xlsx$datapath, sheet = "time_period", na = "NA")
-      rv$inputs$time <- readxl::read_xlsx(input$load_xlsx$datapath, sheet = "time_period", na = "NA")
-      rv$inputs$time <- readxl::read_xlsx(input$load_xlsx$datapath, sheet = "time_period", na = "NA")
-      rv$inputs$time <- readxl::read_xlsx(input$load_xlsx$datapath, sheet = "time_period", na = "NA")
-
-      #shinyWidgets::updateProgressBar(session = session, id = "prog_checks", value = 100, status = "success")
-
-
-
-    })
+    # observeEvent(rv$inputs$btn_run_checks, {
+    #
+    #   rv$inputs$time <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "time_periods", na = "NA")
+    #   rv$inputs$ad <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "AD_lu_transitions", na = "NA")
+    #   rv$inputs$cs <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "c_stock", na = "NA")
+    #   rv$inputs$usr <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "user_inputs", na = "NA")
+    #
+    #   shinyWidgets::updateProgressBar(session = session, id = "prog_checks", value = 25, status = "success")
+    #
+    #
+    #
+    # })
 
 
     ## + Events ================================================================
@@ -33,24 +40,15 @@ submod_check_server <- function(id, rv) {
 
     ## + UI changes ============================================================
 
-    ## Show hide data ok if tabs are correct
-
-    observe({
-      req(rv$inputs$xlsx_tabs)
-
-      if(rv$inputs$xlsx_tabs_ok) {
-        shinyjs::hide("msg_no_data")
-        shinyjs::show("msg_data_tabs_ok")
-        shinyjs::hide("msg_data_tabs_wrong")
-        shinyjs::enable("run_check")
-      } else {
-        shinyjs::hide("msg_no_data")
-        shinyjs::hide("msg_data_tabs_ok")
-        shinyjs::show("msg_data_tabs_wrong")
-        shinyjs::disable("run_check")
-      }
-
-    })
+    # observeEvent(rv$inputs$btn_run_checks, {
+    #
+    #   shinyjs::hide("check_init_msg")
+    #   shinyjs::show("check_progress")
+    #   shinyjs::hide("check_vbs")
+    #   shinyjs::hide("check_cards")
+    #
+    #
+    # })
 
 
 

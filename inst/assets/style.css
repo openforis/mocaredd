@@ -3,3 +3,38 @@
   line-height: 1 !important;
   font-weight: 300 !important;
 }
+
+/* Get color theme from Yeti as nicer
+:root {
+  --bs-primary: #008cba;
+  --bs-secondary: #eee;
+  --bs-success: #43ac6a;
+  --bs-info: #5bc0de;
+  --bs-warning: #e99002;
+  --bs-danger: #f04124;
+  --bs-light: #eee;
+  --bs-dark: #333;
+}
+*/
+
+/* Force dark color navbar text elements in Yeti theme */
+.navbar {
+  --bs-navbar-color: rgba(0, 0, 0, 0.65) !important;
+  --bs-navbar-hover-color: rgba(0, 0, 0, 0.8) !important;
+  --bs-navbar-disabled-color: rgba(0, 0 , 0, 0.3) !important;
+  --bs-navbar-active-color: rgba(0, 0, 0, 1) !important;
+  --bs-navbar-brand-color: rgba(0, 0, 0, 1) !important;
+  --bs-navbar-brand-hover-color: rgba(0, 0, 0, 1) !important;
+  --bs-navbar-toggler-icon-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2890,90,90,0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  --bs-navbar-toggler-border-color: rgba(0, 0, 0, 0.15);
+}
+
+/* Copy border radius from minty as nicer */
+:root {
+  --bs-border-radius: 0.4rem;
+  --bs-border-radius-sm: 0.3rem;
+  --bs-border-radius-lg: 0.6rem;
+  --bs-border-radius-xl: 1rem;
+  --bs-border-radius-xxl: 2rem;
+  --bs-border-radius-2xl: var(--bs-border-radius-xxl);
+}

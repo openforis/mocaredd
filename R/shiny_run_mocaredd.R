@@ -28,9 +28,14 @@ shiny_run_mocaredd <- function(...) {
 
   ## + list of categories for checks ===========================================
   app_checklist <- list(
-    xlsx_tabs = c("user_inputs", "time_periods", "AD_lu_transitions", "c_stock"),
-    c_pools   = c("AGB", "BGB", "DW", "LI", "SOC", "ALL"),
-    redd_acti = c("DF", "DG", "EN", "EN_AF", "EN_RE")
+    xlsx_tabs  = c("user_inputs", "time_periods", "AD_lu_transitions", "c_stock"),
+    cat_cpools = c("AGB", "BGB", "DW", "LI", "SOC", "ALL"),
+    cat_racti  = c("DF", "DG", "EN", "EN_AF", "EN_RE"),
+    cat_ptype  = c("REF", "M"),
+    col_usr    = c("trunc_pdf", "n_iter", "ran_seed", "c_unit", "c_fraction", "dg_pool", "dg_expool", "ad_annual", "conf_level"),
+    col_time   = c("period_no", "year_start", "year_end", "period_type"),
+    col_ad     = c("trans_no",	"trans_id",	"trans_period",	"redd_activity", "lu_initial_id", "lu_initial",	"lu_final_id", "lu_final", "trans_area", "trans_se", "trans_pdf", "trans_pdf_a", "trans_pdf_b", "trans_pdf_c"),
+    col_cs     = c("c_no",	"c_id",	"lu_id", "lu_name",	"c_pool",	"c_value",	"c_se",	"c_pdf",	"c_pdf_a",	"c_pdf_b",	"c_pdf_c")
   )
 
   app_checklist$c_cat <- c(app_checklist$c_pools, "RS", "DG_ratio")
@@ -101,7 +106,7 @@ shiny_run_mocaredd <- function(...) {
       window_title = "{mocaredd}",
       theme = bs_theme(
         version = 5,
-        bootswatch = "minty",
+        bootswatch = "yeti",
         base_font = font_collection(
           "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue",
           "Arial", "Noto Sans", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji",
@@ -114,7 +119,7 @@ shiny_run_mocaredd <- function(...) {
       ),
       fillable = FALSE, ## Not needed for now, make a tab fill the whole browser, cool for leaflets
       bg = "#f8f9fa",
-      inverse = FALSE,
+      # inverse = FALSE, ## Not working well with yeti, overridden in assets/styles.css
 
       ## + Panels ####
       nav_spacer(), ## align menu to the right
@@ -140,35 +145,11 @@ shiny_run_mocaredd <- function(...) {
         mod_about_UI("tab_about", i18n = i18n)
       ),
 
-      ## Following panels now as tabsets in tool
-      # nav_panel(
-      #   title = i18n$t("Data upload"),
-      #   value = "upload",
-      #   icon = icon("info"),
-      #   mod_upload_UI("tab_upload_UI")
-      # ),
-      #
-      # nav_panel(
-      #   title = i18n$t("MCS results"),
-      #   value = "res",
-      #   icon = icon("chart-line"),
-      #   mod_res_UI("tab_res_UI")
-      # ),
-      #
-      # nav_panel(
-      #   title = i18n$t("Sensitivity analysis"),
-      #   value = "sensitivity",
-      #   icon = icon("chart-line"),
-      #   mod_sensitivity_UI("tab_sensitivity_UI")
-      # ),
-
-      # nav_spacer(),
-
       nav_item(language_selector)
 
     ) |> ## End page_navbar
       ## Make navbar larger before switch to menu button
-      shiny::tagAppendAttributes(.cssSelector = "nav", class = "navbar-expand-lg")
+      shiny::tagAppendAttributes(.cssSelector = "nav", class = "navbar-expand-md")
   ) ## End tagList
 
 
@@ -181,12 +162,14 @@ shiny_run_mocaredd <- function(...) {
     ## + Initiate reactive values list to be passed between modules ####
     ## See https://rtask.thinkr.fr/communication-between-modules-and-its-whims/
     rv <- reactiveValues(
-      inputs  = reactiveValues(),
-      sims    = reactiveValues(),
-      res     = reactiveValues(),
-      gt      = reactiveValues(),
-      histo   = reactiveValues(),
-      actions = reactiveValues()
+      checklist = app_checklist,
+      inputs    = reactiveValues(),
+      checks    = reactiveValues(),
+      sims      = reactiveValues(),
+      res       = reactiveValues(),
+      gt        = reactiveValues(),
+      histo     = reactiveValues(),
+      actions   = reactiveValues()
     )
 
     ## Save language value to show/hide divs with shinyjs

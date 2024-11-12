@@ -55,7 +55,7 @@
 
 
 <dt id="arg--cs">.cs<a class="anchor" aria-label="anchor" href="#arg--cs"></a></dt>
-<dd><p>Carbon Stock input table for the shiny app (c_stock)</p></dd>
+<dd><p>Carbon Stock input table for the shiny app (c_stocks)</p></dd>
 
 
 <dt id="arg--init">.init<a class="anchor" aria-label="anchor" href="#arg--init"></a></dt>
@@ -75,10 +75,9 @@ to check the imported data against.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>   sheet <span class="op">=</span> <span class="st">"c_stock"</span>,</span></span>
+<span class="r-in"><span>   sheet <span class="op">=</span> <span class="st">"c_stocks"</span>,</span></span>
 <span class="r-in"><span>   na <span class="op">=</span> <span class="st">"NA"</span></span></span>
 <span class="r-in"><span>   <span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> Sheet 'c_stock' not found</span>
 <span class="r-in"><span><span class="va">ad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"AD_lu_transitions"</span>,</span></span>
@@ -91,7 +90,8 @@ to check the imported data against.</p></dd>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">fct_check_data</span><span class="op">(</span>.ad <span class="op">=</span> <span class="va">ad</span>, .cs <span class="op">=</span> <span class="va">cs</span>, .init <span class="op">=</span> <span class="va">init</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'cs' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   pass_trans_id pass_c_id pass_pool pass_acti pass_lu_no</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          TRUE      TRUE      TRUE      TRUE       TRUE</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

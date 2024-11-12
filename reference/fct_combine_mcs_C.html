@@ -51,7 +51,7 @@
 
 
 <dl><dt id="arg--c-sub">.c_sub<a class="anchor" aria-label="anchor" href="#arg--c-sub"></a></dt>
-<dd><p>Subset with one land use from the carbon stock input table for the shiny app (c_stock).</p></dd>
+<dd><p>Subset with one land use from the carbon stock input table for the shiny app (c_stocks).</p></dd>
 
 
 <dt id="arg--usr">.usr<a class="anchor" aria-label="anchor" href="#arg--usr"></a></dt>
@@ -79,23 +79,19 @@ total carbon stock in tCO2/ha.</p>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"c_stock"</span>,</span></span>
+<span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"c_stocks"</span>,</span></span>
 <span class="r-in"><span>  na <span class="op">=</span> <span class="st">"NA"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> Sheet 'c_stock' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cs_clean</span> <span class="op">&lt;-</span> <span class="va">cs</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">c_value</span><span class="op">)</span> <span class="op">&amp;</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">c_pdf_a</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'cs' not found</span>
 <span class="r-in"><span><span class="va">c_sub</span> <span class="op">&lt;-</span> <span class="va">cs_clean</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">lu_id</span> <span class="op">==</span> <span class="st">"ev_wet_closed"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'cs_clean' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">fct_combine_mcs_C</span><span class="op">(</span>.c_sub <span class="op">=</span> <span class="va">c_sub</span>, .usr <span class="op">=</span> <span class="va">usr</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'c_sub' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">C_all</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res' not found</span>
+<span class="r-plt img"><img src="fct_combine_mcs_C-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">C_all</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 453</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

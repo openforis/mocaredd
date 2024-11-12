@@ -95,18 +95,15 @@ AGB and BGB can also be expressed in ton of dry matter (DM), then a carbon fract
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cs</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"c_stock"</span>,</span></span>
+<span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"c_stocks"</span>,</span></span>
 <span class="r-in"><span>  na <span class="op">=</span> <span class="st">"NA"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> Sheet 'c_stock' not found</span>
 <span class="r-in"><span><span class="va">c_lu</span>  <span class="op">&lt;-</span> <span class="va">cs</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">lu_id</span> <span class="op">==</span> <span class="st">"dg_ev_wet_closed"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'cs' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">c_check</span> <span class="op">&lt;-</span> <span class="fu"><a href="fct_check_pool.html">fct_check_pool</a></span><span class="op">(</span>.c_lu <span class="op">=</span> <span class="va">c_lu</span>, .c_unit <span class="op">=</span> <span class="st">"C"</span>, .c_fraction <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'c_lu' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">fct_make_formula</span><span class="op">(</span>.c_check <span class="op">=</span> <span class="va">c_check</span>, .c_unit <span class="op">=</span> <span class="st">"C"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'c_check' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "DG_ratio"</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

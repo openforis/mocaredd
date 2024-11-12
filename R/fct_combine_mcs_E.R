@@ -4,7 +4,7 @@
 #'
 #'
 #' @param .ad Activity Data input table for the shiny app (AD_lu_transitions)
-#' @param .cs Carbon Stock input table for the shiny app (c_stock)
+#' @param .cs Carbon Stock input table for the shiny app (c_stocks)
 #' @param .usr User inputs' table for the shiny app (user_inputs). Contains the number
 #'             of iterations of the MCS, carbon fraction if needed and if truncated PDFs
 #'             should be used when necessary.
@@ -22,7 +22,7 @@
 #'
 #' cs <- read_xlsx(
 #'   system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "c_stock",
+#'   sheet = "c_stocks",
 #'   na = "NA"
 #'   )
 #' ad <- read_xlsx(

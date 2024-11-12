@@ -23,7 +23,7 @@
 #'
 #' cs    <- read_xlsx(
 #'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "c_stock",
+#'   sheet = "c_stocks",
 #'   na = "NA"
 #'   )
 #' c_lu  <- cs |> filter(lu_id == "dg_ev_wet_closed")

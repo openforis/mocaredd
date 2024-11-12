@@ -4,7 +4,7 @@
 #'
 #'
 #' @param .ad Activity Data input table for the shiny app (AD_lu_transitions)
-#' @param .cs Carbon Stock input table for the shiny app (c_stock)
+#' @param .cs Carbon Stock input table for the shiny app (c_stocks)
 #' @param .init initial list of coded variables for carbon pools and REDD+ activity
 #'              to check the imported data against.
 #'
@@ -17,7 +17,7 @@
 #'
 #' cs <- read_xlsx(
 #'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'    sheet = "c_stock",
+#'    sheet = "c_stocks",
 #'    na = "NA"
 #'    )
 #' ad <- read_xlsx(

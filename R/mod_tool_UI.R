@@ -134,7 +134,7 @@ mod_tool_UI <- function(id, i18n){
   vb_time <- value_box(
     title = "Time periods",
     value = textOutput(ns("vb_nb_time")),
-    showcase = bsicons::bs_icon("calendar3", size = "48px"),
+    showcase = bsicons::bs_icon("calendar3", size = "40px"),
     theme = "primary",
     textOutput(ns("vb_nb_ref")),
     textOutput(ns("vb_nb_mon"))

@@ -9,7 +9,7 @@ fct_combine_mcs_E(.ad, .cs, .usr)
 \arguments{
 \item{.ad}{Activity Data input table for the shiny app (AD_lu_transitions)}
 
-\item{.cs}{Carbon Stock input table for the shiny app (c_stock)}
+\item{.cs}{Carbon Stock input table for the shiny app (c_stocks)}
 
 \item{.usr}{User inputs' table for the shiny app (user_inputs). Contains the number
 of iterations of the MCS, carbon fraction if needed and if truncated PDFs
@@ -29,7 +29,7 @@ library(mocaredd)
 
 cs <- read_xlsx(
   system.file("extdata/example1.xlsx", package = "mocaredd"),
-  sheet = "c_stock",
+  sheet = "c_stocks",
   na = "NA"
   )
 ad <- read_xlsx(

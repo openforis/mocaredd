@@ -7,7 +7,7 @@
 fct_combine_mcs_C(.c_sub, .usr)
 }
 \arguments{
-\item{.c_sub}{Subset with one land use from the carbon stock input table for the shiny app (c_stock).}
+\item{.c_sub}{Subset with one land use from the carbon stock input table for the shiny app (c_stocks).}
 
 \item{.usr}{User inputs' table for the shiny app (user_inputs). Contains the number
 of iterations of the MCS, carbon fraction if needed and if truncated PDFs
@@ -32,7 +32,7 @@ usr <- read_xlsx(
   )
 cs <- read_xlsx(
   system.file("extdata/example1.xlsx", package = "mocaredd"),
-  sheet = "c_stock",
+  sheet = "c_stocks",
   na = "NA"
   )
 

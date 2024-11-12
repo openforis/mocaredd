@@ -61,11 +61,12 @@
 fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
 
   ## !! FOR TESTING ONLY
-  .usr <- usr
-  .time <- time
-  .ad <- ad
-  .cs <- cs
-  .checklist <- app_checklist
+  # .usr <- usr
+  # .time <- time
+  # .ad <- ad
+  # .cs <- cs
+  # .checklist <- app_checklist
+  ## !!
 
 
   tmp <- list()

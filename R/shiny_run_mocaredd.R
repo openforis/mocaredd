@@ -37,10 +37,10 @@ shiny_run_mocaredd <- function(...) {
     col_usr    = c("trunc_pdf", "n_iter", "ran_seed", "c_unit", "c_fraction", "dg_pool", "dg_expool", "ad_annual", "conf_level"),
     col_time   = c("period_no", "year_start", "year_end", "period_type"),
     col_ad     = c("trans_no",	"trans_id",	"trans_period",	"redd_activity", "lu_initial_id", "lu_initial",	"lu_final_id", "lu_final", "trans_area", "trans_se", "trans_pdf", "trans_pdf_a", "trans_pdf_b", "trans_pdf_c"),
-    col_cs     = c("c_no",	"c_id",	"lu_id", "lu_name",	"c_pool",	"c_value",	"c_se",	"c_pdf",	"c_pdf_a",	"c_pdf_b",	"c_pdf_c")
+    col_cs     = c("c_no",	"c_id",	"c_period", "lu_id", "lu_name",	"c_pool",	"c_value",	"c_se",	"c_pdf",	"c_pdf_a",	"c_pdf_b",	"c_pdf_c")
   )
 
-  app_checklist$cat_cpools_all <- c(app_checklist$c_pools, "RS", "DG_ratio")
+  app_checklist$cat_cpools_all <- c(app_checklist$cat_cpools, "RS", "DG_ratio")
 
   ## + Initiate translation ====================================================
 

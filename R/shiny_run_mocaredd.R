@@ -28,7 +28,7 @@ shiny_run_mocaredd <- function(...) {
 
   ## + list of categories for checks ===========================================
   app_checklist <- list(
-    xlsx_tabs  = c("user_inputs", "time_periods", "AD_lu_transitions", "c_stock"),
+    xlsx_tabs  = c("user_inputs", "time_periods", "AD_lu_transitions", "c_stocks"),
     cat_cunits = c("DM", "C"),
     cat_cpools = c("AGB", "BGB", "DW", "LI", "SOC", "ALL"),
     cat_racti  = c("DF", "DG", "EN", "EN_AF", "EN_RE"),

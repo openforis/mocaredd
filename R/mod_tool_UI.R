@@ -134,7 +134,7 @@ mod_tool_UI <- function(id, i18n){
   vb_time <- value_box(
     title = "Time periods",
     value = textOutput(ns("vb_nb_time")),
-    showcase = bsicons::bs_icon("calendar3"),
+    showcase = bsicons::bs_icon("calendar3", size = "48px"),
     theme = "primary",
     textOutput(ns("vb_nb_ref")),
     textOutput(ns("vb_nb_mon"))
@@ -143,7 +143,7 @@ mod_tool_UI <- function(id, i18n){
   vb_ad <- value_box(
     title = "Land use transitions",
     value = textOutput(ns("vb_nb_trans")),
-    showcase = bsicons::bs_icon("pin-map"),
+    showcase = bsicons::bs_icon("pin-map", size = "40px"),
     theme = "secondary",
     textOutput(ns("vb_nb_lu"))
   )
@@ -151,7 +151,7 @@ mod_tool_UI <- function(id, i18n){
   vb_cs <- value_box(
     title = "Carbon stock",
     value = textOutput(ns("vb_nb_pools")),
-    showcase = bsicons::bs_icon("arrow-repeat"),
+    showcase = bsicons::bs_icon("arrow-repeat", size = "48px"),
     theme = "warning",
     #textOutput(ns("vb_dg_method")),
   )
@@ -177,37 +177,41 @@ mod_tool_UI <- function(id, i18n){
 
   card_cols <- card(
     h4("Check all column names are valid"),
-      textOutput(ns("card_cols"), container = p)
+      verbatimTextOutput(ns("card_cols"))
+  )
+
+  card_size <- card(
+    h4("Check all column names are valid"),
+    textOutput(ns("card_size"), container = p)
+  )
+
+  card_datatypes <- card(
+    h4("Check all column names are valid"),
+    textOutput(ns("card_datatypes"), container = p)
   )
 
   card_cats <- card(
     h4("Check all categories are valid"),
-    p(
-      "TEXT"
-    )
+    textOutput(ns("card_cats"), container = p)
   )
 
-  card_lu <- card(
+  card_ids <- card(
+    h4("Check all categories are valid"),
+    textOutput(ns("card_ids"), container = p)
+  )
+
+  card_matches <- card(
     h4("Land use categories match"),
-    p(
-      "TEXT"
-    )
-  )
-
-  card_dg <- card(
-    h4("Forest degradation calculation method"),
-    p(
-      "TEXT"
-    )
+    textOutput(ns("card_ids"), container = p)
   )
 
   ## combine cards
   div_cards <- shinyjs::hidden(div(
     id = ns("check_cards"),
-    layout_column_wrap(
-      width = "200px",
-      card_cat, card_lu, card_dg
-    )
+    # layout_column_wrap(
+    #   width = "200px",
+      card_cols, card_size, card_datatypes
+    # )
   ))
 
 

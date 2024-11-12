@@ -18,9 +18,9 @@ mod_tool_server <- function(id, rv) {
 
       rv$inputs$xlsx_path <- input$load_xlsx$datapath
 
-      rv$inputs$xlsx_tabs <- readxl::excel_sheets(input$load_xlsx$datapath)
-
-      rv$inputs$xlsx_tabs_ok <- all(rv$checklist$xlsx_tabs %in% rv$inputs$xlsx_tabs)
+      # rv$inputs$xlsx_tabs <- readxl::excel_sheets(input$load_xlsx$datapath)
+      # rv$inputs$xlsx_tabs_ok <- all(rv$checklist$xlsx_tabs %in% rv$inputs$xlsx_tabs)
+      rv$inputs$xlsx_tabs_ok <- all(rv$checklist$xlsx_tabs %in% readxl::excel_sheets(input$load_xlsx$datapath))
 
     })
 
@@ -78,9 +78,9 @@ mod_tool_server <- function(id, rv) {
       rv$inputs$usr  <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "user_inputs", na = "NA")
       rv$inputs$time <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "time_periods", na = "NA")
       rv$inputs$ad   <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "AD_lu_transitions", na = "NA")
-      rv$inputs$cs   <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "c_stock", na = "NA")
+      rv$inputs$cs   <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "c_stocks", na = "NA")
 
-      Sys.sleep(0.5)
+      Sys.sleep(0.1)
 
       shinyWidgets::updateProgressBar(
         title = "Data loaded...",
@@ -88,110 +88,15 @@ mod_tool_server <- function(id, rv) {
         )
 
       ## ++ Run checks ---------------------------------------------------------
-      ## +++ Check tables have at least the correct columns ----
-      rv$checks$cols_ok <- all(
-        rv$checklist$col_usr %in% names(rv$inputs$usr),
-        rv$checklist$col_time %in% names(rv$inputs$time),
-        rv$checklist$col_ad %in% names(rv$inputs$ad),
-        rv$checklist$col_cs %in% names(rv$inputs$cs)
-      )
 
-      ## +++ Check tables dimensions ----
-      if (rv$checks$cols_ok) {
-        rv$checks$size_ok <- all(
-          nrow(rv$inputs$usr) == 1, ## usr has only one row
-          nrow(rv$inputs$time) >= 2, ## at least one ref and one monitoring
-        )
-      }
-
-      ## +++ Check data types are correct ----
-      if (rv$checks$size_ok) {
-        ## usr tab
-        rv$checks$usr_datatypes_ok <- all(
-          is.logical(rv$inputs$usr$trunc_pdf),
-          is.integer(rv$inputs$usr$n_iter),
-          is.integer(rv$inputs$usr$ran_seed) | is.na(rv$inputs$usr$ran_seed),
-          is.character(rv$inputs$usr$c_unit),
-          #is.numeric(rv$inputs$usr$c_fraction), ## !!! C_fraction needs mean, sd if not NA, maybe better to have it in Cstock table
-          is.character(rv$inputs$usr$dg_pool) | is.na(rv$inputs$usr$dg_pool),
-          is.character(rv$inputs$usr$dg_expool) | is.na(rv$inputs$usr$dg_expool),
-          is.logical(rv$inputs$usr$ad_annual),
-          is.numeric(rv$inputs$usr$conf_level)
-        )
-
-        ## time tab
-        rv$checks$time_datatypes_ok <- all()
-
-        ## ad tab
-        rv$checks$ad_datatypes_ok <- all()
-
-        ## cs tab
-        rv$checks$cs_datatypes_ok <- all()
-
-        ## all
-        rv$checks$datatypes_ok <- all(
-          rv$checks$usr_datatypes_ok,
-          rv$checks$time_datatypes_ok,
-          rv$checks$ad_datatypes_ok,
-          rv$checks$cs_datatypes_ok
-        )
-
-      }
-
-      ## +++ Check category variables are correct ----
-      if (rv$checks$datatypes_ok) {
-
-        ## Get usr$dg_pool as vector
-        ## ex. c("AGB", "BGB", "DW") %in% c("AGB", "BGB", "DW", "LI", "SOC", "ALL")
-        dg_pool <- stringr::str_split(rv$inputs$usr$dg_pool, pattern = ",") |>
-          purrr::map(stringr::str_trim) |>
-          unlist()
-
-        ### Check usr categorie variables
-        rv$checks$usr_cats_ok <- all(
-          rv$inputs$usr$c_unit %in% rv$checklist$cat_cunits,
-          all(dg_pool %in% rv$checklist$cat_cpools)
-        )
-
-        ## Check time categorie variables
-        rv$checks$time_cats_ok <- all()
-
-        ## Check ad categorie variables
-        rv$checks$ad_cats_ok <- all()
-
-        ## Check cs categorie variables
-        rv$checks$cs_cats_ok <- all()
-
-        ## Combine
-        rv$checks$cats_ok <- all(
-          rv$checks$usr_cats_ok,
-          rv$checks$time_cats_ok,
-          rv$checks$ad_cats_ok,
-          rv$checks$cs_cats_ok
-        )
-
-      }
-
-      ## +++ Check Unique IDs ----
-      rv$checks$ids_ok <- all()
-
-      ## +++ Check matching variables ----
-      rv$checks$matches_ok <- all()
 
       ## !!! NEED TO REVISE CHECK FUNCTION TO INCLUDE ALL CHECKS
       # rv$check$check_data_ok <- fct_check_data(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .init = rv$checklist)
 
       ## +++ Recap all checks ----
-      rv$checks$all_ok <- all(
-        rv$checks$cols_ok,
-        rv$checks$size_ok,
-        rv$checks$datatypes_ok,
-        rv$checks$cats_ok,
-        rv$checks$ids_ok,
-        rv$checks$matches_ok
-      )
+      rv$checks$all_ok <- TRUE
 
-      Sys.sleep(0.5)
+      Sys.sleep(0.1)
 
       shinyWidgets::updateProgressBar(
         title = "Checks  completed...",
@@ -199,7 +104,7 @@ mod_tool_server <- function(id, rv) {
         )
 
       ## ++ Calculations -------------------------------------------------------
-      Sys.sleep(1)
+      Sys.sleep(0.5)
 
       shinyWidgets::updateProgressBar(
         title = "Calculations done...",
@@ -210,7 +115,7 @@ mod_tool_server <- function(id, rv) {
       ## outputs are calculated once new data is uploaded so they are performed here
       ## instead of the render*({}) functions
 
-      Sys.sleep(1)
+      Sys.sleep(0.5)
 
       shinyWidgets::updateProgressBar(
         title = "All steps completed...",
@@ -229,7 +134,7 @@ mod_tool_server <- function(id, rv) {
     output$vb_nb_time <- renderText({
       req(rv$checks$all_ok)
       if (rv$checks$all_ok) {
-        paste0(nrow(rv$inputs$time), " time periods reported.")
+        paste0(nrow(rv$inputs$time), " periods")
       }
     })
 
@@ -237,7 +142,7 @@ mod_tool_server <- function(id, rv) {
       req(rv$checks$all_ok)
       if (rv$checks$all_ok) {
         time_sub <- rv$inputs$time |> dplyr::filter(stringr::str_detect(period_type, pattern = "REF"))
-        paste0(nrow(time_sub), " time periods are for reference.")
+        paste0(nrow(time_sub), " for reference.")
       }
     })
 
@@ -245,7 +150,7 @@ mod_tool_server <- function(id, rv) {
       req(rv$checks$all_ok)
       if (rv$checks$all_ok) {
         time_sub <- rv$inputs$time |> dplyr::filter(stringr::str_detect(period_type, pattern = "M"))
-        paste0(nrow(time_sub), " time periods are for monitoring.")
+        paste0(nrow(time_sub), " for monitoring.")
       }
     })
 
@@ -267,6 +172,16 @@ mod_tool_server <- function(id, rv) {
     # )
 
     ## ++ Cards content --------------------------------------------------------
+    output$card_cols <- renderText({
+      req(rv$checks$cols_ok)
+
+      if (rv$checks$cols_ok) {
+        out <- paste0(bsicons::bs_icon("check-circle"), " all checks pass.")
+      } else {
+        out <- paste0(bsicons::bs_icon("x-circle"), "issues in tables: ", "PLACEHOLDER")
+      }
+
+    })
 
 
 

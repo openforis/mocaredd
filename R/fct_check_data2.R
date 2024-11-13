@@ -262,21 +262,57 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
   ## 6. Check matching and logical interactions
 
   ## - Period matching exactly between tables
+  tmp$match_period_ad_ok <- all(sort(unique(.ad$trans_period)) == sort(unique(.time$period_no)))
 
-  ## -
+  cs_period <- .cs |> dplyr::filter(c_period != "ALL")
+  if (nrow(cs_period) > 0) {
+    tmp$match_period_cs_ok <- all(sort(unique(.cs$c_period)) == sort(unique(.time$period_no)))
+  } else {
+    tmp$match_period_cs_ok <- TRUE
+  }
 
-  ## - DG method
+  ## - LU matching between tables
+  lu_ad <- sort(c(unique(.ad$lu_initial_id), unique(.ad$lu_final_id)))
+  lu_cs <- sort(unique(.cs$lu_id))
+
+  tmp$match_lu_ok <- all(lu_ad == lu_cs)
+
+  ## - At least one ref and one monitoring period
+  nb_ref <- .time |> dplyr::filter(stringr::str_detect(period_type, pattern = "REF|REF[0-9]"))
+  nb_mon <- .time |> dplyr::filter(stringr::str_detect(period_type, pattern = "MON|MON[0-9]"))
+
+  tmp$match_ref_ok <- nrow(nb_ref) > 0
+  tmp$match_mon_ok <- nrow(nb_mon) > 0
 
   ## - CF if DM
   ## TBD should add carbon fraction as row in c_stocks instead of user_inputs
 
-  # nb_ref <- .time |> dplyr::filter(stringr::str_detect(period_type, pattern = "REF|REF[0-9]"))
-  # nb_mon <- .time |> dplyr::filter(stringr::str_detect(period_type, pattern = "MON|MON[0-9]"))
+  ## - DG method: either (1) dg_ratio applied to all pools, (2) dg_ratio applied to some pools other kept intact (dg_expool == T), (3) diff in Cstocks.
+  ## NOT IMPLEMENTED YET
 
+  ## - Combine
+  out$matches_ok <- all(
+    tmp$match_period_ad_ok,
+    tmp$match_period_cs_ok,
+    tmp$match_lu_ok,
+    tmp$match_ref_ok,
+    tmp$match_mon_ok
+  )
 
-  out$matches_ok <- all()
+  if (out$matches_ok) {
+    out$ids_pb <- NULL
+  } else {
+    if (tmp$match_period_ad_ok) tmp$match_period_ad_pb <- NULL else tmp$match_period_ad_pb <- "period_no != trans_period"
+    if (tmp$match_period_cs_ok) tmp$match_period_cs_pb <- NULL else tmp$match_period_cs_pb <- "period_no != c_period"
+    if (tmp$match_lu_ok)        tmp$match_lu_pb        <- NULL else tmp$match_lu_pb        <- "land use mismatch between AD and CS"
+    if (tmp$match_ref_ok)       tmp$match_ref_pb       <- NULL else tmp$match_ref_pb       <- "missing REF in time_periods"
+    if (tmp$match_mon_ok)       tmp$match_mon_pb       <- NULL else tmp$match_mon_pb       <- "missing MON in time_periods"
 
-  ## - combine all
+    out$matches_pb <- c(tmp$match_period_ad_pb, tmp$match_period_cs_pb, tmp$match_lu_pb, tmp$match_ref_pb, tmp$match_mon_pb)
+
+  }
+
+  ## 7. combine all
   out$all_ok <- all(
     out$cols_ok,
     out$size_ok,
@@ -286,9 +322,9 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
     out$matches_ok
   )
 
+  ## Return results as 1st level elements for checks and 2nd level for problems
   checks <- out[stringr::str_detect(names(out), pattern = "_ok")]
-  pbs    <- out[stringr::str_detect(names(out), pattern = "_pb")]
-
-  list(checks = checks, pbs = pbs)
+  checks$pbs  <- out[stringr::str_detect(names(out), pattern = "_pb")]
+  checks
 
 }

@@ -210,7 +210,7 @@ mod_tool_UI <- function(id, i18n){
     id = ns("check_cards"),
     # layout_column_wrap(
     #   width = "200px",
-      card_cols, card_size, card_datatypes
+      card_cols, card_size, card_datatypes, card_cats, card_ids, card_matches
     # )
   ))
 

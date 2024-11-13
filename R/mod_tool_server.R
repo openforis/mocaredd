@@ -37,7 +37,7 @@ mod_tool_server <- function(id, rv) {
     ## Show hide data ok if tabs are correct
 
     observe({
-      req(rv$inputs$xlsx_tabs)
+      req(rv$inputs$xlsx_tabs_ok)
 
       if(rv$inputs$xlsx_tabs_ok) {
         shinyjs::hide("msg_no_data")
@@ -89,12 +89,14 @@ mod_tool_server <- function(id, rv) {
 
       ## ++ Run checks ---------------------------------------------------------
 
-
-      ## !!! NEED TO REVISE CHECK FUNCTION TO INCLUDE ALL CHECKS
-      # rv$check$check_data_ok <- fct_check_data(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .init = rv$checklist)
-
-      ## +++ Recap all checks ----
-      rv$checks$all_ok <- TRUE
+      ## Use fct_check_data2()
+      rv$check$check_data_ok <- fct_check_data2(
+        .usr = rv$inputs$usr,
+        .time = rv$inputs$time,
+        .ad = rv$inputs$ad,
+        .cs = rv$inputs$cs,
+        .checklist = rv$checklist
+        )
 
       Sys.sleep(0.1)
 

@@ -15,6 +15,9 @@
 #' A dataframe with TRUE or FALSE (TRUE if each check passes), and broad error locations
 #' if FALSE.
 #'
+#' @importFrom rlang .data
+#' @importFrom magrittr %>%
+#'
 #' @examples
 #' library(mocaredd)
 #' library(readxl)
@@ -47,10 +50,14 @@
 #'   cat_racti  = c("DF", "DG", "EN", "EN_AF", "EN_RE"),
 #'   cat_ptype  = c("REF", "REF[0-9]", "MON", "MON[0-9]"),
 #'   cat_pdf    = c("normal", "beta"),
-#'   col_usr    = c("trunc_pdf", "n_iter", "ran_seed", "c_unit", "c_fraction", "dg_pool", "dg_expool", "ad_annual", "conf_level"),
+#'   col_usr    = c("trunc_pdf", "n_iter", "ran_seed", "c_unit", "c_fraction", "dg_pool",
+#'                  "dg_expool", "ad_annual", "conf_level"),
 #'   col_time   = c("period_no", "year_start", "year_end", "period_type"),
-#'   col_ad     = c("trans_no",	"trans_id",	"trans_period",	"redd_activity", "lu_initial_id", "lu_initial",	"lu_final_id", "lu_final", "trans_area", "trans_se", "trans_pdf", "trans_pdf_a", "trans_pdf_b", "trans_pdf_c"),
-#'   col_cs     = c("c_no",	"c_id", "c_period", "lu_id", "lu_name",	"c_pool",	"c_value",	"c_se",	"c_pdf",	"c_pdf_a",	"c_pdf_b",	"c_pdf_c")
+#'   col_ad     = c("trans_no",	"trans_id",	"trans_period",	"redd_activity", "lu_initial_id",
+#'                  "lu_initial",	"lu_final_id", "lu_final", "trans_area", "trans_se",
+#'                  "trans_pdf", "trans_pdf_a", "trans_pdf_b", "trans_pdf_c"),
+#'   col_cs     = c("c_no",	"c_id", "c_period", "lu_id", "lu_name",	"c_pool",	"c_value",
+#'                	"c_se",	"c_pdf",	"c_pdf_a",	"c_pdf_b",	"c_pdf_c")
 #' )
 #'
 #' app_checklist$cat_cpools_all <- c(app_checklist$cat_cpools, "RS", "DG_ratio")
@@ -94,10 +101,10 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
   }
 
   ## Check 2. tables dimensions
-  tmp$size_usr_ok <- nrow(.usr) == 1 ## usr has only one row
+  tmp$size_usr_ok  <- nrow(.usr) == 1 ## usr has only one row
   tmp$size_time_ok <- nrow(.time) >= 2 ## at least one ref and one monitoring
-  tmp$size_ad_ok <- nrow(.ad) >= 2 ## at least one lu transition for ref and monitoring
-  tmp$size_cs_ok <- nrow(.cs) >= 2 ## at least one initial and one final cstock of one pool
+  tmp$size_ad_ok   <- nrow(.ad) >= 2 ## at least one lu transition for ref and monitoring
+  tmp$size_cs_ok   <- nrow(.cs) >= 2 ## at least one initial and one final cstock of one pool
 
   out$size_ok <- all(
     out$size_usr_ok, out$size_time_ok, out$size_ad_ok, out$size_cs_ok
@@ -264,7 +271,7 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
   ## - Period matching exactly between tables
   tmp$match_period_ad_ok <- all(sort(unique(.ad$trans_period)) == sort(unique(.time$period_no)))
 
-  cs_period <- .cs |> dplyr::filter(c_period != "ALL")
+  cs_period <- .cs %>% dplyr::filter(.data$c_period != "ALL")
   if (nrow(cs_period) > 0) {
     tmp$match_period_cs_ok <- all(sort(unique(.cs$c_period)) == sort(unique(.time$period_no)))
   } else {
@@ -278,8 +285,8 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
   tmp$match_lu_ok <- all(lu_ad == lu_cs)
 
   ## - At least one ref and one monitoring period
-  nb_ref <- .time |> dplyr::filter(stringr::str_detect(period_type, pattern = "REF|REF[0-9]"))
-  nb_mon <- .time |> dplyr::filter(stringr::str_detect(period_type, pattern = "MON|MON[0-9]"))
+  nb_ref <- .time %>% dplyr::filter(stringr::str_detect(.data$period_type, pattern = "REF|REF[0-9]"))
+  nb_mon <- .time %>% dplyr::filter(stringr::str_detect(.data$period_type, pattern = "MON|MON[0-9]"))
 
   tmp$match_ref_ok <- nrow(nb_ref) > 0
   tmp$match_mon_ok <- nrow(nb_mon) > 0

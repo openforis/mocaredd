@@ -46,7 +46,7 @@ fct_combine_mcs_C <- function(.c_sub, .usr){
   # .usr    <- usr
   ## !!
 
-  .c_sub <- .c_sub |> filter(!(is.na(c_value) & is.na(c_pdf_a)))
+  .c_sub <- .c_sub |> dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
 
   c_pools <- unique(.c_sub$c_pool)
   c_check <- fct_check_pool(.c_lu = .c_sub, .c_unit = .usr$c_unit, .c_fraction = .usr$c_fraction)

@@ -134,7 +134,7 @@ mod_tool_UI <- function(id, i18n){
   ## ++ Value boxes ------------------------------------------------------------
   vb_time <- value_box(
     title = "Time periods",
-    value = textOutput(ns("vb_nb_time")),
+    value = htmlOutput(ns("vb_nb_time")),
     showcase = bsicons::bs_icon("calendar3", size = "40px"),
     theme = "primary",
     textOutput(ns("vb_nb_ref")),
@@ -190,7 +190,9 @@ mod_tool_UI <- function(id, i18n){
 
   card_lumatrix <- card(
     h5(i18n$t("Land use change matrix")),
-    gt::gt_output(ns("lumatrix"))
+    uiOutput(outputId = ns("check_slider_UI")),
+    verbatimTextOutput(ns("check_lumatrix"))
+    #gt::gt_output(ns("check_lumatrix"))
   )
 
   ## combine cards

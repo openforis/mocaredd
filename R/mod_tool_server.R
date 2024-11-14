@@ -68,9 +68,15 @@ mod_tool_server <- function(id, rv) {
       shinyjs::hide("check_vbs")
       shinyjs::hide("check_cards")
 
-      shinyWidgets::updateProgressBar(session = session, id = "prog_allchecks", value = 0, status = "primary")
+      ## Reset indicator that all checks are done
+      rv$checks$all_done <- NULL
 
       ## ++ Read data ----------------------------------------------------------
+      shinyWidgets::updateProgressBar(
+        title = "Loading data...",
+        session = session, id = "prog_allchecks", value = 0, status = "primary"
+        )
+
       rv$inputs$usr  <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "user_inputs", na = "NA")
       rv$inputs$time <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "time_periods", na = "NA")
       rv$inputs$ad   <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "AD_lu_transitions", na = "NA")
@@ -78,12 +84,11 @@ mod_tool_server <- function(id, rv) {
 
       Sys.sleep(0.1)
 
-      shinyWidgets::updateProgressBar(
-        title = "Data loaded...",
-        session = session, id = "prog_allchecks", value = 25
-        )
-
       ## ++ Run checks ---------------------------------------------------------
+      shinyWidgets::updateProgressBar(
+        title = "Checking input file...",
+        session = session, id = "prog_allchecks", value = 25
+      )
 
       ## Use fct_check_data2()
       rv$checks$check_data <- fct_check_data2(
@@ -96,41 +101,39 @@ mod_tool_server <- function(id, rv) {
 
       Sys.sleep(0.1)
 
-      shinyWidgets::updateProgressBar(
-        title = "Checks  completed...",
-        session = session, id = "prog_allchecks", value = 50
-        )
-
       ## ++ Calculations -------------------------------------------------------
-      Sys.sleep(0.1)
-
-      rv$checks$sim_trans_ar <- fct_combine_mcs_E(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .usr = rv$inputs$usr)
-      rv$checks$sim_FREL_ar  <- fct_combine_mcs_P(
-        .data = sim_trans,
-        .time = rv$inputs$time,
-        .period_type = "REF",
-        .ad_annual = rv$inputs$usr$ad_annual
+      shinyWidgets::updateProgressBar(
+        title = "Running Calculations...",
+        session = session, id = "prog_allchecks", value = 50
       )
 
-      shinyWidgets::updateProgressBar(
-        title = "Calculations done...",
-        session = session, id = "prog_allchecks", value = 75
-        )
+      # rv$checks$sim_trans_ar <- fct_combine_mcs_E(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .usr = rv$inputs$usr)
+      # rv$checks$sim_FREL_ar  <- fct_combine_mcs_P(
+      #   .data = rv$checks$sim_trans_ar,
+      #   .time = rv$inputs$time,
+      #   .period_type = "reference",
+      #   .ad_annual = rv$inputs$usr$ad_annual
+      # )
+
+      Sys.sleep(0.5)
 
       ## ++ Outputs ------------------------------------------------------------
       ## outputs are calculated once new data is uploaded so they are performed here
       ## instead of the render*({}) functions
+      shinyWidgets::updateProgressBar(
+        title = "Preparing outputs...",
+        session = session, id = "prog_allchecks", value = 50
+      )
 
       Sys.sleep(0.5)
 
+      ## ++ Finalize -----------------------------------------------------------
       shinyWidgets::updateProgressBar(
         title = "All steps completed...",
         session = session, id = "prog_allchecks", value = 100, status = "success"
-        )
+      )
 
-      ## ++ Finalize -----------------------------------------------------------
       rv$checks$all_done <- TRUE
-
 
     })
 
@@ -138,10 +141,10 @@ mod_tool_server <- function(id, rv) {
 
     ## ++ value box content ----------------------------------------------------
     ## +++ Time related ----
-    output$vb_nb_time <- renderText({
+    output$vb_nb_time <- renderUI({
       req(rv$checks$check_data$all_ok)
       if (rv$checks$check_data$all_ok) {
-        paste0(nrow(rv$inputs$time), " periods")
+        HTML(paste0(nrow(rv$inputs$time), "&nbsp;periods"))
       }
     })
 
@@ -166,6 +169,7 @@ mod_tool_server <- function(id, rv) {
     ## +++ CS related ----
 
     ## ++ Cards content --------------------------------------------------------
+    ## +++ Table of checks ----
     output$check_msg <- gt::render_gt({
       req(rv$checks$all_done)
 
@@ -204,26 +208,39 @@ mod_tool_server <- function(id, rv) {
 
     output$check_arithmetic_gg <- renderPlot({ })
 
-    output$check_lumatrix <- gt::render_gt({ })
+    ## +++ LU change matrix ----
+    output$check_slider_UI <- renderUI({
+      selectInput(
+        inputId = ns("check_slider_period"),
+        label = "Select a time period",
+        choices = rv$inputs$time$period_no
+          )
+    })
 
+    #output$check_lumatrix <- gt::render_gt({ })
 
+    # observe({
+    #   req(input$check_slider_period)
+    #   rv$checks$check_slider_period <- input$check_slider_period
+    # })
+
+    output$check_lumatrix <- renderText({ input$check_slider_period })
 
     ## + UI changes ============================================================
 
     ## Update show / hide panels
     observe({
       req(rv$checks$all_done)
-      shinyjs::show("check_show")
+
+      if (rv$checks$all_done) shinyjs::show("check_show") else shinyjs::hide("check_show")
+
     })
 
-
     observeEvent(input$btn_show_checks, {
-
       shinyjs::hide("check_progress")
       shinyjs::hide("check_show")
       shinyjs::show("check_vbs")
       shinyjs::show("check_cards")
-
     })
 
     # submod_check_server("tab_check", rv = rv)

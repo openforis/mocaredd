@@ -38,3 +38,9 @@
   --bs-border-radius-xxl: 2rem;
   --bs-border-radius-2xl: var(--bs-border-radius-xxl);
 }
+
+/* Rm container-name to avoid showcase moving to top in value box */
+.bslib-value-box {
+  container-name: none !important;
+}
+

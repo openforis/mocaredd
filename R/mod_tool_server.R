@@ -1,5 +1,8 @@
 #' Tool module server function
 #'
+#' @importFrom rlang .data
+#' @importFrom magrittr %>%
+#'
 #' @noRd
 mod_tool_server <- function(id, rv) {
 
@@ -99,7 +102,15 @@ mod_tool_server <- function(id, rv) {
         )
 
       ## ++ Calculations -------------------------------------------------------
-      Sys.sleep(0.5)
+      Sys.sleep(0.1)
+
+      rv$checks$sim_trans_ar <- fct_combine_mcs_E(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .usr = rv$inputs$usr)
+      rv$checks$sim_FREL_ar  <- fct_combine_mcs_P(
+        .data = sim_trans,
+        .time = rv$inputs$time,
+        .period_type = "REF",
+        .ad_annual = rv$inputs$usr$ad_annual
+      )
 
       shinyWidgets::updateProgressBar(
         title = "Calculations done...",
@@ -126,6 +137,7 @@ mod_tool_server <- function(id, rv) {
     ## + Outputs ===============================================================
 
     ## ++ value box content ----------------------------------------------------
+    ## +++ Time related ----
     output$vb_nb_time <- renderText({
       req(rv$checks$check_data$all_ok)
       if (rv$checks$check_data$all_ok) {
@@ -149,22 +161,9 @@ mod_tool_server <- function(id, rv) {
       }
     })
 
-    # vb_ad <- value_box(
-    #   title = "Land use transitions",
-    #   value = textOutput(ns("vb_nb_trans")),
-    #   showcase = bsicons::bs_icon("pin-map"),
-    #   theme = "secondary",
-    #   textOutput(ns("vb_nb_lu")),
-    #   textOutput(ns("vb_nb_mon"))
-    # )
-    #
-    # vb_cs <- value_box(
-    #   title = "Carbon stock",
-    #   value = textOutput(ns("vb_nb_pools")),
-    #   showcase = bsicons::bs_icon("arrow-repeat"),
-    #   theme = "warning",
-    #   #textOutput(ns("vb_dg_method")),
-    # )
+    ## +++ AD related ----
+
+    ## +++ CS related ----
 
     ## ++ Cards content --------------------------------------------------------
     output$check_msg <- gt::render_gt({

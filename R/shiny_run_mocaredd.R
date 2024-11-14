@@ -10,7 +10,8 @@
 #'
 #' @import shiny
 #' @import bslib
-#'
+#' @importFrom rlang .data
+#' @importFrom magrittr %>%
 #'
 #' @examples
 #' if (interactive()) {

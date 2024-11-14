@@ -40,6 +40,6 @@ app_checklist$cat_cpools_all <- c(app_checklist$cat_cpools, "RS", "DG_ratio")
 res <- fct_check_data2(.ad = ad, .cs = cs, .usr = usr, .time = time, .checklist = app_checklist)
 
 testthat::test_that("function doesn't work :P", {
-  testthat::expect_equal(res$checks$all_ok, TRUE)
+  testthat::expect_equal(res$all_ok, TRUE)
 })
 

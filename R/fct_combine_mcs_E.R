@@ -64,7 +64,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   mcs_trans <- purrr::map(vec_trans, function(x){
 
     ## !! FOR TESTING ONLY
-    # x = "T1_DG_ev_wet_closed"
+    # x = "T1_ev_wet_closed_dg_ev_wet_closed"
     ## !!
 
     ad_x <- .ad %>% dplyr::filter(.data$trans_id == x)
@@ -91,12 +91,16 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
 
     ## EF - Emissions Factors decomposed for each carbon pool
     ## Carbon stock of initial land use
-    c_i     <- .cs %>% dplyr::filter(.data$lu_id == ad_x$lu_initial_id)
+    c_i     <- .cs %>%
+      dplyr::filter(.data$lu_id == ad_x$lu_initial_id) %>%
+      dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
     SIMS_CI <- fct_combine_mcs_C(.c_sub = c_i, .usr = .usr)
 
     names(SIMS_CI) <- c("sim_no", paste0(setdiff(names(SIMS_CI), "sim_no"), "_i"))
 
-    c_f     <- .cs %>% dplyr::filter(.data$lu_id == ad_x$lu_final_id)
+    c_f     <- .cs %>%
+      dplyr::filter(.data$lu_id == ad_x$lu_final_id) %>%
+      dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
     SIMS_CF <- fct_combine_mcs_C(.c_sub = c_f, .usr = .usr)
 
     names(SIMS_CF) <- c("sim_no", paste0(setdiff(names(SIMS_CF), "sim_no"), "_f"))

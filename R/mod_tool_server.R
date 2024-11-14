@@ -22,23 +22,6 @@ mod_tool_server <- function(id, rv) {
       # rv$inputs$xlsx_tabs_ok <- all(rv$checklist$xlsx_tabs %in% rv$inputs$xlsx_tabs)
       rv$inputs$xlsx_tabs_ok <- all(rv$checklist$xlsx_tabs %in% readxl::excel_sheets(input$load_xlsx$datapath))
 
-    })
-
-    ## + Outputs ===============================================================
-
-    ## Download example 1 if needed
-    output$dl_template <- downloadHandler(
-      filename <- function() { "template1.xlsx" },
-      content  <- function(file) { file.copy(system.file("extdata/example1.xlsx", package = "mocaredd"), file) }
-    )
-
-    ## + UI changes ============================================================
-
-    ## Show hide data ok if tabs are correct
-
-    observe({
-      req(rv$inputs$xlsx_tabs_ok)
-
       if(rv$inputs$xlsx_tabs_ok) {
         shinyjs::hide("msg_no_data")
         shinyjs::show("msg_data_tabs_ok")
@@ -52,6 +35,50 @@ mod_tool_server <- function(id, rv) {
       }
 
     })
+
+    # observe({
+    #   req(input$load_xlsx$datapath)
+    #
+    #   rv$inputs$xlsx_path <- input$load_xlsx$datapath
+    #
+    #   # rv$inputs$xlsx_tabs <- readxl::excel_sheets(input$load_xlsx$datapath)
+    #   # rv$inputs$xlsx_tabs_ok <- all(rv$checklist$xlsx_tabs %in% rv$inputs$xlsx_tabs)
+    #   rv$inputs$xlsx_tabs_ok <- all(rv$checklist$xlsx_tabs %in% readxl::excel_sheets(input$load_xlsx$datapath))
+    #
+    # })
+
+    ## + Outputs ===============================================================
+
+    ## Download example 1 if needed
+    output$dl_template <- downloadHandler(
+      filename <- function() { "template1.xlsx" },
+      content  <- function(file) { file.copy(system.file("extdata/example1.xlsx", package = "mocaredd"), file) }
+    )
+
+    output$ctrl_input <- renderText({
+      rv$inputs$xlsx_tabs_ok
+    })
+
+    ## + UI changes ============================================================
+
+    ## Show hide data ok if tabs are correct
+
+    # observe({
+    #   req(rv$inputs$xlsx_tabs_ok)
+    #
+    #   if(rv$inputs$xlsx_tabs_ok) {
+    #     shinyjs::hide("msg_no_data")
+    #     shinyjs::show("msg_data_tabs_ok")
+    #     shinyjs::hide("msg_data_tabs_wrong")
+    #     shinyjs::enable("btn_run_checks")
+    #   } else {
+    #     shinyjs::hide("msg_no_data")
+    #     shinyjs::hide("msg_data_tabs_ok")
+    #     shinyjs::show("msg_data_tabs_wrong")
+    #     shinyjs::disable("btn_run_checks")
+    #   }
+    #
+    # })
 
     ##
     ## 2. Read data and run checks #############################################
@@ -90,11 +117,11 @@ mod_tool_server <- function(id, rv) {
       ## ++ Run checks ---------------------------------------------------------
 
       ## Use fct_check_data2()
-      rv$check$check_data_ok <- fct_check_data2(
-        .usr = rv$inputs$usr,
+      rv$checks$check_data <- fct_check_data2(
+        .usr =  rv$inputs$usr,
         .time = rv$inputs$time,
-        .ad = rv$inputs$ad,
-        .cs = rv$inputs$cs,
+        .ad =   rv$inputs$ad,
+        .cs =   rv$inputs$cs,
         .checklist = rv$checklist
         )
 
@@ -106,7 +133,9 @@ mod_tool_server <- function(id, rv) {
         )
 
       ## ++ Calculations -------------------------------------------------------
-      Sys.sleep(0.5)
+      Sys.sleep(0.1)
+
+      rv$checks$arithm <- fct_combine_mcs_C()
 
       shinyWidgets::updateProgressBar(
         title = "Calculations done...",
@@ -134,25 +163,25 @@ mod_tool_server <- function(id, rv) {
 
     ## ++ value box content ----------------------------------------------------
     output$vb_nb_time <- renderText({
-      req(rv$checks$all_ok)
-      if (rv$checks$all_ok) {
+      req(rv$checks$check_data$all_ok)
+      if (rv$checks$check_data$all_ok) {
         paste0(nrow(rv$inputs$time), " periods")
       }
     })
 
     output$vb_nb_ref <- renderText({
-      req(rv$checks$all_ok)
-      if (rv$checks$all_ok) {
+      req(rv$checks$check_data$all_ok)
+      if (rv$checks$check_data$all_ok) {
         time_sub <- rv$inputs$time |> dplyr::filter(stringr::str_detect(period_type, pattern = "REF"))
-        paste0(nrow(time_sub), " for reference.")
+        paste0(nrow(time_sub), " for reference")
       }
     })
 
     output$vb_nb_mon <- renderText({
-      req(rv$checks$all_ok)
-      if (rv$checks$all_ok) {
+      req(rv$checks$check_data$all_ok)
+      if (rv$checks$check_data$all_ok) {
         time_sub <- rv$inputs$time |> dplyr::filter(stringr::str_detect(period_type, pattern = "M"))
-        paste0(nrow(time_sub), " for monitoring.")
+        paste0(nrow(time_sub), " for monitoring")
       }
     })
 
@@ -174,18 +203,45 @@ mod_tool_server <- function(id, rv) {
     # )
 
     ## ++ Cards content --------------------------------------------------------
-    output$card_cols <- renderText({
-      req(rv$checks$cols_ok)
+    output$check_msg <- gt::render_gt({
+      req(rv$checks$all_done)
 
-      if (rv$checks$cols_ok) {
-        out <- paste0(bsicons::bs_icon("check-circle"), " all checks pass.")
-      } else {
-        out <- paste0(bsicons::bs_icon("x-circle"), "issues in tables: ", "PLACEHOLDER")
-      }
+      col_check <- c(
+        "column names",
+        "table sizes",
+        "column data types",
+        "category variables",
+        "unique IDs",
+        "matches between tables"
+        )
 
-    })
+      col_icon <- c()
+      if (rv$checks$check_data$cols_ok)      col_icon[1] <- bsicons::bs_icon("check-circle", class = "text-success") else col_icon[1] <- bsicons::bs_icon("x-circle", class = "text-danger")
+      if (rv$checks$check_data$size_ok)      col_icon[2] <- bsicons::bs_icon("check-circle", class = "text-success") else col_icon[2] <- bsicons::bs_icon("x-circle", class = "text-danger")
+      if (rv$checks$check_data$datatypes_ok) col_icon[3] <- bsicons::bs_icon("check-circle", class = "text-success") else col_icon[3] <- bsicons::bs_icon("x-circle", class = "text-danger")
+      if (rv$checks$check_data$cats_ok)      col_icon[4] <- bsicons::bs_icon("check-circle", class = "text-success") else col_icon[4] <- bsicons::bs_icon("x-circle", class = "text-danger")
+      if (rv$checks$check_data$ids_ok)       col_icon[5] <- bsicons::bs_icon("check-circle", class = "text-success") else col_icon[5] <- bsicons::bs_icon("x-circle", class = "text-danger")
+      if (rv$checks$check_data$matches_ok)   col_icon[6] <- bsicons::bs_icon("check-circle", class = "text-success") else col_icon[6] <- bsicons::bs_icon("x-circle", class = "text-danger")
 
+      col_pb <- c()
+      ## Error msgs
+      if (rv$checks$check_data$cols_ok)      col_pb[1] <- "" else col_pb[1] <- rv$checks$check_data$pbs$cols_pb
+      if (rv$checks$check_data$size_ok)      col_pb[2] <- "" else col_pb[2] <- rv$checks$check_data$pbs$size_pb
+      if (rv$checks$check_data$datatypes_ok) col_pb[3] <- "" else col_pb[3] <- rv$checks$check_data$pbs$datatypes_pb
+      if (rv$checks$check_data$cats_ok)      col_pb[4] <- "" else col_pb[4] <- rv$checks$check_data$pbs$cats_pb
+      if (rv$checks$check_data$ids_ok)       col_pb[5] <- "" else col_pb[5] <- rv$checks$check_data$pbs$ids_pb
+      if (rv$checks$check_data$matches_ok)   col_pb[6] <- "" else col_pb[6] <- rv$checks$check_data$pbs$matches_pb
 
+      data.frame(check = col_check, status = col_icon, problems = col_pb) |>
+        gt::gt() |>
+        gt::fmt_markdown(columns = "status") |>
+        gt::cols_label_with(columns = gt::everything(), fn = stringr::str_to_sentence)
+
+      })
+
+    output$check_arithmetic_gg <- renderPlot({ })
+
+    output$check_lumatrix <- gt::render_gt({ })
 
 
 

@@ -70,7 +70,7 @@
 # # .cs <- cs
 # # .usr <- usr
 # # .time <- time
-# # .c_lu <- cs |> filter(lu_id == "dg_ev_wet_closed")
+# # .c_lu <- cs |> dplyr::filter(lu_id == "dg_ev_wet_closed")
 # ## !!
 #
 # ## test fct_check_pool() and fct_make_formula()
@@ -89,7 +89,7 @@
 # c_sims$c_value
 #
 # ## test fct_combine_mcs_C()
-# res <- fct_combine_mcs_C(.n_iter = 10000, .c_sub = c_lu, .c_unit = "C", .c_fraction = NA)
+# res <- fct_combine_mcs_C(.usr = usr, .c_sub = .c_lu)
 #
 # check_cstock <- res |>
 #   mutate(
@@ -100,7 +100,7 @@
 # message("CSTOCK sims working: ", all(check_cstock$flag_cstock))
 #
 # ## Test fct_combine_mcs_E()
-# sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .init = init, .usr = usr)
+# sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .usr = usr)
 #
 # ## Test fct_calc_res()
 # res_trans <- fct_calc_res(.data = sim_trans, .id = trans_id, .sim = E_sim, .ci_alpha = ci_alpha)
@@ -128,7 +128,7 @@
 # ## test whole calculation chain ######
 # ##
 #
-# sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .init = init, .usr = usr)
+# sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .usr = usr)
 #
 # ## FREL
 # sim_FREL <- fct_combine_mcs_P(
@@ -207,7 +207,7 @@
 #   )
 #
 # gg_ER <- fct_histogram(.dat = sim_ER, .res = res_ER, .id = period_type, .value = ER_sim, .value_type = "ER", period_type == "M1")
-#
+
 #
 #
 #

@@ -41,7 +41,8 @@ mod_tool_UI <- function(id, i18n){
         inputId = ns("load_xlsx"),
         accept = ".xlsx",
         label = NULL
-      )
+      ),
+      shiny::verbatimTextOutput(outputId = ns("ctrl_input"))
     ),
     div(
       id = ns("msg_no_data"),
@@ -145,7 +146,8 @@ mod_tool_UI <- function(id, i18n){
     value = textOutput(ns("vb_nb_trans")),
     showcase = bsicons::bs_icon("pin-map", size = "40px"),
     theme = "secondary",
-    textOutput(ns("vb_nb_lu"))
+    textOutput(ns("vb_nb_lu")),
+    textOutput(ns("vb_nb_redd"))
   )
 
   vb_cs <- value_box(
@@ -153,14 +155,15 @@ mod_tool_UI <- function(id, i18n){
     value = textOutput(ns("vb_nb_pools")),
     showcase = bsicons::bs_icon("arrow-repeat", size = "48px"),
     theme = "warning",
-    #textOutput(ns("vb_dg_method")),
+    textOutput(ns("vb_c_level")),
+    textOutput(ns("vb_dg_method")),
   )
 
   ## Combine value boxes
   div_value_boxes <- shinyjs::hidden(div(
     id = ns("check_vbs"),
     layout_column_wrap(
-      width = "200px",
+      #width = "200px",
       fill = FALSE,
       vb_time, vb_ad, vb_cs
     )
@@ -175,43 +178,28 @@ mod_tool_UI <- function(id, i18n){
   # rv$checks$ids_ok,
   # rv$checks$matches_ok
 
-  card_cols <- card(
-    h4("Check all column names are valid"),
-      verbatimTextOutput(ns("card_cols"))
+  card_check_msg <- card(
+    h5(i18n$t("Check all column names are valid")),
+      gt::gt_output(ns("check_msg"))
   )
 
-  card_size <- card(
-    h4("Check all column names are valid"),
-    textOutput(ns("card_size"), container = p)
+  card_arithmetic_gg <- card(
+    h5(i18n$t("Arithmetic mean emission reductions per period (tCO2e/y)")),
+    plotOutput(ns("check_arithmetic_gg"))
   )
 
-  card_datatypes <- card(
-    h4("Check all column names are valid"),
-    textOutput(ns("card_datatypes"), container = p)
-  )
-
-  card_cats <- card(
-    h4("Check all categories are valid"),
-    textOutput(ns("card_cats"), container = p)
-  )
-
-  card_ids <- card(
-    h4("Check all categories are valid"),
-    textOutput(ns("card_ids"), container = p)
-  )
-
-  card_matches <- card(
-    h4("Land use categories match"),
-    textOutput(ns("card_ids"), container = p)
+  card_lumatrix <- card(
+    h5(i18n$t("Land use change matrix")),
+    gt::gt_output(ns("lumatrix"))
   )
 
   ## combine cards
   div_cards <- shinyjs::hidden(div(
     id = ns("check_cards"),
-    # layout_column_wrap(
-    #   width = "200px",
-      card_cols, card_size, card_datatypes, card_cats, card_ids, card_matches
-    # )
+    layout_columns(
+      card_check_msg, card_arithmetic_gg
+    ),
+    card_lumatrix
   ))
 
 
@@ -255,6 +243,7 @@ mod_tool_UI <- function(id, i18n){
         ## progress bar
         div_check_progress,
         div_btn_show_check,
+        ## Checks
         div_value_boxes,
         br(),
         div_cards

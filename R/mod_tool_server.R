@@ -13,13 +13,10 @@ mod_tool_server <- function(id, rv) {
 
     ## + Events ================================================================
 
-    ## Read the XLSX files
+    ## ++ Check uploaded file columns ------------------------------------------
     observeEvent(input$load_xlsx, {
 
       rv$inputs$xlsx_path <- input$load_xlsx$datapath
-
-      # rv$inputs$xlsx_tabs <- readxl::excel_sheets(input$load_xlsx$datapath)
-      # rv$inputs$xlsx_tabs_ok <- all(rv$checklist$xlsx_tabs %in% rv$inputs$xlsx_tabs)
       rv$inputs$xlsx_tabs_ok <- all(rv$checklist$xlsx_tabs %in% readxl::excel_sheets(input$load_xlsx$datapath))
 
       if(rv$inputs$xlsx_tabs_ok) {
@@ -36,17 +33,6 @@ mod_tool_server <- function(id, rv) {
 
     })
 
-    # observe({
-    #   req(input$load_xlsx$datapath)
-    #
-    #   rv$inputs$xlsx_path <- input$load_xlsx$datapath
-    #
-    #   # rv$inputs$xlsx_tabs <- readxl::excel_sheets(input$load_xlsx$datapath)
-    #   # rv$inputs$xlsx_tabs_ok <- all(rv$checklist$xlsx_tabs %in% rv$inputs$xlsx_tabs)
-    #   rv$inputs$xlsx_tabs_ok <- all(rv$checklist$xlsx_tabs %in% readxl::excel_sheets(input$load_xlsx$datapath))
-    #
-    # })
-
     ## + Outputs ===============================================================
 
     ## Download example 1 if needed
@@ -59,26 +45,6 @@ mod_tool_server <- function(id, rv) {
       rv$inputs$xlsx_tabs_ok
     })
 
-    ## + UI changes ============================================================
-
-    ## Show hide data ok if tabs are correct
-
-    # observe({
-    #   req(rv$inputs$xlsx_tabs_ok)
-    #
-    #   if(rv$inputs$xlsx_tabs_ok) {
-    #     shinyjs::hide("msg_no_data")
-    #     shinyjs::show("msg_data_tabs_ok")
-    #     shinyjs::hide("msg_data_tabs_wrong")
-    #     shinyjs::enable("btn_run_checks")
-    #   } else {
-    #     shinyjs::hide("msg_no_data")
-    #     shinyjs::hide("msg_data_tabs_ok")
-    #     shinyjs::show("msg_data_tabs_wrong")
-    #     shinyjs::disable("btn_run_checks")
-    #   }
-    #
-    # })
 
     ##
     ## 2. Read data and run checks #############################################
@@ -133,9 +99,7 @@ mod_tool_server <- function(id, rv) {
         )
 
       ## ++ Calculations -------------------------------------------------------
-      Sys.sleep(0.1)
-
-      rv$checks$arithm <- fct_combine_mcs_C()
+      Sys.sleep(0.5)
 
       shinyWidgets::updateProgressBar(
         title = "Calculations done...",

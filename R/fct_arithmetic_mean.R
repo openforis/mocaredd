@@ -53,49 +53,63 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   ## START LOOP
   vec_trans <- unique(.ad$trans_id)
   ## For each transition, calculate simulations for each element of the calculation chain
-  mcs_trans <- purrr::map(vec_trans, function(x){
+  arithm_trans <- purrr::map(vec_trans, function(x){
 
     ## !! FOR TESTING ONLY
     # x = "T1_ev_wet_closed_dg_ev_wet_closed"
     ## !!
 
-    ad_x <- .ad %>% dplyr::filter(.data$trans_id == x)
+    ad_x <- .ad %>%
+      dplyr::filter(.data$trans_id == x) %>%
+      dplyr::select("redd_activity", "trans_id", "trans_period", "lu_initial_id", "lu_final_id", AD = "trans_area")
 
     redd_x <- ad_x$redd_activity
-
 
     ## EF - Emissions Factors decomposed for each carbon pool
     ## Carbon stock of initial land use
     c_i <- .cs %>%
       dplyr::filter(.data$lu_id == ad_x$lu_initial_id) %>%
       dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
-    # SIMS_CI <- fct_combine_mcs_C(.c_sub = c_i, .usr = .usr)
 
     c_pools <- unique(c_i$c_pool)
     c_check <- fct_check_pool(.c_lu = c_i, .c_unit = .usr$c_unit, .c_fraction = .usr$c_fraction)
     c_form  <- fct_make_formula(.c_check = c_check, .c_unit = .usr$c_unit)
 
-    c_i_calc <- c_i  %>%
-      tidyr::pivot_wider(id_cols = "lu_id", names_from = "c_pool", values_from = "c_value") %>%
+    c_i_wide <- c_i  %>%
+      tidyr::pivot_wider(id_cols = "lu_id", names_from = "c_pool", values_from = "c_value")
+
+    c_i_calc <- c_i_wide %>%
       dplyr::mutate(
         C_form = c_form,
-        C_all = eval(parse(text=c_form), c_i_calc),
+        C_all = eval(parse(text=c_form), c_i_wide),
       )
 
-    names(SIMS_CI) <- c("sim_no", paste0(setdiff(names(SIMS_CI), "sim_no"), "_i"))
+    names(c_i_calc) <- paste0(names(c_i_calc), "_i")
 
     c_f     <- .cs %>%
       dplyr::filter(.data$lu_id == ad_x$lu_final_id) %>%
       dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
-    SIMS_CF <- fct_combine_mcs_C(.c_sub = c_f, .usr = .usr)
 
-    names(SIMS_CF) <- c("sim_no", paste0(setdiff(names(SIMS_CF), "sim_no"), "_f"))
+    c_pools <- unique(c_f$c_pool)
+    c_check <- fct_check_pool(.c_lu = c_f, .c_unit = .usr$c_unit, .c_fraction = .usr$c_fraction)
+    c_form  <- fct_make_formula(.c_check = c_check, .c_unit = .usr$c_unit)
 
-    combi <- SIMS_AD |>
-      dplyr::left_join(SIMS_CI, by = "sim_no") |>
-      dplyr::left_join(SIMS_CF, by = "sim_no")
+    c_f_wide <- c_f  %>%
+      tidyr::pivot_wider(id_cols = "lu_id", names_from = "c_pool", values_from = "c_value")
 
-    ## If degradation is ratio, using .usr$dg_pool to calculate C_all_f
+    c_f_calc <- c_f_wide %>%
+      dplyr::mutate(
+        C_form = c_form,
+        C_all = eval(parse(text=c_form), c_f_wide),
+      )
+
+    names(c_f_calc) <- paste0(names(c_f_calc), "_f")
+
+    combi <- ad_x |>
+      dplyr::left_join(c_i_calc, by = c("lu_initial_id" = "lu_id_i")) |>
+      dplyr::left_join(c_f_calc, by = c("lu_final_id" = "lu_id_f"))
+
+    ## If degradation is ratio, using .usr$dg_pool to re-calculate C_all_f
     if (redd_x == "DG" & length(.usr$dg_pool) > 0) {
 
       dg_pool <- stringr::str_split(.usr$dg_pool, pattern = ",") |> purrr::map(stringr::str_trim) |> unlist()
@@ -124,15 +138,15 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   ## END LOOP
 
   ## Re-arrange columns and add EF and E (emissions at transition level)
-  mcs_trans2 <- mcs_trans %>%
+  arithm_trans2 <- arithm_trans %>%
     dplyr::mutate(
       EF = .data$C_all_i - .data$C_all_f,
       E_sim  = .data$AD * .data$EF
     ) %>%
     dplyr::select(
-      .data$sim_no, .data$redd_activity, time_period = .data$trans_period, .data$trans_id,
-      .data$AD, .data$EF, .data$E_sim, .data$C_form_i, .data$C_all_i, .data$C_form_f,
-      .data$C_all_f, dplyr::everything()
+      "redd_activity", time_period = "trans_period", "trans_id",
+      "AD", "EF", "E_sim", "C_form_i", "C_all_i", "C_form_f",
+      "C_all_f", dplyr::everything()
     )
 
 }

@@ -44,6 +44,43 @@ mod_tool_UI <- function(id, i18n){
       ),
       shiny::verbatimTextOutput(outputId = ns("ctrl_input"))
     ),
+    # div(
+    #   id = ns("msg_no_data"),
+    #   "No data uploaded.",
+    #   class = "text-warning",
+    #   style = "font-style: italic;"
+    # ),
+    # shinyjs::hidden(div(
+    #   id = ns("msg_data_tabs_ok"),
+    #   "Data uploaded with correct tabs.",
+    #   class = "text-success",
+    #   style = "font-style: italic;"
+    # )),
+    # shinyjs::hidden(div(
+    #   id = ns("msg_data_tabs_wrong"),
+    #   "Data uploaded with incorrect tabs.",
+    #   class = "text-danger",
+    #   style = "font-style: italic;"
+    # )),
+    # div(
+    #   shinyjs::disabled(
+    #     actionButton(
+    #       inputId = ns("btn_run_checks"),
+    #       label = "Run checks"
+    #    )
+    #   ),
+    #   style = "margin-top: 1rem;"
+    # )
+
+  )
+
+  ## ++ Accordion 2: Run checks ------------------------------------------------
+  ac_check <- accordion_panel(
+    title = i18n$t("Run data checks"),
+    icon = bsicons::bs_icon("2-circle"),
+    value = ns("ac_check"),
+
+    ## Content
     div(
       id = ns("msg_no_data"),
       "No data uploaded.",
@@ -67,20 +104,10 @@ mod_tool_UI <- function(id, i18n){
         actionButton(
           inputId = ns("btn_run_checks"),
           label = "Run checks"
-       )
+        )
       ),
       style = "margin-top: 1rem;"
     )
-  )
-
-  ## ++ Accordion 2: Run checks ------------------------------------------------
-  ac_check <- accordion_panel(
-    title = i18n$t("Run data checks"),
-    icon = bsicons::bs_icon("2-circle"),
-    value = ns("ac_check"),
-
-    ## Content
-    h4("TEXT")
 
   )
 
@@ -91,7 +118,33 @@ mod_tool_UI <- function(id, i18n){
     value = ns("ac_mcs"),
 
     ## Content
-    h4("TEXT")
+    div(
+      id = ns("msg_no_check"),
+      "Run checks first.",
+      class = "text-warning",
+      style = "font-style: italic;"
+    ),
+    shinyjs::hidden(div(
+      id = ns("msg_checks_ok"),
+      "All checks passed.",
+      class = "text-success",
+      style = "font-style: italic;"
+    )),
+    shinyjs::hidden(div(
+      id = ns("msg_checks_wrong"),
+      "Checks not passed.",
+      class = "text-danger",
+      style = "font-style: italic;"
+    )),
+    div(
+      shinyjs::disabled(
+        actionButton(
+          inputId = ns("btn_run_mcs"),
+          label = "Run simulations"
+        )
+      ),
+      style = "margin-top: 1rem;"
+    )
 
   )
 
@@ -223,6 +276,8 @@ mod_tool_UI <- function(id, i18n){
       sidebar = sidebar(
         width = "300px",
         accordion(
+          open = TRUE,
+          multiple = TRUE,
           ac_load,
           ac_check,
           ac_mcs,

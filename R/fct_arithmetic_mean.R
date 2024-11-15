@@ -1,4 +1,4 @@
-#' Generate and propagate Monte Carlo Simulations based on a template input file.
+#' Calculate emissions based on arithmetic means
 #'
 #' @description TBD
 #'
@@ -9,7 +9,7 @@
 #'             of iterations of the MCS, carbon fraction if needed and if truncated PDFs
 #'             should be used when necessary.
 #'
-#' @return A data frame with Monte Carlo simulations of CO2 emissions for each land use
+#' @return A data frame with arithmetic mean of CO2 emissions for each land use
 #'         transition, REDD+ activity or emission reductions level.
 #'
 #' @importFrom rlang .data
@@ -38,25 +38,17 @@
 #'
 #' cs_clean <- cs |> filter(!is.na(c_value) | !is.na(c_pdf_a))
 #'
-#' res <- fct_combine_mcs_E(.ad = ad, .cs = cs_clean, .usr = usr)
-#' hist(res$E_sim)
-#' round(median(res$E_sim))
+#' res <- fct_arithmetic_mean(.ad = ad, .cs = cs_clean, .usr = usr)
+#' head(res)
 #'
 #' @export
 fct_combine_mcs_E <- function(.ad, .cs, .usr){
 
-  ## CHECK THE INPUT DATA CONFORMITY - done outside function
-  # flag_all <- fct_check_data(.ad = ad, .cs = cs, .init = init)
-
-  ## Seed for random simulation
-  if (!is.na(.usr$ran_seed)){
-    set.seed(.usr$ran_seed)
-    message("Random simulations with seed: ", .usr$ran_seed)
-  } else {
-    app_ran_seed <- sample(1:100, 1)
-    set.seed(app_ran_seed)
-    message("Seed for random simulations: ", app_ran_seed)
-  }
+  ## !!! FOR TESTING ONLY
+  # .ad = ad
+  # .cs = cs
+  # .usr = usr
+  ## !!!
 
   ## START LOOP
   vec_trans <- unique(.ad$trans_id)
@@ -71,30 +63,24 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
 
     redd_x <- ad_x$redd_activity
 
-    ## AD - Activity Data
-    SIMS <- fct_make_mcs(
-      .n_iter = .usr$n_iter,
-      .pdf    = ad_x$trans_pdf,
-      .mean   = ad_x$trans_area,
-      .se     = ad_x$trans_se,
-      .params = c(ad_x$c_pdf_a, ad_x$c_pdf_b, ad_x$c_pdf_c),
-      .trunc  = .usr$trunc_pdf
-      )
-
-    SIMS_AD <- dplyr::tibble(
-      sim_no = 1:.usr$n_iter,
-      redd_activity = ad_x$redd_activity,
-      trans_id = ad_x$trans_id,
-      trans_period = ad_x$trans_period,
-      AD = SIMS
-      )
 
     ## EF - Emissions Factors decomposed for each carbon pool
     ## Carbon stock of initial land use
-    c_i     <- .cs %>%
+    c_i <- .cs %>%
       dplyr::filter(.data$lu_id == ad_x$lu_initial_id) %>%
       dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
-    SIMS_CI <- fct_combine_mcs_C(.c_sub = c_i, .usr = .usr)
+    # SIMS_CI <- fct_combine_mcs_C(.c_sub = c_i, .usr = .usr)
+
+    c_pools <- unique(c_i$c_pool)
+    c_check <- fct_check_pool(.c_lu = c_i, .c_unit = .usr$c_unit, .c_fraction = .usr$c_fraction)
+    c_form  <- fct_make_formula(.c_check = c_check, .c_unit = .usr$c_unit)
+
+    c_i_calc <- c_i  %>%
+      tidyr::pivot_wider(id_cols = "lu_id", names_from = "c_pool", values_from = "c_value") %>%
+      dplyr::mutate(
+        C_form = c_form,
+        C_all = eval(parse(text=c_form), c_i_calc),
+      )
 
     names(SIMS_CI) <- c("sim_no", paste0(setdiff(names(SIMS_CI), "sim_no"), "_i"))
 

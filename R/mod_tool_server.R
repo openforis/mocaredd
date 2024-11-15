@@ -16,7 +16,23 @@ mod_tool_server <- function(id, rv) {
 
     ## + Events ================================================================
 
-    ## ++ Check uploaded file columns ------------------------------------------
+    ## + Outputs ===============================================================
+
+    ## Download example 1 if needed
+    output$dl_template <- downloadHandler(
+      filename <- function() { "template1.xlsx" },
+      content  <- function(file) { file.copy(system.file("extdata/example1.xlsx", package = "mocaredd"), file) }
+    )
+
+
+
+    ##
+    ## 2. Read data and run checks #############################################
+    ##
+
+    ## + Check events ==========================================================
+
+    ## ++ 2.1. Check uploaded file columns -------------------------------------
     observeEvent(input$load_xlsx, {
 
       rv$inputs$xlsx_path <- input$load_xlsx$datapath
@@ -36,26 +52,7 @@ mod_tool_server <- function(id, rv) {
 
     })
 
-    ## + Outputs ===============================================================
-
-    ## Download example 1 if needed
-    output$dl_template <- downloadHandler(
-      filename <- function() { "template1.xlsx" },
-      content  <- function(file) { file.copy(system.file("extdata/example1.xlsx", package = "mocaredd"), file) }
-    )
-
-    output$ctrl_input <- renderText({
-      rv$inputs$xlsx_tabs_ok
-    })
-
-
-    ##
-    ## 2. Read data and run checks #############################################
-    ##
-
-    ## + Events ================================================================
-
-    ## Save Run checks to reactiveValues()
+    ## ++ 2.2 Read data and run checks -----------------------------------------
     observeEvent(input$btn_run_checks, {
 
       ## For moving to sub-module?
@@ -75,7 +72,7 @@ mod_tool_server <- function(id, rv) {
       shinyWidgets::updateProgressBar(
         title = "Loading data...",
         session = session, id = "prog_allchecks", value = 0, status = "primary"
-        )
+      )
 
       rv$inputs$usr  <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "user_inputs", na = "NA")
       rv$inputs$time <- readxl::read_xlsx(rv$inputs$xlsx_path, sheet = "time_periods", na = "NA")
@@ -97,7 +94,7 @@ mod_tool_server <- function(id, rv) {
         .ad =   rv$inputs$ad,
         .cs =   rv$inputs$cs,
         .checklist = rv$checklist
-        )
+      )
 
       Sys.sleep(0.1)
 
@@ -120,6 +117,8 @@ mod_tool_server <- function(id, rv) {
       ## ++ Outputs ------------------------------------------------------------
       ## outputs are calculated once new data is uploaded so they are performed here
       ## instead of the render*({}) functions
+
+      ## !!! NOT IMPLEMENTED - see outputs section
       shinyWidgets::updateProgressBar(
         title = "Preparing outputs...",
         session = session, id = "prog_allchecks", value = 50
@@ -137,10 +136,15 @@ mod_tool_server <- function(id, rv) {
 
     })
 
-    ## + Outputs ===============================================================
+    ## + Check Outputs =========================================================
+
+    ## !!! TMP: Show xlsx_tabs_ok
+    output$ctrl_input <- renderText({
+      rv$inputs$xlsx_tabs_ok
+    })
 
     ## ++ value box content ----------------------------------------------------
-    ## +++ Time related ----
+    ## +++ Time VB ----
     output$vb_nb_time <- renderUI({
       req(rv$checks$check_data$all_ok)
       if (rv$checks$check_data$all_ok) {
@@ -164,9 +168,9 @@ mod_tool_server <- function(id, rv) {
       }
     })
 
-    ## +++ AD related ----
+    ## +++ AD VB ----
 
-    ## +++ CS related ----
+    ## +++ CS VB ----
 
     ## ++ Cards content --------------------------------------------------------
     ## +++ Table of checks ----
@@ -180,7 +184,7 @@ mod_tool_server <- function(id, rv) {
         "category variables",
         "unique IDs",
         "matches between tables"
-        )
+      )
 
       col_icon <- c()
       if (rv$checks$check_data$cols_ok)      col_icon[1] <- bsicons::bs_icon("check-circle", class = "text-success") else col_icon[1] <- bsicons::bs_icon("x-circle", class = "text-danger")
@@ -204,8 +208,9 @@ mod_tool_server <- function(id, rv) {
         gt::fmt_markdown(columns = "status") |>
         gt::cols_label_with(columns = gt::everything(), fn = stringr::str_to_sentence)
 
-      })
+    })
 
+    ## +++ Graph of ERs ----
     output$check_arithmetic_gg <- renderPlot({ })
 
     ## +++ LU change matrix ----
@@ -214,7 +219,7 @@ mod_tool_server <- function(id, rv) {
         inputId = ns("check_slider_period"),
         label = "Select a time period",
         choices = rv$inputs$time$period_no
-          )
+      )
     })
 
     #output$check_lumatrix <- gt::render_gt({ })

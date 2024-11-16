@@ -64,13 +64,21 @@ fct_combine_mcs_P <- function(
     .ad_annual
 ){
 
-  ## aggregate redd+ periods for the reference level
-  time_ref   <- .time %>% dplyr::filter(.data$period_type == .period_type)
+  ## !!! FOR TESTING ONLY
+  # .data = sim_trans
+  # .time = time_clean
+  # .period_type = "REF"
+  # .ad$annual = usr$ad_annual
+  ## !!!
+
+
+  ## aggregate redd+ periods for REF or MON
+  time_ref   <- .time %>% dplyr::filter(stringr::str_detect(.data$period_type, pattern = .period_type))
   nb_ref     <- length(unique(time_ref$period_no))
   length_ref <- sum(time_ref$nb_years)
 
 
-if (.ad_annual) {
+  if (.ad_annual) {
 
     ## Weighted average of the sims from the reference sub-periods
     ## Get the volume per period then divide by total length of reference period

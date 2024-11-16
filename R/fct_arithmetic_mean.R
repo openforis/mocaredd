@@ -8,6 +8,7 @@
 #' @param .usr User inputs' table for the shiny app (user_inputs). Contains the number
 #'             of iterations of the MCS, carbon fraction if needed and if truncated PDFs
 #'             should be used when necessary.
+#' @param .time the 'time' table from the tool input file (see template)
 #'
 #' @return A data frame with arithmetic mean of CO2 emissions for each land use
 #'         transition, REDD+ activity or emission reductions level.
@@ -36,13 +37,22 @@
 #'   na = "NA"
 #'   )
 #'
-#' cs_clean <- cs |> filter(!is.na(c_value) | !is.na(c_pdf_a))
+#' time <- read_xlsx(
+#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
+#'   sheet = "time_periods",
+#'   na = "NA"
+#'   )
 #'
-#' res <- fct_arithmetic_mean(.ad = ad, .cs = cs_clean, .usr = usr)
-#' head(res)
+#' #ad_clean <- ad |> dplyr::filter(!is.na(trans_area) | !is.na(trans_pdf_a))
+#' #cs_clean <- cs |> dplyr::filter(!is.na(c_value) | !is.na(c_pdf_a))
+#' time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
+#'
+#' res <- fct_arithmetic_mean(.ad = ad, .cs = cs, .usr = usr, .time = time_clean)
+#' head(res$emissions)
+#' res$gg_emissions
 #'
 #' @export
-fct_combine_mcs_E <- function(.ad, .cs, .usr){
+fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
 
   ## !!! FOR TESTING ONLY
   # .ad = ad
@@ -50,106 +60,71 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   # .usr = usr
   ## !!!
 
-  ## START LOOP
-  vec_trans <- unique(.ad$trans_id)
-  ## For each transition, calculate simulations for each element of the calculation chain
-  arithm_trans <- purrr::map(vec_trans, function(x){
+  usr_ari <- .usr |> dplyr::mutate(n_iter = 1)
+  ad_ari  <- .ad  |> dplyr::mutate(trans_se = 0, trans_pdf = "normal")
+  cs_ari  <- .cs  |> dplyr::mutate(c_se = 0, c_pdf = "normal")
 
-    ## !! FOR TESTING ONLY
-    # x = "T1_ev_wet_closed_dg_ev_wet_closed"
-    ## !!
+  .time <- .time |> dplyr::mutate(nb_years = year_end - year_start + 1)
 
-    ad_x <- .ad %>%
-      dplyr::filter(.data$trans_id == x) %>%
-      dplyr::select("redd_activity", "trans_id", "trans_period", "lu_initial_id", "lu_final_id", AD = "trans_area")
+  ari_trans <- fct_combine_mcs_E(.ad = ad_ari, .cs = cs_ari, .usr = usr_ari)
 
-    redd_x <- ad_x$redd_activity
+  ari_REF  <- fct_combine_mcs_P(
+    .data = ari_trans,
+    .time = .time,
+    .period_type = "REF",
+    .ad_annual = usr_ari$ad_annual
+  )
 
-    ## EF - Emissions Factors decomposed for each carbon pool
-    ## Carbon stock of initial land use
-    c_i <- .cs %>%
-      dplyr::filter(.data$lu_id == ad_x$lu_initial_id) %>%
-      dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
+  ari_MON  <- fct_combine_mcs_P(
+    .data = ari_trans,
+    .time = .time,
+    .period_type = "MON",
+    .ad_annual = usr_ari$ad_annual
+  )
 
-    c_pools <- unique(c_i$c_pool)
-    c_check <- fct_check_pool(.c_lu = c_i, .c_unit = .usr$c_unit, .c_fraction = .usr$c_fraction)
-    c_form  <- fct_make_formula(.c_check = c_check, .c_unit = .usr$c_unit)
+  out_combi <- .time |>
+    dplyr::group_by(.data$period_type) |>
+    dplyr::summarize(
+      year_start = min(.data$year_start),
+      year_end   = max(.data$year_end)
+    ) |>
+    dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1) |>
+    dplyr::arrange(.data$year_start) |>
+    dplyr::left_join(dplyr::bind_rows(ari_REF, ari_MON), by = "period_type")
 
-    c_i_wide <- c_i  %>%
-      tidyr::pivot_wider(id_cols = "lu_id", names_from = "c_pool", values_from = "c_value")
+  mon <- out_combi |> dplyr::filter(stringr::str_detect(.data$period_type, pattern = "MON"))
 
-    c_i_calc <- c_i_wide %>%
-      dplyr::mutate(
-        C_form = c_form,
-        C_all = eval(parse(text=c_form), c_i_wide),
-      )
+  years_mon <- min(mon$year_start):max(mon$year_end)
 
-    names(c_i_calc) <- paste0(names(c_i_calc), "_i")
+  ggdat <- purrr::map(years_mon, function(x){
 
-    c_f     <- .cs %>%
-      dplyr::filter(.data$lu_id == ad_x$lu_final_id) %>%
-      dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
+    REF <- out_combi |> dplyr::filter(period_type == "REF") |> dplyr::pull("E_sim")
+    REF  <- round(REF / 10^6, 2)
+    E <- mon |>
+      dplyr::filter(.data$year_start <= x, .data$year_end >= x) |>
+      dplyr::pull("E_sim")
+    E <- round(E / 10^6, 2)
 
-    c_pools <- unique(c_f$c_pool)
-    c_check <- fct_check_pool(.c_lu = c_f, .c_unit = .usr$c_unit, .c_fraction = .usr$c_fraction)
-    c_form  <- fct_make_formula(.c_check = c_check, .c_unit = .usr$c_unit)
-
-    c_f_wide <- c_f  %>%
-      tidyr::pivot_wider(id_cols = "lu_id", names_from = "c_pool", values_from = "c_value")
-
-    c_f_calc <- c_f_wide %>%
-      dplyr::mutate(
-        C_form = c_form,
-        C_all = eval(parse(text=c_form), c_f_wide),
-      )
-
-    names(c_f_calc) <- paste0(names(c_f_calc), "_f")
-
-    combi <- ad_x |>
-      dplyr::left_join(c_i_calc, by = c("lu_initial_id" = "lu_id_i")) |>
-      dplyr::left_join(c_f_calc, by = c("lu_final_id" = "lu_id_f"))
-
-    ## If degradation is ratio, using .usr$dg_pool to re-calculate C_all_f
-    if (redd_x == "DG" & length(.usr$dg_pool) > 0) {
-
-      dg_pool <- stringr::str_split(.usr$dg_pool, pattern = ",") |> purrr::map(stringr::str_trim) |> unlist()
-      dg_pool_i <- paste0(dg_pool, "_i")
-
-      combi <- combi %>%
-        dplyr::rowwise() %>%
-        dplyr::mutate(C_all_f = .data$DG_ratio_f * sum(!!!rlang::syms(dg_pool_i)) * 44/12) %>%
-        dplyr::ungroup()
-
-      ## If degradation has unaffected pools, we identify them by difference and
-      ## exclude them from EF formula
-      if (.usr$dg_expool) {
-        dg_expool <- paste0(setdiff(c_i$c_pool, dg_pool), "_i")
-        combi <- combi %>%
-          dplyr::rowwise() %>%
-          dplyr::mutate(C_all_f = .data$C_all_f + sum(!!!rlang::syms(dg_expool))) %>%
-          dplyr::ungroup()
-      }
-
-    }
-
-    combi
+    data.frame(year = x, E = E, REF = REF)
 
   }) |> purrr::list_rbind()
-  ## END LOOP
 
-  ## Re-arrange columns and add EF and E (emissions at transition level)
-  arithm_trans2 <- arithm_trans %>%
-    dplyr::mutate(
-      EF = .data$C_all_i - .data$C_all_f,
-      E_sim  = .data$AD * .data$EF
-    ) %>%
-    dplyr::select(
-      "redd_activity", time_period = "trans_period", "trans_id",
-      "AD", "EF", "E_sim", "C_form_i", "C_all_i", "C_form_f",
-      "C_all_f", dplyr::everything()
+  out_gg <- ggdat |>
+    # mutate(year = lubridate::year(.data$year)) |>
+    ggplot2::ggplot(ggplot2::aes(x = .data$year)) +
+    ggplot2::geom_col(ggplot2::aes(y = .data$REF), col = "darkgreen", fill = "lightgreen") +
+    ggplot2::geom_col(ggplot2::aes(y = .data$E), col = "darkred", fill = "pink") +
+    #ggplot2::scale_x_continuous(expand=c(0, .9)) +
+    ggplot2::theme_bw() +
+    ggplot2::labs(
+      x = "Years",
+      y = "Emissions (MtCO2e/y)"
     )
 
+  list(emissions = out_combi, gg_emissions = out_gg)
+
 }
+
 
 
 

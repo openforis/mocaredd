@@ -104,15 +104,13 @@ mod_tool_server <- function(id, rv) {
         session = session, id = "prog_allchecks", value = 50
       )
 
-      # rv$checks$sim_trans_ar <- fct_combine_mcs_E(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .usr = rv$inputs$usr)
-      # rv$checks$sim_FREL_ar  <- fct_combine_mcs_P(
-      #   .data = rv$checks$sim_trans_ar,
-      #   .time = rv$inputs$time,
-      #   .period_type = "reference",
-      #   .ad_annual = rv$inputs$usr$ad_annual
-      # )
+      ## Calc length of periods
+      rv$inputs$time_clean <- rv$inputs$time |> dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1)
 
-      Sys.sleep(0.5)
+      ## Calc arithmetic mean
+      rv$checks$ari_res <- fct_arithmetic_mean(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .usr = rv$inputs$usr, .time = rv$inputs$time_clean)
+
+      Sys.sleep(0.1)
 
       ## ++ Outputs ------------------------------------------------------------
       ## outputs are calculated once new data is uploaded so they are performed here
@@ -211,7 +209,11 @@ mod_tool_server <- function(id, rv) {
     })
 
     ## +++ Graph of ERs ----
-    output$check_arithmetic_gg <- renderPlot({ })
+    output$check_arithmetic_gg <- renderPlot({
+
+      rv$checks$ari_res$gg_emissions
+
+      })
 
     ## +++ LU change matrix ----
     output$check_slider_UI <- renderUI({

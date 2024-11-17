@@ -234,10 +234,10 @@ mod_tool_server <- function(id, rv) {
 
       ## !!! ADD Full list of LU to get complete matrix
       ## !!! Replace NA with 0 or "-"
-      ## SHow integers with thd separators
+      ## !!! Show integers with thd separators
       rv$inputs$ad |>
         dplyr::filter(.data$trans_period == input$check_select_period) |>
-        tidyr::pivot_wider(id_cols = lu_initial, names_from = lu_final, values_from = trans_area)
+        tidyr::pivot_wider(id_cols = "lu_initial", names_from = "lu_final", values_from = "trans_area")
 
     })
 

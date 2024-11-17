@@ -243,9 +243,8 @@ mod_tool_UI <- function(id, i18n){
 
   card_lumatrix <- card(
     h5(i18n$t("Land use change matrix")),
-    uiOutput(outputId = ns("check_slider_UI")),
-    verbatimTextOutput(ns("check_lumatrix"))
-    #gt::gt_output(ns("check_lumatrix"))
+    uiOutput(outputId = ns("check_select_period_UI")),
+    gt::gt_output(ns("check_lumatrix"))
   )
 
   ## combine cards

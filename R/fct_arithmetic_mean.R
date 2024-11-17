@@ -64,7 +64,7 @@ fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
   ad_ari  <- .ad  |> dplyr::mutate(trans_se = 0, trans_pdf = "normal")
   cs_ari  <- .cs  |> dplyr::mutate(c_se = 0, c_pdf = "normal")
 
-  .time <- .time |> dplyr::mutate(nb_years = year_end - year_start + 1)
+  .time <- .time |> dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1)
 
   ari_trans <- fct_combine_mcs_E(.ad = ad_ari, .cs = cs_ari, .usr = usr_ari)
 
@@ -98,11 +98,16 @@ fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
 
   ggdat <- purrr::map(years_mon, function(x){
 
-    REF <- out_combi |> dplyr::filter(period_type == "REF") |> dplyr::pull("E_sim")
+    REF <- out_combi |>
+      dplyr::filter(.data$period_type == "REF") |>
+      dplyr::pull("E_sim")
+
     REF  <- round(REF / 10^6, 2)
+
     E <- mon |>
       dplyr::filter(.data$year_start <= x, .data$year_end >= x) |>
       dplyr::pull("E_sim")
+
     E <- round(E / 10^6, 2)
 
     data.frame(year = x, E = E, REF = REF)

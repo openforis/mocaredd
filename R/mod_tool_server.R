@@ -105,7 +105,11 @@ mod_tool_server <- function(id, rv) {
       )
 
       ## Calc length of periods
-      rv$inputs$time_clean <- rv$inputs$time |> dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1)
+      rv$inputs$time_clean <- rv$inputs$time |>
+        dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1)
+
+      ## Calc all land uses
+      rv$inputs$lu_list <- sort(unique(c(rv$inputs$ad$lu_initial, rv$inputs$lu_final)))
 
       ## Calc arithmetic mean
       rv$checks$ari_res <- fct_arithmetic_mean(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .usr = rv$inputs$usr, .time = rv$inputs$time_clean)
@@ -153,7 +157,7 @@ mod_tool_server <- function(id, rv) {
     output$vb_nb_ref <- renderText({
       req(rv$checks$check_data$all_ok)
       if (rv$checks$check_data$all_ok) {
-        time_sub <- rv$inputs$time |> dplyr::filter(stringr::str_detect(period_type, pattern = "REF"))
+        time_sub <- rv$inputs$time |> dplyr::filter(stringr::str_detect(.data$period_type, pattern = "REF"))
         paste0(nrow(time_sub), " for reference")
       }
     })
@@ -161,7 +165,7 @@ mod_tool_server <- function(id, rv) {
     output$vb_nb_mon <- renderText({
       req(rv$checks$check_data$all_ok)
       if (rv$checks$check_data$all_ok) {
-        time_sub <- rv$inputs$time |> dplyr::filter(stringr::str_detect(period_type, pattern = "M"))
+        time_sub <- rv$inputs$time |> dplyr::filter(stringr::str_detect(.data$period_type, pattern = "M"))
         paste0(nrow(time_sub), " for monitoring")
       }
     })
@@ -216,22 +220,27 @@ mod_tool_server <- function(id, rv) {
       })
 
     ## +++ LU change matrix ----
-    output$check_slider_UI <- renderUI({
+    output$check_select_period_UI <- renderUI({
       selectInput(
-        inputId = ns("check_slider_period"),
+        inputId = ns("check_select_period"),
         label = "Select a time period",
         choices = rv$inputs$time$period_no
       )
     })
 
-    #output$check_lumatrix <- gt::render_gt({ })
+    output$check_lumatrix <- gt::render_gt({
 
-    # observe({
-    #   req(input$check_slider_period)
-    #   rv$checks$check_slider_period <- input$check_slider_period
-    # })
+      req(input$check_select_period)
 
-    output$check_lumatrix <- renderText({ input$check_slider_period })
+      ## !!! ADD Full list of LU to get complete matrix
+      ## !!! Replace NA with 0 or "-"
+      ## SHow integers with thd separators
+      rv$inputs$ad |>
+        dplyr::filter(.data$trans_period == input$check_select_period) |>
+        tidyr::pivot_wider(id_cols = lu_initial, names_from = lu_final, values_from = trans_area)
+
+    })
+
 
     ## + UI changes ============================================================
 

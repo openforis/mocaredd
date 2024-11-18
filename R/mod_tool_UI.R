@@ -44,43 +44,6 @@ mod_tool_UI <- function(id, i18n){
       ),
       shiny::verbatimTextOutput(outputId = ns("ctrl_input"))
     ),
-    # div(
-    #   id = ns("msg_no_data"),
-    #   "No data uploaded.",
-    #   class = "text-warning",
-    #   style = "font-style: italic;"
-    # ),
-    # shinyjs::hidden(div(
-    #   id = ns("msg_data_tabs_ok"),
-    #   "Data uploaded with correct tabs.",
-    #   class = "text-success",
-    #   style = "font-style: italic;"
-    # )),
-    # shinyjs::hidden(div(
-    #   id = ns("msg_data_tabs_wrong"),
-    #   "Data uploaded with incorrect tabs.",
-    #   class = "text-danger",
-    #   style = "font-style: italic;"
-    # )),
-    # div(
-    #   shinyjs::disabled(
-    #     actionButton(
-    #       inputId = ns("btn_run_checks"),
-    #       label = "Run checks"
-    #    )
-    #   ),
-    #   style = "margin-top: 1rem;"
-    # )
-
-  )
-
-  ## ++ Accordion 2: Run checks ------------------------------------------------
-  ac_check <- accordion_panel(
-    title = i18n$t("Run data checks"),
-    icon = bsicons::bs_icon("2-circle"),
-    value = ns("ac_check"),
-
-    ## Content
     div(
       id = ns("msg_no_data"),
       "No data uploaded.",
@@ -104,17 +67,18 @@ mod_tool_UI <- function(id, i18n){
         actionButton(
           inputId = ns("btn_run_checks"),
           label = "Run checks"
-        )
+       )
       ),
       style = "margin-top: 1rem;"
     )
 
   )
 
-  ## ++ Accordion 3: Run MCS ---------------------------------------------------
+
+  ## ++ Accordion 2: Run MCS ---------------------------------------------------
   ac_mcs <-  accordion_panel(
     title = i18n$t("Create Monte Carlo Simulations"),
-    icon = bsicons::bs_icon("3-circle"),
+    icon = bsicons::bs_icon("2-circle"),
     value = ns("ac_mcs"),
 
     ## Content
@@ -148,14 +112,14 @@ mod_tool_UI <- function(id, i18n){
 
   )
 
-  ## ++ Accordion 4: Run Sensitivity -------------------------------------------
+  ## ++ Accordion 3: Run Sensitivity -------------------------------------------
   ac_sens <-  accordion_panel(
     title = i18n$t("Perform senstivity analysis"),
-    icon = bsicons::bs_icon("4-circle"),
+    icon = bsicons::bs_icon("3-circle"),
     value = ns("ac_sens"),
 
     ## Content
-    h4("TEXT")
+    h4("Not implemented yet")
   )
 
   ## + Check panel =============================================================
@@ -223,14 +187,6 @@ mod_tool_UI <- function(id, i18n){
   ))
 
   ## ++ Cards ------------------------------------------------------------------
-  ## All check types
-  # rv$checks$cols_ok,
-  # rv$checks$size_ok,
-  # rv$checks$datatypes_ok,
-  # rv$checks$cats_ok,
-  # rv$checks$ids_ok,
-  # rv$checks$matches_ok
-
   card_check_msg <- card(
     h5(i18n$t("Check all column names are valid")),
       gt::gt_output(ns("check_msg"))
@@ -278,7 +234,6 @@ mod_tool_UI <- function(id, i18n){
           open = TRUE,
           multiple = TRUE,
           ac_load,
-          ac_check,
           ac_mcs,
           ac_sens
           )
@@ -311,7 +266,11 @@ mod_tool_UI <- function(id, i18n){
         title = i18n$t("Results"),
         value = "res",
         icon = icon("chart-simple"),
-        submod_res_UI("tab_res", i18n = i18n)
+        #submod_res_UI("tab_res", i18n = i18n)
+        card(
+          h5(i18n$t("Forest plot of simulation based results")),
+          gt::gt_output(ns("mcs_fp_trans"))
+        )
       ),
 
       ## + Sensitivity analysis panel ============================================

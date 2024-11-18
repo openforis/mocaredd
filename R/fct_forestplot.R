@@ -44,8 +44,14 @@ fct_forestplot <- function(
   col_ciup  <- rlang::enquo(.ciupper)
 
   ## data range for the plot
-  E_min <- eval(substitute(min(.data$.cilower, 0)))
-  E_max <- eval(substitute(max(.data$.ciupper, 0)))
+  E_min <- .data |> dplyr::pull(!!col_cilo) |> min()
+  E_min <- min(0, E_min)
+
+  E_max <- .data |> dplyr::pull(!!col_ciup) |> max()
+  E_max <- max(0, E_max)
+
+  #E_min <- eval(substitute(min(.data$.cilower, 0)))
+  #E_max <- eval(substitute(max(.data$.ciupper, 0)))
   E_range <- c(E_min, E_max)
 
   ## Extend range to 5% of the data range to make it look nicer

@@ -11,28 +11,16 @@ mod_tool_server <- function(id, rv) {
     ns <- session$ns
 
     ##
-    ## 1. Data upload ##########################################################
+    ## 1. Data upload and checks ###############################################
     ##
 
-    ## + Events ================================================================
-
-    ## + Outputs ===============================================================
-
-    ## Download example 1 if needed
+    ## 1.1 Download example 1 if needed ========================================
     output$dl_template <- downloadHandler(
       filename <- function() { "template1.xlsx" },
       content  <- function(file) { file.copy(system.file("extdata/example1.xlsx", package = "mocaredd"), file) }
     )
 
-
-
-    ##
-    ## 2. Read data and run checks #############################################
-    ##
-
-    ## + Check events ==========================================================
-
-    ## ++ 2.1. Check uploaded file columns -------------------------------------
+    ## 1.2 Check uploaded file columns =========================================
     observeEvent(input$load_xlsx, {
 
       rv$inputs$xlsx_path <- input$load_xlsx$datapath
@@ -52,7 +40,7 @@ mod_tool_server <- function(id, rv) {
 
     })
 
-    ## ++ 2.2 Read data and run checks -----------------------------------------
+    ## 1.3 Read data and run checks ============================================
     observeEvent(input$btn_run_checks, {
 
       ## For moving to sub-module?
@@ -108,11 +96,11 @@ mod_tool_server <- function(id, rv) {
       rv$inputs$time_clean <- rv$inputs$time |>
         dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1)
 
-      ## Calc all land uses
-      rv$inputs$lu_list <- sort(unique(c(rv$inputs$ad$lu_initial, rv$inputs$lu_final)))
-
       ## Calc arithmetic mean
       rv$checks$ari_res <- fct_arithmetic_mean(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .usr = rv$inputs$usr, .time = rv$inputs$time_clean)
+
+      ## Conf int alpha
+      rv$inputs$ci_alpha <- 1 - rv$inputs$usr$conf_level
 
       Sys.sleep(0.1)
 
@@ -138,7 +126,7 @@ mod_tool_server <- function(id, rv) {
 
     })
 
-    ## + Check Outputs =========================================================
+    ## 1.4 Prepare Outputs =====================================================
 
     ## !!! TMP: Show xlsx_tabs_ok
     output$ctrl_input <- renderText({
@@ -214,8 +202,11 @@ mod_tool_server <- function(id, rv) {
 
     ## +++ Graph of ERs ----
     output$check_arithmetic_gg <- renderPlot({
+      req(rv$checks$check_data$all_ok, rv$checks$ari_res)
 
-      rv$checks$ari_res$gg_emissions
+      if (rv$checks$check_data$all_ok) {
+        rv$checks$ari_res$gg_emissions
+      }
 
       })
 
@@ -230,19 +221,35 @@ mod_tool_server <- function(id, rv) {
 
     output$check_lumatrix <- gt::render_gt({
 
-      req(input$check_select_period)
+      req(rv$inputs$ad, rv$checks$check_data$all_ok, input$check_select_period)
 
-      ## !!! ADD Full list of LU to get complete matrix
-      ## !!! Replace NA with 0 or "-"
-      ## !!! Show integers with thd separators
-      rv$inputs$ad |>
-        dplyr::filter(.data$trans_period == input$check_select_period) |>
-        tidyr::pivot_wider(id_cols = "lu_initial", names_from = "lu_final", values_from = "trans_area")
+      if (rv$checks$check_data$all_ok) {
+
+        year_start <- rv$inputs$time |>
+          dplyr::filter(.data$period_no == input$check_select_period) |>
+          dplyr::pull(.data$year_start)
+
+        year_end <- rv$inputs$time |>
+          dplyr::filter(.data$period_no == input$check_select_period) |>
+          dplyr::pull(.data$year_end)
+
+        rv$inputs$ad |>
+          dplyr::filter(.data$trans_period == input$check_select_period) |>
+          dplyr::mutate(trans_area = round(.data$trans_area, 0)) |>
+          dplyr::arrange(.data$lu_final) |>
+          tidyr::pivot_wider(id_cols = "lu_initial", names_from = "lu_final", values_from = "trans_area", values_fill = 0) |>
+          dplyr::arrange(.data$lu_initial) |>
+          gt::gt(rowname_col = "lu_initial") |>
+          gt::tab_stubhead(label = "Area (ha)") |>
+          gt::tab_row_group(label = gt::md(paste0("**Initial land use ", year_start, "**")), rows = gt::everything()) |>
+          gt::tab_spanner(label = gt::md(paste0("**Final land use ", year_end, "**")), columns = gt::everything()) |>
+          gt::fmt_number(columns = gt::everything(), decimals = 0, use_seps = TRUE)
+
+      }
 
     })
 
-
-    ## + UI changes ============================================================
+    ## 1.5 Show checks after all prepared ==========================================
 
     ## Update show / hide panels
     observe({
@@ -260,6 +267,87 @@ mod_tool_server <- function(id, rv) {
     })
 
     # submod_check_server("tab_check", rv = rv)
+
+    ##
+    ## 2. Run MCS ##############################################################
+    ##
+
+    ## 2.1 Enable button =======================================================
+
+    observe({
+
+      req(rv$checks$all_done, rv$checks$check_data$all_ok)
+
+
+      if(rv$checks$check_data$all_ok) {
+        shinyjs::hide("msg_no_check")
+        shinyjs::show("msg_checks_ok")
+        shinyjs::hide("msg_checks_wrong")
+        shinyjs::enable("btn_run_mcs")
+      } else {
+        shinyjs::hide("msg_no_check")
+        shinyjs::hide("msg_checks_ok")
+        shinyjs::show("msg_checks_wrong")
+        shinyjs::disable("btn_run_mcs")
+      }
+
+    })
+
+    ## 2.2 Run MCS and calculate res and graphs ================================
+    observeEvent(input$btn_run_mcs, {
+
+      # shinyjs::hide("mcs_init_msg")
+      # shinyjs::show("mcs_progress")
+      # shinyjs::hide("mcs_show")
+      # shinyjs::hide("mcs_vbs")
+      # shinyjs::hide("mcs_cards")
+
+      ## LU transition sims
+      rv$mcs$sim_trans <- fct_combine_mcs_E(
+        .ad = rv$inputs$ad,
+        .cs = rv$inputs$cs,
+        .usr = rv$inputs$usr
+        )
+
+      ## LU transition level results
+      rv$mcs$res_trans <- fct_calc_res(
+        .data = rv$mcs$sim_trans,
+        .id = .data$trans_id,
+        .sim = .data$E_sim,
+        .ci_alpha = rv$inputs$ci_alpha
+        )
+
+      # ## FREL sims
+      # rv$mcs$sim_FREL <- fct_combine_mcs_P(
+      #   .data = rv$mcs$sim_trans,
+      #   .time = rv$inputs$time_clean,
+      #   .period_type = "REF",
+      #   .ad_annual = rv$inputs$usr$ad_annual
+      #   )
+
+
+    })
+
+
+    ## 2.3 Prepare Outputs =====================================================
+
+output$mcs_fp_trans <- gt::render_gt({
+
+  ## no binding hack in R cmd check
+  trans_id <- E <- E_U <- E_cilower <- E_ciupper <- NULL
+  fct_forestplot(
+    .data = rv$mcs$res_trans,
+    .id = trans_id,
+    .value = E,
+    .uperc = E_U,
+    .cilower = E_cilower,
+    .ciupper = E_ciupper,
+    .id_colname = "Land use transition",
+    .conflevel = "90%",
+    .filename = NA
+    )
+
+})
 
 
   }) ## END module server function

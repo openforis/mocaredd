@@ -55,7 +55,7 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
 
   combi <- tidyr::expand_grid(lu = c_lu, period = c_period)
 
-  mcs_c <- pmap(combi, function(lu, period){
+  mcs_c <- purrr::pmap(combi, function(lu, period){
 
     c_sub <- .cs %>%
       dplyr::filter(.data$lu_id == lu, .data$c_period == period) %>%

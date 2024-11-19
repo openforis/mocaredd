@@ -33,7 +33,7 @@
 #' usr <- read_xlsx(
 #'   system.file("extdata/example1.xlsx", package = "mocaredd"),
 #'   sheet = "user_inputs",
-#'   na = "NA
+#'   na = "NA"
 #'   )
 #'
 #' cs_clean <- cs |> filter(!is.na(c_value) | !is.na(c_pdf_a))

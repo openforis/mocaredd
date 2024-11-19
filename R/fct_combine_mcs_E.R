@@ -33,33 +33,45 @@
 #' usr <- read_xlsx(
 #'   system.file("extdata/example1.xlsx", package = "mocaredd"),
 #'   sheet = "user_inputs",
-#'   na = "NA"
+#'   na = "NA
 #'   )
 #'
 #' cs_clean <- cs |> filter(!is.na(c_value) | !is.na(c_pdf_a))
 #'
 #' res <- fct_combine_mcs_E(.ad = ad, .cs = cs_clean, .usr = usr)
-#' hist(res$E_sim)
-#' round(median(res$E_sim))
+#'
+#' get_trans <- sample(res$trans_id, 1)
+#' res_sub <- res |> filter(trans_id == get_trans)
+#'
+#' hist(res_sub$E_sim)
+#' round(median(res_sub$E_sim))
 #'
 #' @export
 fct_combine_mcs_E <- function(.ad, .cs, .usr){
 
-  ## CHECK THE INPUT DATA CONFORMITY - done outside function
-  # flag_all <- fct_check_data(.ad = ad, .cs = cs, .init = init)
+  ## !!! FOR TESTING ONLY - run example then assign ad, cs and usr to the input vars.
+  # .ad <- ad
+  # .cs <- cs
+  # .usr <- usr
+  ## !!!
 
   ## Seed for random simulation
-  if (!is.na(.usr$ran_seed)){
-    set.seed(.usr$ran_seed)
-    message("Random simulations with seed: ", .usr$ran_seed)
-  } else {
-    app_ran_seed <- sample(1:100, 1)
-    set.seed(app_ran_seed)
-    message("Seed for random simulations: ", app_ran_seed)
-  }
+  ## Implemented outside function now
+  # if (!is.na(.usr$ran_seed)){
+  #   set.seed(.usr$ran_seed)
+  #   message("Random simulations with seed: ", .usr$ran_seed)
+  # } else {
+  #   app_ran_seed <- sample(1:100, 1)
+  #   set.seed(app_ran_seed)
+  #   message("Seed for random simulations: ", app_ran_seed)
+  # }
 
-  ## START LOOP
+  ## Get all Cstock simulations
+  mcs_c <- fct_combine_mcs_cstock(.ad = .ad, .cs = .cs, .usr = .usr)
+
+  ## Get all land use transition
   vec_trans <- unique(.ad$trans_id)
+
   ## For each transition, calculate simulations for each element of the calculation chain
   mcs_trans <- purrr::map(vec_trans, function(x){
 
@@ -67,50 +79,56 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
     # x = "T1_ev_wet_closed_dg_ev_wet_closed"
     ## !!
 
-    ad_x <- .ad %>% dplyr::filter(.data$trans_id == x)
-
+    ad_x   <- .ad %>% dplyr::filter(.data$trans_id == x)
     redd_x <- ad_x$redd_activity
 
     ## AD - Activity Data
-    SIMS <- fct_make_mcs(
-      .n_iter = .usr$n_iter,
-      .pdf    = ad_x$trans_pdf,
-      .mean   = ad_x$trans_area,
-      .se     = ad_x$trans_se,
-      .params = c(ad_x$c_pdf_a, ad_x$c_pdf_b, ad_x$c_pdf_c),
-      .trunc  = .usr$trunc_pdf
-      )
-
     SIMS_AD <- dplyr::tibble(
       sim_no = 1:.usr$n_iter,
       redd_activity = ad_x$redd_activity,
       trans_id = ad_x$trans_id,
       trans_period = ad_x$trans_period,
-      AD = SIMS
+      AD = fct_make_mcs(
+        .n_iter = .usr$n_iter,
+        .pdf    = ad_x$trans_pdf,
+        .mean   = ad_x$trans_area,
+        .se     = ad_x$trans_se,
+        .params = c(ad_x$c_pdf_a, ad_x$c_pdf_b, ad_x$c_pdf_c),
+        .trunc  = .usr$trunc_pdf
       )
+    )
 
     ## EF - Emissions Factors decomposed for each carbon pool
     ## Carbon stock of initial land use
-    c_i     <- .cs %>%
-      dplyr::filter(.data$lu_id == ad_x$lu_initial_id) %>%
-      dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
-    SIMS_CI <- fct_combine_mcs_C(.c_sub = c_i, .usr = .usr)
+    SIMS_CI <- mcs_c |> dplyr::filter(.data$lu_id == ad_x$lu_initial_id)
 
-    names(SIMS_CI) <- c("sim_no", paste0(setdiff(names(SIMS_CI), "sim_no"), "_i"))
+    names(SIMS_CI) <- c("sim_no", "c_period", paste0(setdiff(names(SIMS_CI), c("sim_no", "c_period")), "_i"))
 
-    c_f     <- .cs %>%
-      dplyr::filter(.data$lu_id == ad_x$lu_final_id) %>%
-      dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
-    SIMS_CF <- fct_combine_mcs_C(.c_sub = c_f, .usr = .usr)
+    ## Carbon stock of final land use
+    SIMS_CF <- mcs_c |> dplyr::filter(.data$lu_id == ad_x$lu_final_id)
 
-    names(SIMS_CF) <- c("sim_no", paste0(setdiff(names(SIMS_CF), "sim_no"), "_f"))
+    names(SIMS_CF) <- c("sim_no", "c_period", paste0(setdiff(names(SIMS_CF), c("sim_no", "c_period")), "_f"))
 
-    combi <- SIMS_AD |>
-      dplyr::left_join(SIMS_CI, by = "sim_no") |>
-      dplyr::left_join(SIMS_CF, by = "sim_no")
+    ## Combine AD and EF by land use and if needed time period
+    if (unique(SIMS_CI$c_period) == "ALL" &  unique(SIMS_CF$c_period) == "ALL") {
+
+      SIMS_CI <- SIMS_CI |> dplyr::select(-"c_period")
+      SIMS_CF <- SIMS_CF |> dplyr::select(-"c_period")
+
+      combi <- SIMS_AD |>
+        dplyr::left_join(SIMS_CI, by = "sim_no") |>
+        dplyr::left_join(SIMS_CF, by = "sim_no")
+
+    } else {
+
+      combi <- SIMS_AD |>
+        dplyr::left_join(SIMS_CI, by = c("sim_no", "trans_period" = "c_period")) |>
+        dplyr::left_join(SIMS_CF, by = c("sim_no", "trans_period" = "c_period"))
+
+    }
 
     ## If degradation is ratio, using .usr$dg_pool to calculate C_all_f
-    if (redd_x == "DG" & length(.usr$dg_pool) > 0) {
+    if (redd_x == "DG" & !is.na(.usr$dg_pool)) {
 
       dg_pool <- stringr::str_split(.usr$dg_pool, pattern = ",") |> purrr::map(stringr::str_trim) |> unlist()
       dg_pool_i <- paste0(dg_pool, "_i")
@@ -120,10 +138,15 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
         dplyr::mutate(C_all_f = .data$DG_ratio_f * sum(!!!rlang::syms(dg_pool_i)) * 44/12) %>%
         dplyr::ungroup()
 
-      ## If degradation has unaffected pools, we identify them by difference and
-      ## exclude them from EF formula
-      if (.usr$dg_expool) {
-        dg_expool <- paste0(setdiff(c_i$c_pool, dg_pool), "_i")
+      ## If degradation has unaffected pools, we identify them by difference and add them to final C stock
+      c_pools <- .cs |>
+        dplyr::filter(.data$lu_id == ad_x$lu_initial_id) |>
+        dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a))) |>
+        dplyr::pull("c_pool") |>
+        unique()
+      dg_expool <- paste0(setdiff(c_pools, dg_pool), "_i")
+
+      if (length(dg_expool) > 0) {
         combi <- combi %>%
           dplyr::rowwise() %>%
           dplyr::mutate(C_all_f = .data$C_all_f + sum(!!!rlang::syms(dg_expool))) %>%
@@ -138,7 +161,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   ## END LOOP
 
   ## Re-arrange columns and add EF and E (emissions at transition level)
-  mcs_trans2 <- mcs_trans %>%
+  mcs_trans %>%
     dplyr::mutate(
       EF = .data$C_all_i - .data$C_all_f,
       E_sim  = .data$AD * .data$EF

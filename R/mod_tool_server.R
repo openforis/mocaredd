@@ -276,7 +276,7 @@ mod_tool_server <- function(id, rv) {
 
     observe({
 
-      req(rv$checks$all_done, rv$checks$check_data$all_ok)
+      req(rv$checks$check_data$all_ok)
 
 
       if(rv$checks$check_data$all_ok) {
@@ -296,11 +296,23 @@ mod_tool_server <- function(id, rv) {
     ## 2.2 Run MCS and calculate res and graphs ================================
     observeEvent(input$btn_run_mcs, {
 
+        nav_select(id = "tool_panel", selected = "res_panel")
+
       # shinyjs::hide("mcs_init_msg")
       # shinyjs::show("mcs_progress")
       # shinyjs::hide("mcs_show")
       # shinyjs::hide("mcs_vbs")
       # shinyjs::hide("mcs_cards")
+
+      ## Seed for random simulation
+      if (!is.na(.usr$ran_seed)){
+        set.seed(.usr$ran_seed)
+        message("Random simulations with seed: ", .usr$ran_seed)
+      } else {
+        app_ran_seed <- sample(1:100, 1)
+        set.seed(app_ran_seed)
+        message("Seed for random simulations: ", app_ran_seed)
+      }
 
       ## LU transition sims
       rv$mcs$sim_trans <- fct_combine_mcs_E(
@@ -331,7 +343,7 @@ mod_tool_server <- function(id, rv) {
 
     ## 2.3 Prepare Outputs =====================================================
 
-output$mcs_fp_trans <- gt::render_gt({
+output$res_trans_tab <- gt::render_gt({
 
   ## no binding hack in R cmd check
   trans_id <- E <- E_U <- E_cilower <- E_ciupper <- NULL

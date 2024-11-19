@@ -33,13 +33,13 @@
 #' cs_clean <- cs |> filter(!(is.na(c_value) & is.na(c_pdf_a)))
 #' c_sub <- cs_clean |> filter(lu_id == "ev_wet_closed")
 #'
-#' res <- fct_combine_mcs_C(.c_sub = c_sub, .usr = usr)
+#' res <- fct_combine_mcs_cpools(.c_sub = c_sub, .usr = usr)
 #'
 #' hist(res$C_all)
 #' round(median(res$C_all))
 #'
 #' @export
-fct_combine_mcs_C <- function(.c_sub, .usr){
+fct_combine_mcs_cpools <- function(.c_sub, .usr){
 
   ## !! FOR TESTING ONLY
   # .c_sub  <- cs |> filter(lu_id == "postdef_open") ## "dg_ev_wet_closed"

@@ -213,6 +213,49 @@ mod_tool_UI <- function(id, i18n){
   ))
 
 
+  ## + Results panel ===========================================================
+
+  ## ++ Res initial text -------------------------------------------------------
+  div_res_init <- div(
+    id = ns("res_init_msg"),
+    bsicons::bs_icon("gear"), i18n$t(" Run simulations in the sidebar."),
+    class = "text-warning",
+    style = "font-style: italic;"
+  )
+
+  ## ++ Res progress bar -------------------------------------------------------
+  div_res_progress <- shinyjs::hidden(div(
+    id = ns("div_res_progress"),
+    shinyWidgets::progressBar(
+      id = ns("prog_res"),
+      value = 0,
+      title = "Simulations progress",
+      display_pct = TRUE
+    )
+  ))
+
+  div_btn_show_res <- shinyjs::hidden(div(
+    id = ns("res_show"),
+    actionButton(inputId = ns("btn_show_res"), label = "Show simulation results")
+  ))
+
+  ## ++ Res Cards --------------------------------------------------------------
+  card_tab_frl <- card(
+    h5(i18n$t("Forest Reference Level")),
+    gt::gt_output(ns("res_frl_tab"))
+  )
+
+  card_hist_frl <- card(
+    h5(i18n$t("Forest Reference Level")),
+    plotOutput(ns("res_frl_hist"))
+  )
+
+  card_trans_tab <- card(
+    h5(i18n$t("Forest plot of simulation based results")),
+    gt::gt_output(ns("res_trans_tab"))
+  )
+
+  ## +++ combine cards
 
   ##
   ## Layout UI elements with tagList() function ################################
@@ -225,6 +268,7 @@ mod_tool_UI <- function(id, i18n){
     br(),
 
     navset_card_tab(
+      id = ns("tool_panels"),
 
       ## + Sidebar =============================================================
 
@@ -246,7 +290,7 @@ mod_tool_UI <- function(id, i18n){
 
       nav_panel(
         title = i18n$t("Check your data"),
-        value = "about",
+        value = ns("check_panel"),
         icon = icon("circle-check"),
         #submod_check_UI("tab_check", i18n = i18n)
         ## Initial msg
@@ -264,20 +308,21 @@ mod_tool_UI <- function(id, i18n){
 
       nav_panel(
         title = i18n$t("Results"),
-        value = "res",
+        value = ns("res_panel"),
         icon = icon("chart-simple"),
         #submod_res_UI("tab_res", i18n = i18n)
-        card(
-          h5(i18n$t("Forest plot of simulation based results")),
-          gt::gt_output(ns("mcs_fp_trans"))
-        )
+        div_res_init,
+        ## progress bar
+        div_res_progress,
+        div_btn_show_res,
+        card_trans_tab
       ),
 
       ## + Sensitivity analysis panel ============================================
 
       nav_panel(
         title = i18n$t("Sensitivity"),
-        value = "sensitivity",
+        value = ns("sensi_panel"),
         icon = icon("magnifying-glass"),
         submod_sensitivity_UI("tab_sensitivity", i18n = i18n)
       )

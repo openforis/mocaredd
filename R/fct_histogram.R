@@ -50,10 +50,10 @@ fct_histogram <- function(.data, .res, .id, .value, .value_type, ...){
 
     if (.value_type == "ER") {
       cols <- c("darkseagreen1", "darkseagreen", "forestgreen")
-      subt <- paste0("Emission reductions for ", rlang::as_label(id), ": ", x)
+      subt <- paste0("Emission reductions for: ", x)
     } else if (.value_type == "E") {
       cols <- c("pink", "pink3", "hotpink")
-      subt <- paste0("Emissions for ", rlang::as_label(id), ": ", x)
+      subt <- paste0("Emissions for: ", x)
     }
 
 

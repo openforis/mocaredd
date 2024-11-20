@@ -41,12 +41,19 @@
 #'
 #' time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
 #'
-#' sim_trans <- fct_combine_mcs_E(.ad = ad_clean, .cs = cs_clean, .usr = usr)
+#' sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .usr = usr)
 #'
-#' sim_FREL <- fct_combine_mcs_P(
+#' sim_REF <- fct_combine_mcs_P(
 #'   .data = sim_trans,
 #'   .time = time_clean,
 #'   .period_type = "REF",
+#'   .ad_annual = usr$ad_annual
+#' )
+#'
+#'sim_MON <- fct_combine_mcs_P(
+#'   .data = sim_trans,
+#'   .time = time_clean,
+#'   .period_type = "MON",
 #'   .ad_annual = usr$ad_annual
 #' )
 #'
@@ -59,51 +66,54 @@ fct_combine_mcs_ER <- function(
     .ad_annual
 ){
 
+  ## !!! FOR TESTING ONLY - run example then assign to function inputs
+  .sim_ref = sim_REF
+  .sim_mon = sim_MON
+  .ad_annual = usr$ad_annual
+  ## !!!
+
   moni_combi <- unique(.sim_mon$period_type)
 
+  purrr::map(moni_combi, function(x){
 
-  sim_ER <- map(moni_combi, function(x){
+    out <- .sim_mon |>
+      dplyr::filter(.data$period_type == x) |>
+      dplyr::inner_join(sim_FREL, by = "sim_no", suffix = c("", "_R")) |>
+      dplyr::mutate(ER_sim = .data$E_sim_R - .data$E_sim)
 
-    out <- sim_moni |>
-      filter(period_type == x) |>
-      inner_join(sim_FREL, by = join_by(sim_no), suffix = c("", "_R")) |>
-      mutate(
-        ER_sim = E_sim_R - E_sim
-      )
+  }) |> purrr::list_rbind()
 
-  }) |> list_rbind()
-
-  res_ER <- sim_ER |>
-    fct_calc_res(.id = period_type, .sim = ER_sim, .ci_alpha = ci_alpha)
-
-  tmp_ER <- time_clean |>
-    group_by(period_type) |>
-    summarise(
-      year_start = min(year_start),
-      year_end = max(year_end),
-      nb_years = sum(nb_years)
-    )
-
-  res_ER2 <- tmp_ER |> inner_join(res_ER, by = join_by(period_type))
-
-  gt_ER <- res_ER |> fct_forestplot(
-    .id = period_type,
-    .value = E,
-    .uperc = E_U,
-    .cilower = E_cilower,
-    .ciupper = E_ciupper,
-    .id_colname = "Monitoring period",
-    .conflevel = "90%",
-    .filename = NA
-  )
-
-  gg_ER <- fct_histogram(
-    .dat = sim_ER,
-    .res = res_ER,
-    .id = period_type,
-    .value = ER_sim,
-    .value_type = "ER"
-  )
+  # res_ER <- sim_ER |>
+  #   fct_calc_res(.id = period_type, .sim = ER_sim, .ci_alpha = ci_alpha)
+  #
+  # tmp_ER <- time_clean |>
+  #   group_by(period_type) |>
+  #   summarise(
+  #     year_start = min(year_start),
+  #     year_end = max(year_end),
+  #     nb_years = sum(nb_years)
+  #   )
+  #
+  # res_ER2 <- tmp_ER |> inner_join(res_ER, by = join_by(period_type))
+  #
+  # gt_ER <- res_ER |> fct_forestplot(
+  #   .id = period_type,
+  #   .value = E,
+  #   .uperc = E_U,
+  #   .cilower = E_cilower,
+  #   .ciupper = E_ciupper,
+  #   .id_colname = "Monitoring period",
+  #   .conflevel = "90%",
+  #   .filename = NA
+  # )
+  #
+  # gg_ER <- fct_histogram(
+  #   .dat = sim_ER,
+  #   .res = res_ER,
+  #   .id = period_type,
+  #   .value = ER_sim,
+  #   .value_type = "ER"
+  # )
 
 
 }

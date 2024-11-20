@@ -124,7 +124,7 @@ mod_tool_UI <- function(id, i18n){
 
   ## + Check panel =============================================================
 
-  ## ++ Initial text -----------------------------------------------------------
+  ## ++ Check Initial text -----------------------------------------------------------
   div_check_init <- div(
     id = ns("check_init_msg"),
     bsicons::bs_icon("arrow-left"), " Start with uploading your data in the sidebar.",
@@ -132,7 +132,7 @@ mod_tool_UI <- function(id, i18n){
     style = "font-style: italic;"
   )
 
-  ## ++ Progress bar -----------------------------------------------------------
+  ## ++ Checl Progress bar -----------------------------------------------------------
   div_check_progress <- shinyjs::hidden(div(
     id = ns("check_progress"),
     shinyWidgets::progressBar(
@@ -148,7 +148,7 @@ mod_tool_UI <- function(id, i18n){
     actionButton(inputId = ns("btn_show_checks"), label = "Show data checks")
   ))
 
-  ## ++ Value boxes ------------------------------------------------------------
+  ## ++ Check Value boxes ------------------------------------------------------------
   vb_time <- value_box(
     title = "Time periods",
     value = htmlOutput(ns("vb_nb_time")),
@@ -186,7 +186,7 @@ mod_tool_UI <- function(id, i18n){
     )
   ))
 
-  ## ++ Cards ------------------------------------------------------------------
+  ## ++ Check Cards ------------------------------------------------------------------
   card_check_msg <- card(
     h5(i18n$t("Check all column names are valid")),
       gt::gt_output(ns("check_msg"))
@@ -217,7 +217,7 @@ mod_tool_UI <- function(id, i18n){
 
   ## ++ Res initial text -------------------------------------------------------
   div_res_init <- div(
-    id = ns("res_init_msg"),
+    id = ns("res_init"),
     bsicons::bs_icon("gear"), i18n$t(" Run simulations in the sidebar."),
     class = "text-warning",
     style = "font-style: italic;"
@@ -225,7 +225,7 @@ mod_tool_UI <- function(id, i18n){
 
   ## ++ Res progress bar -------------------------------------------------------
   div_res_progress <- shinyjs::hidden(div(
-    id = ns("div_res_progress"),
+    id = ns("res_progress"),
     shinyWidgets::progressBar(
       id = ns("prog_res"),
       value = 0,
@@ -235,27 +235,52 @@ mod_tool_UI <- function(id, i18n){
   ))
 
   div_btn_show_res <- shinyjs::hidden(div(
-    id = ns("res_show"),
+    id = ns("btn_show_res"),
     actionButton(inputId = ns("btn_show_res"), label = "Show simulation results")
   ))
 
-  ## ++ Res Cards --------------------------------------------------------------
-  card_tab_frl <- card(
-    h5(i18n$t("Forest Reference Level")),
-    gt::gt_output(ns("res_frl_tab"))
+  ## ++ Res cards --------------------------------------------------------------
+  card_res_dl <- card(
+    h5(i18n$t("Download the simulations and aggregated results")),
+    "Download land use transition level emissions",
+    "Download aggregated results",
+    "Download forest plots",
+  )
+  card_res_fp <- card(
+    h5(i18n$t("Emission reductions details")),
+    gt::gt_output(ns("res_fp"))
   )
 
-  card_hist_frl <- card(
-    h5(i18n$t("Forest Reference Level")),
-    plotOutput(ns("res_frl_hist"))
+  card_res_gg <- card(
+    h5(i18n$t("Emission reductions figure")),
+    plotOutput(ns("res_gg"))
   )
 
-  card_trans_tab <- card(
-    h5(i18n$t("Forest plot of simulation based results")),
-    gt::gt_output(ns("res_trans_tab"))
+  card_redd_fp <- card(
+    h5(i18n$t("REDD+ Activity details")),
+    gt::gt_output(ns("redd_fp"))
+  )
+
+  card_redd_hist <- card(
+    h5(i18n$t("REDD+ activity histograms")),
+    uiOutput(outputId = ns("select_redd_hist_UI")),
+    plotOutput(ns("redd_hist"))
+  )
+
+  card_trans_fp <- card(
+    h5(i18n$t("Land use transition period")),
+    gt::gt_output(ns("trans_fp"))
   )
 
   ## +++ combine cards
+  div_res_cards <- shinyjs::hidden(div(
+    id = ns("res_cards"),
+    card_res_dl,
+    layout_columns(card_tab_ref, card_hist_ref),
+    layout_columns(card_tab_mon, card_hist_ref),
+    layout_columns(card_tab_ER, card_hist_ER),
+
+  ))
 
   ##
   ## Layout UI elements with tagList() function ################################

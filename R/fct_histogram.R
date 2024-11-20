@@ -58,7 +58,7 @@ fct_histogram <- function(.data, .res, .id, .value, .value_type, ...){
 
 
     ggplot(dat2, aes(x = !!value)) +
-      geom_histogram(aes(y = .data$..density..), fill = cols[1], color = cols[2]) +
+      geom_histogram(aes(y = ggplot2::after_stat(.data$density)), fill = cols[1], color = cols[2]) +
       stat_function(
         fun = stats::dnorm,
         colour = cols[3],

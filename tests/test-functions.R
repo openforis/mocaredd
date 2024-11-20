@@ -3,78 +3,90 @@
 # ## NEED TO CONVERT TO PROPER TESTING FROM TESTTHAT.
 # ## SEE tests/testthat.
 #
-library(tidyverse)
-library(readxl)
-library(mocaredd)
+# library(tidyverse)
+# library(readxl)
+# library(mocaredd)
 #
+# ## LOAD DATA
+# cs <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stocks", na = "NA")
+# ad <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "AD_lu_transitions", na = "NA")
+# usr <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "user_inputs", na = "NA")
+# time <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "time_periods", na = "NA")
+#
+# time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
+#
+# ci_alpha <- 1 - usr$conf_level
+#
+# ##
+# ## test whole calculation chain ######
+# ##
+#
+# sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .usr = usr)
+#
+# ## Check
+# tt <- sim_FREL |> filter(sim_no == 1)
+# tt
+#
+# ## FREL
+# sim_REF <- fct_combine_mcs_P(
+#   .data = sim_trans,
+#   .time = time_clean,
+#   .period_type = "REF",
+#   .ad_annual = usr$ad_annual
+# )
+#
+#
+# res_REF <- sim_REF |>
+#   fct_calc_res(.id = period_type, .sim = E_sim, .ci_alpha = ci_alpha)
+#
+# message("FREL is: ", res_REF$E, " ± ", res_REF$E_U, "%")
+#
+# ## Monitoring
+# sim_MON <- fct_combine_mcs_P(
+#     .data = sim_trans,
+#     .time = time_clean,
+#     .period_type = "MON",
+#     .ad_annual = usr$ad_annual
+#   )
+#
+# res_MON <- sim_MON |>
+#   fct_calc_res(.id = period_type, .sim = E_sim, .ci_alpha = ci_alpha) |>
+#   mutate(period_type = paste0("E-", period_type))
+#
+# sim_ER <- fct_combine_mcs_ER(.sim_ref = sim_REF, .sim_mon = sim_MON, .ad_annual = usr$ad_annual)
+#
+# res_ER <- sim_ER |>
+#   fct_calc_res(.id = period_type, .sim = ER_sim, .ci_alpha = ci_alpha) |>
+#   mutate(period_type = paste0("ER-", period_type))
+#
+# ## Combine results
+# gt_all <- res_REF |>
+#   bind_rows(res_MON) |>
+#   bind_rows(res_ER) |>
+#   fct_forestplot(
+#     .id = period_type,
+#     .value = E,
+#     .uperc = E_U,
+#     .cilower = E_cilower,
+#     .ciupper = E_ciupper,
+#     .id_colname = "Period",
+#     .conflevel = "90%",
+#     .filename = NA
+#   )
+# gt_all
 
-## LOAD DATA
-cs <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stocks", na = "NA")
-ad <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "AD_lu_transitions", na = "NA")
-usr <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "user_inputs", na = "NA")
-time <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "time_periods", na = "NA")
 
-time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
-
-ci_alpha <- 1 - usr$conf_level
-
-##
-## test whole calculation chain ######
-##
-
-sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .usr = usr)
-
-## FREL
-sim_FREL <- fct_combine_mcs_P(
-  .data = sim_trans,
-  .time = time_clean,
-  .period_type = "REF",
-  .ad_annual = usr$ad_annual
-)
-
-
-## Check
-tt <- sim_trans |> filter(sim_no == 1)
-
-res_FREL <- sim_FREL |>
-  mutate(period_id = "FREL") |>
-  fct_calc_res(.id = period_id, .sim = E_sim, .ci_alpha = ci_alpha)
-
-message("FREL is: ", res_FREL$E, " ± ", res_FREL$E_U, "%")
-
-## Monitoring
-sim_moni <- fct_combine_mcs_P(
-    .data = sim_trans,
-    .time = time_clean,
-    .period_type = "MON",
-    .ad_annual = usr$ad_annual
-  )
-
-res_moni <- sim_moni |>
-  fct_calc_res(.id = period_type, .sim = E_sim, .ci_alpha = ci_alpha)
 
 # sim_ER <- sim_FREL |>
 #   bind_rows(sim_moni)
 
-.sim_mon <- sim_moni
-.sim_ref <- sim_FREL
-
-moni_combi <- unique(sim_moni$period_type)
 
 
-sim_ER <- map(moni_combi, function(x){
-
-  out <- sim_moni |>
-    filter(period_type == x) |>
-    inner_join(sim_FREL, by = join_by(sim_no), suffix = c("", "_R")) |>
-    mutate(
-      ER_sim = E_sim_R - E_sim
-    )
-
-}) |> list_rbind()
 
 res_ER <- sim_ER |>
   fct_calc_res(.id = period_type, .sim = ER_sim, .ci_alpha = ci_alpha)
+
+
 
 tmp_ER <- time_clean |>
   group_by(period_type) |>
@@ -84,7 +96,15 @@ tmp_ER <- time_clean |>
     nb_years = sum(nb_years)
   )
 
+
+
+
+
+
 res_ER2 <- tmp_ER |> inner_join(res_ER, by = join_by(period_type))
+
+
+
 
 gt_ER <- res_ER |> fct_forestplot(
   .id = period_type,
@@ -105,6 +125,7 @@ gg_ER <- fct_histogram(
   .value_type = "ER"
   )
 
+#gt::gtsave(gt_ER, filename = "test.png")
 
 # ## !!! FOR TESTING INSIDE FUNCTIONS ONLY
 # # .ad <- ad

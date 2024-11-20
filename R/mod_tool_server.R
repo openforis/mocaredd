@@ -124,6 +124,20 @@ mod_tool_server <- function(id, rv) {
 
       rv$checks$all_done <- TRUE
 
+      ## ++ Enable run MCS -----------------------------------------------------
+
+      if(rv$checks$check_data$all_ok) {
+        shinyjs::hide("msg_no_check")
+        shinyjs::show("msg_checks_ok")
+        shinyjs::hide("msg_checks_wrong")
+        shinyjs::enable("btn_run_mcs")
+      } else {
+        shinyjs::hide("msg_no_check")
+        shinyjs::hide("msg_checks_ok")
+        shinyjs::show("msg_checks_wrong")
+        shinyjs::disable("btn_run_mcs")
+      }
+
     })
 
     ## 1.4 Prepare Outputs =====================================================
@@ -274,35 +288,35 @@ mod_tool_server <- function(id, rv) {
 
     ## 2.1 Enable button =======================================================
 
-    observe({
-
-      req(rv$checks$check_data$all_ok)
-
-
-      if(rv$checks$check_data$all_ok) {
-        shinyjs::hide("msg_no_check")
-        shinyjs::show("msg_checks_ok")
-        shinyjs::hide("msg_checks_wrong")
-        shinyjs::enable("btn_run_mcs")
-      } else {
-        shinyjs::hide("msg_no_check")
-        shinyjs::hide("msg_checks_ok")
-        shinyjs::show("msg_checks_wrong")
-        shinyjs::disable("btn_run_mcs")
-      }
-
-    })
+    ## !!! Now within run checks button event
+    # observe({
+    #
+    #   req(rv$checks$check_data$all_ok)
+    #
+    #
+    #   if(rv$checks$check_data$all_ok) {
+    #     shinyjs::hide("msg_no_check")
+    #     shinyjs::show("msg_checks_ok")
+    #     shinyjs::hide("msg_checks_wrong")
+    #     shinyjs::enable("btn_run_mcs")
+    #   } else {
+    #     shinyjs::hide("msg_no_check")
+    #     shinyjs::hide("msg_checks_ok")
+    #     shinyjs::show("msg_checks_wrong")
+    #     shinyjs::disable("btn_run_mcs")
+    #   }
+    #
+    # })
 
     ## 2.2 Run MCS and calculate res and graphs ================================
     observeEvent(input$btn_run_mcs, {
 
         nav_select(id = "tool_panel", selected = "res_panel")
 
-      # shinyjs::hide("mcs_init_msg")
-      # shinyjs::show("mcs_progress")
-      # shinyjs::hide("mcs_show")
-      # shinyjs::hide("mcs_vbs")
-      # shinyjs::hide("mcs_cards")
+      shinyjs::hide("res_init")
+      shinyjs::show("res_progress")
+      shinyjs::hide("btn_show_res")
+      shinyjs::hide("res_cards")
 
       ## Seed for random simulation
       if (!is.na(.usr$ran_seed)){

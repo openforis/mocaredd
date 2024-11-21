@@ -132,7 +132,7 @@ mod_tool_UI <- function(id, i18n){
     style = "font-style: italic;"
   )
 
-  ## ++ Checl Progress bar -----------------------------------------------------------
+  ## ++ Check Progress bar -----------------------------------------------------------
   div_check_progress <- shinyjs::hidden(div(
     id = ns("check_progress"),
     shinyWidgets::progressBar(
@@ -177,7 +177,7 @@ mod_tool_UI <- function(id, i18n){
   )
 
   ## Combine value boxes
-  div_value_boxes <- shinyjs::hidden(div(
+  div_check_vbs <- shinyjs::hidden(div(
     id = ns("check_vbs"),
     layout_column_wrap(
       #width = "200px",
@@ -204,7 +204,7 @@ mod_tool_UI <- function(id, i18n){
   )
 
   ## combine cards
-  div_cards <- shinyjs::hidden(div(
+  div_check_cards <- shinyjs::hidden(div(
     id = ns("check_cards"),
     layout_columns(
       card_check_msg, card_arithmetic_gg
@@ -234,52 +234,72 @@ mod_tool_UI <- function(id, i18n){
     )
   ))
 
-  div_btn_show_res <- shinyjs::hidden(div(
-    id = ns("btn_show_res"),
+  div_res_show <- shinyjs::hidden(div(
+    id = ns("res_show"),
     actionButton(inputId = ns("btn_show_res"), label = "Show simulation results")
   ))
 
   ## ++ Res cards --------------------------------------------------------------
   card_res_dl <- card(
+    fill = FALSE,
     h5(i18n$t("Download the simulations and aggregated results")),
-    "Download land use transition level emissions",
-    "Download aggregated results",
-    "Download forest plots",
+    downloadButton(
+      outputId = ns("dl_ari"),
+      label = "Download the arithmetic mean ERs", class = "btn-outline-secondary btn-small form-group"
+    ),
+    downloadButton(
+      outputId = ns("dl_res"),
+      label = "Download the simulated ERs", class = "btn-outline-secondary btn-small form-group"
+    ),
+    downloadButton(
+      outputId = ns("dl_ari"),
+      label = "Download all the ER simulations", class = "btn-outline-warning btn-small form-group"
+    ),
+    downloadButton(
+      outputId = ns("dl_ari"),
+      label = "Download all the land use transition simulations", class = "btn-outline-warning btn-small form-group"
+    ),
+    downloadButton(
+      outputId = ns("dl_ari"),
+      label = "Download all the forest plots", class = "btn-outline-primary btn-small form-group"
+    ),
   )
+
   card_res_fp <- card(
     h5(i18n$t("Emission reductions details")),
-    gt::gt_output(ns("res_fp"))
+    gt::gt_output(ns("res_ER_fp"))
   )
 
   card_res_gg <- card(
-    h5(i18n$t("Emission reductions figure")),
-    plotOutput(ns("res_gg"))
+    h5(i18n$t("Emission reductions histogram")),
+    uiOutput(outputId = ns("select_ER_hist_UI")),
+    plotOutput(ns("res_ER_hist"))
   )
 
   card_redd_fp <- card(
     h5(i18n$t("REDD+ Activity details")),
-    gt::gt_output(ns("redd_fp"))
+    gt::gt_output(ns("res_redd_fp"))
   )
 
   card_redd_hist <- card(
     h5(i18n$t("REDD+ activity histograms")),
     uiOutput(outputId = ns("select_redd_hist_UI")),
-    plotOutput(ns("redd_hist"))
+    uiOutput(outputId = ns("select_period_hist_UI")),
+    plotOutput(ns("res_redd_hist"))
   )
 
   card_trans_fp <- card(
     h5(i18n$t("Land use transition period")),
-    gt::gt_output(ns("trans_fp"))
+    gt::gt_output(ns("res_trans_fp"))
   )
 
   ## +++ combine cards
   div_res_cards <- shinyjs::hidden(div(
     id = ns("res_cards"),
     card_res_dl,
-    layout_columns(card_tab_ref, card_hist_ref),
-    layout_columns(card_tab_mon, card_hist_ref),
-    layout_columns(card_tab_ER, card_hist_ER),
-
+    layout_columns(col_widths = c(8, 4), card_res_fp, card_res_gg),
+    layout_columns(col_widths = c(8, 4), card_redd_fp, card_redd_hist),
+    card_trans_fp
   ))
 
   ##
@@ -293,7 +313,7 @@ mod_tool_UI <- function(id, i18n){
     br(),
 
     navset_card_tab(
-      id = ns("tool_panels"),
+      id = ns("tool_tabs"),
 
       ## + Sidebar =============================================================
 
@@ -324,9 +344,9 @@ mod_tool_UI <- function(id, i18n){
         div_check_progress,
         div_btn_show_check,
         ## Checks
-        div_value_boxes,
+        div_check_vbs,
         br(),
-        div_cards
+        div_check_cards
       ),
 
       ## + MCS panel ===========================================================
@@ -339,8 +359,9 @@ mod_tool_UI <- function(id, i18n){
         div_res_init,
         ## progress bar
         div_res_progress,
-        div_btn_show_res,
-        card_trans_tab
+        div_res_show,
+        ## cards
+        div_res_cards
       ),
 
       ## + Sensitivity analysis panel ============================================

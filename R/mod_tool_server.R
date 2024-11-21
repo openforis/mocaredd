@@ -16,8 +16,8 @@ mod_tool_server <- function(id, rv) {
 
     ## 1.1 Download example 1 if needed ========================================
     output$dl_template <- downloadHandler(
-      filename <- function() { "template1.xlsx" },
-      content  <- function(file) { file.copy(system.file("extdata/example1.xlsx", package = "mocaredd"), file) }
+      filename = function(){"template1.xlsx"},
+      content  = function(file){file.copy(system.file("extdata/example1.xlsx", package = "mocaredd"), file)}
     )
 
     ## 1.2 Check uploaded file columns =========================================
@@ -41,10 +41,12 @@ mod_tool_server <- function(id, rv) {
     })
 
     ## 1.3 Read data and run checks ============================================
+
     observeEvent(input$btn_run_checks, {
 
       ## For moving to sub-module?
       #rv$inputs$btn_run_checks <- input$btn_run_checks
+      nav_select(id = "tool_tabs", selected = "check_panel")
 
       ## ++ Show progress bar --------------------------------------------------
       shinyjs::hide("check_init_msg")
@@ -92,15 +94,13 @@ mod_tool_server <- function(id, rv) {
         session = session, id = "prog_allchecks", value = 50
       )
 
-      ## Calc length of periods
-      rv$inputs$time_clean <- rv$inputs$time |>
-        dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1)
+      ## !!! UPDATE INPUTS !!!
+      rv$inputs$time               <- rv$inputs$time |> dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1)
+      rv$inputs$usr$ci_alpha       <- 1 - rv$inputs$usr$conf_level
+      rv$inputs$usr$conf_level_txt <- paste0(rv$inputs$usr$conf_level * 100, "%")
 
       ## Calc arithmetic mean
-      rv$checks$ari_res <- fct_arithmetic_mean(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .usr = rv$inputs$usr, .time = rv$inputs$time_clean)
-
-      ## Conf int alpha
-      rv$inputs$ci_alpha <- 1 - rv$inputs$usr$conf_level
+      rv$checks$ari_res <- fct_arithmetic_mean(.ad = rv$inputs$ad, .cs = rv$inputs$cs, .usr = rv$inputs$usr, .time = rv$inputs$time)
 
       Sys.sleep(0.1)
 
@@ -222,7 +222,7 @@ mod_tool_server <- function(id, rv) {
         rv$checks$ari_res$gg_emissions
       }
 
-      })
+    })
 
     ## +++ LU change matrix ----
     output$check_select_period_UI <- renderUI({
@@ -280,8 +280,6 @@ mod_tool_server <- function(id, rv) {
       shinyjs::show("check_cards")
     })
 
-    # submod_check_server("tab_check", rv = rv)
-
     ##
     ## 2. Run MCS ##############################################################
     ##
@@ -311,69 +309,214 @@ mod_tool_server <- function(id, rv) {
     ## 2.2 Run MCS and calculate res and graphs ================================
     observeEvent(input$btn_run_mcs, {
 
-        nav_select(id = "tool_panel", selected = "res_panel")
+      ## ++ Move to res panel --------------------------------------------------
+      nav_select(id = "tool_tabs", selected = "res_panel")
 
+      ## ++ Show progress bar --------------------------------------------------
       shinyjs::hide("res_init")
       shinyjs::show("res_progress")
-      shinyjs::hide("btn_show_res")
+      shinyjs::hide("res_show")
       shinyjs::hide("res_cards")
 
+      rv$mcs$all_done <- NULL
+
+      ## ++ Set seed for simulations -------------------------------------------
+      shinyWidgets::updateProgressBar(
+        title = "Set seed for random simulations...",
+        session = session, id = "prog_res", value = 0, status = "primary"
+      )
+
       ## Seed for random simulation
-      if (!is.na(.usr$ran_seed)){
-        set.seed(.usr$ran_seed)
-        message("Random simulations with seed: ", .usr$ran_seed)
+      if (!is.na(rv$inputs$usr$ran_seed)){
+        set.seed(rv$inputs$usr$ran_seed)
+        message("Random simulations with seed: ", rv$inputs$usr$ran_seed)
       } else {
-        app_ran_seed <- sample(1:100, 1)
-        set.seed(app_ran_seed)
-        message("Seed for random simulations: ", app_ran_seed)
+        rv$inputs$usr$app_ran_seed <- sample(1:100, 1)
+        set.seed(rv$inputs$usr$app_ran_seed)
+        message("Seed for random simulations: ", rv$inputs$usr$app_ran_seed)
       }
 
-      ## LU transition sims
+      Sys.sleep(0.1)
+
+      ## ++ LU transitions sims ------------------------------------------------
+      shinyWidgets::updateProgressBar(
+        title = "Simulate emissions for each land use transition...",
+        session = session, id = "prog_res", value = 10, status = "primary"
+      )
+
       rv$mcs$sim_trans <- fct_combine_mcs_E(
         .ad = rv$inputs$ad,
         .cs = rv$inputs$cs,
         .usr = rv$inputs$usr
-        )
+      )
+
+      Sys.sleep(0.1)
+
+      ## simulation aggregates -------------------------------------------------
+      shinyWidgets::updateProgressBar(
+        title = "Calculate Emission Reductions...",
+        session = session, id = "prog_res", value = 40, status = "primary"
+      )
+
+      rv$mcs$sim_redd <- rv$mcs$sim_trans |>
+        dplyr::group_by(.data$sim_no, .data$time_period, .data$redd_activity) |>
+        dplyr::summarise(E_sim = sum(.data$E_sim), .groups = "drop")
+
+      rv$mcs$sim_REF <- rv$mcs$sim_trans |>
+        fct_combine_mcs_P(.time = rv$inputs$time, .period_type = "REF", .ad_annual = rv$inputs$usr$ad_annual)
+
+      rv$mcs$sim_MON <- rv$mcs$sim_trans |>
+        fct_combine_mcs_P(.time = rv$inputs$time, .period_type = "MON", .ad_annual = rv$inputs$usr$ad_annual)
+
+      rv$mcs$sim_ER <- fct_combine_mcs_ER(.sim_ref = rv$mcs$sim_REF, .sim_mon = rv$mcs$sim_MON, .ad_annual = rv$inputs$usr$ad_annual)
+
+      Sys.sleep(0.1)
+
+      ## ++ Get stats from simulations -----------------------------------------
+      shinyWidgets::updateProgressBar(
+        title = "Get medians and confidence intervals...",
+        session = session, id = "prog_res", value = 60, status = "primary"
+      )
 
       ## LU transition level results
       rv$mcs$res_trans <- fct_calc_res(
         .data = rv$mcs$sim_trans,
         .id = .data$trans_id,
         .sim = .data$E_sim,
-        .ci_alpha = rv$inputs$ci_alpha
-        )
+        .ci_alpha = rv$inputs$usr$ci_alpha
+      )
 
-      # ## FREL sims
-      # rv$mcs$sim_FREL <- fct_combine_mcs_P(
-      #   .data = rv$mcs$sim_trans,
-      #   .time = rv$inputs$time_clean,
-      #   .period_type = "REF",
-      #   .ad_annual = rv$inputs$usr$ad_annual
-      #   )
+      rv$mcs$res_redd <- rv$mcs$sim_redd |>
+        dplyr::mutate(redd_id = paste0(.data$time_period, " - ", .data$redd_activity)) |>
+        fct_calc_res(
+        .id = .data$redd_id,
+        .sim = .data$E_sim,
+        .ci_alpha = rv$inputs$usr$ci_alpha
+      )
 
+      rv$mcs$res_REF <- rv$mcs$sim_REF |>
+        fct_calc_res(.id = .data$period_type, .sim = .data$E_sim, .ci_alpha = rv$inputs$usr$ci_alpha)
+
+      rv$mcs$res_MON <- rv$mcs$sim_MON |>
+        fct_calc_res(.id = .data$period_type, .sim = .data$E_sim, .ci_alpha = rv$inputs$usr$ci_alpha) |>
+        dplyr::mutate(period_type = paste0("E-", .data$period_type))
+
+      rv$mcs$res_ER <- rv$mcs$sim_ER |>
+        fct_calc_res(.id = .data$period_type, .sim = .data$ER_sim, .ci_alpha = rv$inputs$usr$ci_alpha) |>
+        dplyr::mutate(period_type = paste0("ER-", .data$period_type))
+
+      rv$mcs$res_ER2 <- rv$mcs$res_REF |>
+          dplyr::bind_rows(rv$mcs$res_MON) |>
+          dplyr::bind_rows(rv$mcs$res_ER)
+
+      Sys.sleep(0.1)
+
+      ## ++ Prepa forest plots -------------------------------------------------
+      shinyWidgets::updateProgressBar(
+        title = "Prepare outputs...",
+        session = session, id = "prog_res", value = 80, status = "primary"
+      )
+
+      ## no binding hack in R cmd check
+      trans_id <- redd_id <- period_type <- E <- E_U <- E_cilower <- E_ciupper <- NULL
+
+      rv$mcs$fp_trans <- fct_forestplot(
+        .data = rv$mcs$res_trans,
+        .id = trans_id,
+        .value = E,
+        .uperc = E_U,
+        .cilower = E_cilower,
+        .ciupper = E_ciupper,
+        .id_colname = "Land use transition",
+        .conflevel = rv$inputs$usr$conf_level_txt,
+        .filename = NA
+      )
+
+      rv$mcs$fp_redd <- fct_forestplot(
+        .data = rv$mcs$res_redd,
+        .id = redd_id,
+        .value = E,
+        .uperc = E_U,
+        .cilower = E_cilower,
+        .ciupper = E_ciupper,
+        .id_colname = "Land use transition",
+        .conflevel = rv$inputs$usr$conf_level_txt,
+        .filename = NA
+      )
+
+      rv$mcs$fp_ER <- fct_forestplot(
+        .data = rv$mcs$res_ER2,
+        .id = period_type,
+        .value = E,
+        .uperc = E_U,
+        .cilower = E_cilower,
+        .ciupper = E_ciupper,
+        .id_colname = "Land use transition",
+        .conflevel = rv$inputs$usr$conf_level_txt,
+        .filename = NA
+      )
+
+
+      ## ++ Finalize -----------------------------------------------------------
+      shinyWidgets::updateProgressBar(
+        title = "All steps completed!",
+        session = session, id = "prog_res", value = 100, status = "success"
+      )
+
+      rv$mcs$all_done <- TRUE
 
     })
 
 
-    ## 2.3 Prepare Outputs =====================================================
+    ## 2.3 Outputs =============================================================
 
-output$res_trans_tab <- gt::render_gt({
+    ## ++ Downloads ------------------------------------------------------------
 
-  ## no binding hack in R cmd check
-  trans_id <- E <- E_U <- E_cilower <- E_ciupper <- NULL
-  fct_forestplot(
-    .data = rv$mcs$res_trans,
-    .id = trans_id,
-    .value = E,
-    .uperc = E_U,
-    .cilower = E_cilower,
-    .ciupper = E_ciupper,
-    .id_colname = "Land use transition",
-    .conflevel = "90%",
-    .filename = NA
-    )
+    ## ++ Forest plots ---------------------------------------------------------
+    output$res_trans_fp <- gt::render_gt({
+      req(rv$mcs$fp_trans)
 
-})
+      rv$mcs$fp_trans
+
+    })
+
+    output$res_trans_fp <- gt::render_gt({
+      req(rv$mcs$fp_trans)
+
+      rv$mcs$fp_trans
+
+    })
+
+    output$res_redd_fp <- gt::render_gt({
+      req(rv$mcs$fp_redd)
+
+      rv$mcs$fp_redd
+
+    })
+
+    output$res_ER_fp <- gt::render_gt({
+      req(rv$mcs$fp_ER)
+
+      rv$mcs$fp_ER
+
+    })
+    ## ++ Histograms -----------------------------------------------------------
+
+    ## 2.4 Show res conditionally ==============================================
+
+    ## Update show / hide panels
+    observe({
+      req(rv$mcs$all_done)
+
+      if (rv$mcs$all_done) shinyjs::show("res_show") else shinyjs::hide("res_show")
+
+    })
+
+    observeEvent(input$btn_show_res, {
+      shinyjs::hide("res_progress")
+      shinyjs::hide("res_show")
+      shinyjs::show("res_cards")
+    })
 
 
   }) ## END module server function

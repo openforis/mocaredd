@@ -491,10 +491,10 @@ mod_tool_server <- function(id, rv) {
       content  = function(file){write.csv(rv$mcs$sim_trans, file)}
     )
 
-    output$dl_fp <- downloadHandler(
-      filename = function(){"mocaredd - all forest plots for reporting"},
-      content  = function(file){write.csv(rv$checks$ari_res$ER, file)}
-    )
+    # output$dl_fp <- downloadHandler(
+    #   filename = function(){"mocaredd - all forest plots for reporting"},
+    #   content  = function(file){write.csv(rv$checks$ari_res$ER, file)}
+    # )
 
     ## ++ Forest plots ---------------------------------------------------------
     output$res_trans_fp <- gt::render_gt({

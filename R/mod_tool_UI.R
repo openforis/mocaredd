@@ -260,10 +260,10 @@ mod_tool_UI <- function(id, i18n){
         outputId = ns("dl_sim_trans"),
         label = "Download all the land use transition simulations", class = "btn-outline-warning btn-small form-group"
       ),
-      downloadButton(
-        outputId = ns("dl_fp"),
-        label = "Download all the forest plots", class = "btn-outline-primary btn-small form-group"
-      )
+      # downloadButton(
+      #   outputId = ns("dl_fp"),
+      #   label = "Download all the forest plots", class = "btn-outline-primary btn-small form-group"
+      # )
     )
   )
 

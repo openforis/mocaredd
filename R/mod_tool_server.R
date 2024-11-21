@@ -471,6 +471,30 @@ mod_tool_server <- function(id, rv) {
     ## 2.3 Outputs =============================================================
 
     ## ++ Downloads ------------------------------------------------------------
+    output$dl_ari <- downloadHandler(
+      filename = function(){"mocaredd - arithmetic mean based emission reductions.csv"},
+      content  = function(file){write.csv(rv$checks$ari_res$ER, file)}
+    )
+
+    output$dl_res <- downloadHandler(
+      filename = function(){"mocaredd - simulation based emissions reductions.csv"},
+      content  = function(file){write.csv(rv$mcs$res_ER2, file)}
+    )
+
+    output$dl_sim_ER <- downloadHandler(
+      filename = function(){"mocaredd - simulations at ER level.csv"},
+      content  = function(file){write.csv(rv$mcs$sim_ER, file)}
+    )
+
+    output$dl_sim_trans <- downloadHandler(
+      filename = function(){"mocaredd - BIGFILE - simulations at land use transition level.csv"},
+      content  = function(file){write.csv(rv$mcs$sim_trans, file)}
+    )
+
+    output$dl_fp <- downloadHandler(
+      filename = function(){"mocaredd - all forest plots for reporting"},
+      content  = function(file){write.csv(rv$checks$ari_res$ER, file)}
+    )
 
     ## ++ Forest plots ---------------------------------------------------------
     output$res_trans_fp <- gt::render_gt({

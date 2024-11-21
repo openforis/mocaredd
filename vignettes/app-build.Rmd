@@ -93,3 +93,11 @@ usethis::use_test("fct_combine_mcs_P")
 #pkgdown::build_site() 
 usethis::use_pkgdown_github_pages()
 ```
+
+## Install specific version
+
+```{r}
+if (!require(remotes)) install.packages(remotes, dep =TRUE)
+remotes::install_github("openforis/mocaredd@v0.1.0")
+mocaredd::shiny_run_mocaredd()
+```

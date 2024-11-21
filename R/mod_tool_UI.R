@@ -241,28 +241,30 @@ mod_tool_UI <- function(id, i18n){
 
   ## ++ Res cards --------------------------------------------------------------
   card_res_dl <- card(
-    fill = FALSE,
-    h5(i18n$t("Download the simulations and aggregated results")),
-    downloadButton(
-      outputId = ns("dl_ari"),
-      label = "Download the arithmetic mean ERs", class = "btn-outline-secondary btn-small form-group"
-    ),
-    downloadButton(
-      outputId = ns("dl_res"),
-      label = "Download the simulated ERs", class = "btn-outline-secondary btn-small form-group"
-    ),
-    downloadButton(
-      outputId = ns("dl_ari"),
-      label = "Download all the ER simulations", class = "btn-outline-warning btn-small form-group"
-    ),
-    downloadButton(
-      outputId = ns("dl_ari"),
-      label = "Download all the land use transition simulations", class = "btn-outline-warning btn-small form-group"
-    ),
-    downloadButton(
-      outputId = ns("dl_ari"),
-      label = "Download all the forest plots", class = "btn-outline-primary btn-small form-group"
-    ),
+    card_body(
+      fillable = FALSE,
+      h5(i18n$t("Download the simulations and aggregated results")),
+      downloadButton(
+        outputId = ns("dl_ari"),
+        label = "Download the arithmetic mean ERs", class = "btn-outline-secondary btn-small form-group"
+      ),
+      downloadButton(
+        outputId = ns("dl_res"),
+        label = "Download the simulated ERs", class = "btn-outline-secondary btn-small form-group"
+      ),
+      downloadButton(
+        outputId = ns("dl_sim_ER"),
+        label = "Download all the ER simulations", class = "btn-outline-warning btn-small form-group"
+      ),
+      downloadButton(
+        outputId = ns("dl_sim_trans"),
+        label = "Download all the land use transition simulations", class = "btn-outline-warning btn-small form-group"
+      ),
+      downloadButton(
+        outputId = ns("dl_fp"),
+        label = "Download all the forest plots", class = "btn-outline-primary btn-small form-group"
+      )
+    )
   )
 
   card_res_fp <- card(

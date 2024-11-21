@@ -65,7 +65,9 @@ usethis::use_package("dplyr")
 devtools::document()
 devtools::load_all()
 shiny_run_mocaredd()
+```
 
+```{r}
 devtools::install()
 library(mocaredd)
 shiny_run_mocaredd()

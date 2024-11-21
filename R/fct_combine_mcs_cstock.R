@@ -36,7 +36,7 @@
 #'   na = "NA"
 #'   )
 #'
-#' res <- fct_combine_mcs_cstock(.ad = ad, .cs = cs_clean, .usr = usr)
+#' res <- fct_combine_mcs_cstock(.ad = ad, .cs = cs, .usr = usr)
 #' res |> filter(sim_no == 1)
 #'
 #' @export

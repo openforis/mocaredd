@@ -67,9 +67,9 @@ fct_combine_mcs_ER <- function(
 ){
 
   ## !!! FOR TESTING ONLY - run example then assign to function inputs
-  .sim_ref = sim_REF
-  .sim_mon = sim_MON
-  .ad_annual = usr$ad_annual
+  # .sim_ref = sim_REF
+  # .sim_mon = sim_MON
+  # .ad_annual = usr$ad_annual
   ## !!!
 
   moni_combi <- unique(.sim_mon$period_type)
@@ -78,7 +78,7 @@ fct_combine_mcs_ER <- function(
 
     out <- .sim_mon |>
       dplyr::filter(.data$period_type == x) |>
-      dplyr::inner_join(sim_FREL, by = "sim_no", suffix = c("", "_R")) |>
+      dplyr::inner_join(.sim_ref, by = "sim_no", suffix = c("", "_R")) |>
       dplyr::mutate(ER_sim = .data$E_sim_R - .data$E_sim)
 
   }) |> purrr::list_rbind()

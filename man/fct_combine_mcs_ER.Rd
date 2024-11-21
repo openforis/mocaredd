@@ -49,12 +49,19 @@ time <- read_xlsx(
 
 time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
 
-sim_trans <- fct_combine_mcs_E(.ad = ad_clean, .cs = cs_clean, .usr = usr)
+sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .usr = usr)
 
-sim_FREL <- fct_combine_mcs_P(
+sim_REF <- fct_combine_mcs_P(
   .data = sim_trans,
   .time = time_clean,
   .period_type = "REF",
+  .ad_annual = usr$ad_annual
+)
+
+sim_MON <- fct_combine_mcs_P(
+  .data = sim_trans,
+  .time = time_clean,
+  .period_type = "MON",
   .ad_annual = usr$ad_annual
 )
 

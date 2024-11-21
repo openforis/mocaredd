@@ -97,7 +97,7 @@ fct_combine_mcs_cpools <- function(.c_sub, .usr){
       C_all = eval(parse(text=c_form), SIMS),
       sim_no = 1:.usr$n_iter
     ) |>
-    dplyr::select(.data$sim_no, dplyr::everything())
+    dplyr::select("sim_no", dplyr::everything())
 
 }
 

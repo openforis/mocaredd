@@ -167,9 +167,9 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
       E_sim  = .data$AD * .data$EF
     ) %>%
     dplyr::select(
-      .data$sim_no, .data$redd_activity, time_period = .data$trans_period, .data$trans_id,
-      .data$AD, .data$EF, .data$E_sim, .data$C_form_i, .data$C_all_i, .data$C_form_f,
-      .data$C_all_f, dplyr::everything()
+      "sim_no", "redd_activity", time_period = "trans_period", "trans_id",
+      "AD", "EF", "E_sim", "C_form_i", "C_all_i", "C_form_f",
+      "C_all_f", dplyr::everything()
     )
 
 }

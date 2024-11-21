@@ -8,6 +8,7 @@ ad_clean <- ad |> dplyr::filter(!is.na(trans_area) | !is.na(trans_pdf_a))
 cs_clean <- cs |> dplyr::filter(!is.na(c_value) | !is.na(c_pdf_a))
 time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
 
+set.seed(1)
 sim_trans <- fct_combine_mcs_E(.ad = ad_clean, .cs = cs_clean, .usr = usr)
 
 sim_FREL <- fct_combine_mcs_P(
@@ -20,5 +21,5 @@ sim_FREL <- fct_combine_mcs_P(
 test_res <- round(median(sim_FREL$E_sim))
 
 testthat::test_that("function doesn't work :P", {
-  testthat::expect_equal(test_res, 4591614)
+  testthat::expect_equal(test_res, 4594283)
 })

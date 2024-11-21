@@ -13,52 +13,79 @@
 # usr <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "user_inputs", na = "NA")
 # time <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "time_periods", na = "NA")
 #
-# time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
+# time <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
 #
-# ci_alpha <- 1 - usr$conf_level
+# usr$ci_alpha <- 1 - usr$conf_level
+# usr$conf_level_txt = paste0(usr$conf_level * 100, "%")
+#
 #
 # ##
 # ## test whole calculation chain ######
 # ##
 #
+# ari <- fct_arithmetic_mean(.ad = ad, .cs = cs, .usr = usr ,.time = time)
+#
 # sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .usr = usr)
 #
 # ## Check
-# tt <- sim_FREL |> filter(sim_no == 1)
+# tt <- sim_trans |> filter(sim_no == 1)
 # tt
+#
+#
+# res_trans <- sim_trans |> fct_calc_res(.id = trans_id, .sim = E_sim, .ci_alpha = usr$ci_alpha)
+#
+# gt_trans <- fct_forestplot(
+#   .data = res_trans,
+#   .id = trans_id,
+#   .value = E,
+#   .uperc = E_U,
+#   .cilower = E_cilower,
+#   .ciupper = E_ciupper,
+#   .id_colname = "REDD+ Activity",
+#   .conflevel = usr$conf_level_txt,
+#   .filename = NA
+#   )
+#
+# sim_redd <- sim_trans |>
+#  dplyr::group_by(.data$sim_no, .data$time_period, .data$redd_activity) |>
+#   dplyr::summarise(E_sim = sum(.data$E_sim), .groups = "drop")
+#
+# ## Check
+# tt <- sim_redd |> filter(sim_no == 1)
+# tt
+# res_redd <- fct_calc_res(.data = sim_redd, .id = redd_activity, .sim = E_sim, .ci_alpha = usr$ci_alpha)
 #
 # ## FREL
 # sim_REF <- fct_combine_mcs_P(
 #   .data = sim_trans,
-#   .time = time_clean,
+#   .time = time,
 #   .period_type = "REF",
 #   .ad_annual = usr$ad_annual
 # )
 #
-#
 # res_REF <- sim_REF |>
-#   fct_calc_res(.id = period_type, .sim = E_sim, .ci_alpha = ci_alpha)
+#   fct_calc_res(.id = period_type, .sim = E_sim, .ci_alpha = usr$ci_alpha)
 #
 # message("FREL is: ", res_REF$E, " ± ", res_REF$E_U, "%")
 #
 # ## Monitoring
 # sim_MON <- fct_combine_mcs_P(
 #     .data = sim_trans,
-#     .time = time_clean,
+#     .time = time,
 #     .period_type = "MON",
 #     .ad_annual = usr$ad_annual
 #   )
 #
 # res_MON <- sim_MON |>
-#   fct_calc_res(.id = period_type, .sim = E_sim, .ci_alpha = ci_alpha) |>
+#   fct_calc_res(.id = period_type, .sim = E_sim, .ci_alpha = usr$ci_alpha) |>
 #   mutate(period_type = paste0("E-", period_type))
 #
 # sim_ER <- fct_combine_mcs_ER(.sim_ref = sim_REF, .sim_mon = sim_MON, .ad_annual = usr$ad_annual)
 #
 # res_ER <- sim_ER |>
-#   fct_calc_res(.id = period_type, .sim = ER_sim, .ci_alpha = ci_alpha) |>
+#   fct_calc_res(.id = period_type, .sim = ER_sim, .ci_alpha = usr$ci_alpha) |>
 #   mutate(period_type = paste0("ER-", period_type))
-#
+
 # ## Combine results
 # gt_all <- res_REF |>
 #   bind_rows(res_MON) |>
@@ -80,50 +107,50 @@
 # sim_ER <- sim_FREL |>
 #   bind_rows(sim_moni)
 
-
-
-
-res_ER <- sim_ER |>
-  fct_calc_res(.id = period_type, .sim = ER_sim, .ci_alpha = ci_alpha)
-
-
-
-tmp_ER <- time_clean |>
-  group_by(period_type) |>
-  summarise(
-    year_start = min(year_start),
-    year_end = max(year_end),
-    nb_years = sum(nb_years)
-  )
-
-
-
-
-
-
-res_ER2 <- tmp_ER |> inner_join(res_ER, by = join_by(period_type))
-
-
-
-
-gt_ER <- res_ER |> fct_forestplot(
-  .id = period_type,
-  .value = E,
-  .uperc = E_U,
-  .cilower = E_cilower,
-  .ciupper = E_ciupper,
-  .id_colname = "Monitoring period",
-  .conflevel = "90%",
-  .filename = NA
-  )
-
-gg_ER <- fct_histogram(
-  .dat = sim_ER,
-  .res = res_ER,
-  .id = period_type,
-  .value = ER_sim,
-  .value_type = "ER"
-  )
+#
+#
+#
+# res_ER <- sim_ER |>
+#   fct_calc_res(.id = period_type, .sim = ER_sim, .ci_alpha = ci_alpha)
+#
+#
+#
+# tmp_ER <- time_clean |>
+#   group_by(period_type) |>
+#   summarise(
+#     year_start = min(year_start),
+#     year_end = max(year_end),
+#     nb_years = sum(nb_years)
+#   )
+#
+#
+#
+#
+#
+#
+# res_ER2 <- tmp_ER |> inner_join(res_ER, by = join_by(period_type))
+#
+#
+#
+#
+# gt_ER <- res_ER |> fct_forestplot(
+#   .id = period_type,
+#   .value = E,
+#   .uperc = E_U,
+#   .cilower = E_cilower,
+#   .ciupper = E_ciupper,
+#   .id_colname = "Monitoring period",
+#   .conflevel = "90%",
+#   .filename = NA
+#   )
+#
+# gg_ER <- fct_histogram(
+#   .dat = sim_ER,
+#   .res = res_ER,
+#   .id = period_type,
+#   .value = ER_sim,
+#   .value_type = "ER"
+#   )
 
 #gt::gtsave(gt_ER, filename = "test.png")
 

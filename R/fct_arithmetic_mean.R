@@ -58,6 +58,7 @@ fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
   # .ad = ad
   # .cs = cs
   # .usr = usr
+  # .time = time_clean
   ## !!!
 
   usr_ari <- .usr |> dplyr::mutate(n_iter = 1)
@@ -81,6 +82,19 @@ fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
     .period_type = "MON",
     .ad_annual = usr_ari$ad_annual
   )
+
+  ari_ER <- fct_combine_mcs_ER(.sim_ref = ari_REF, .sim_mon = ari_MON, .ad_annual = .usr$ad_annual) |>
+    dplyr::mutate(period_type = paste0("ER-", .data$period_type)) |>
+    dplyr::select("period_type", E = "ER_sim")
+
+  ari_REF2 <- ari_REF |> dplyr::select("period_type", E = "E_sim")
+  ari_MON2 <- ari_MON |>
+    dplyr::mutate(period_type = paste0("E-", .data$period_type)) |>
+    dplyr::select("period_type", E = "E_sim")
+
+  ari_combi <- ari_REF2 |>
+    dplyr::bind_rows(ari_MON2) |>
+    dplyr::bind_rows(ari_ER)
 
   out_combi <- .time |>
     dplyr::group_by(.data$period_type) |>
@@ -126,7 +140,7 @@ fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
       y = "Emissions (MtCO2e/y)"
     )
 
-  list(emissions = out_combi, gg_emissions = out_gg)
+  list(ER = ari_combi, emissions = out_combi, gg_emissions = out_gg)
 
 }
 

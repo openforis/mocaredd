@@ -55,13 +55,14 @@ showing the median and CI together.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fct_forestplot</span><span class="op">(</span></span>
 <span>  <span class="va">.data</span>,</span>
 <span>  <span class="va">.id</span>,</span>
+<span>  .value_ari <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">.value</span>,</span>
 <span>  <span class="va">.uperc</span>,</span>
 <span>  <span class="va">.cilower</span>,</span>
 <span>  <span class="va">.ciupper</span>,</span>
 <span>  <span class="va">.id_colname</span>,</span>
 <span>  <span class="va">.conflevel</span>,</span>
-<span>  <span class="va">.filename</span></span>
+<span>  .filename <span class="op">=</span> <span class="cn">NA</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -75,6 +76,10 @@ showing the median and CI together.</p>
 
 <dt id="arg--id">.id<a class="anchor" aria-label="anchor" href="#arg--id"></a></dt>
 <dd><p>the name of the ID column of the data frame</p></dd>
+
+
+<dt id="arg--value-ari">.value_ari<a class="anchor" aria-label="anchor" href="#arg--value-ari"></a></dt>
+<dd><p>NULL if not relevant (most cases) or a column name with the arithmetic mean of Emission or emission reductions.</p></dd>
 
 
 <dt id="arg--value">.value<a class="anchor" aria-label="anchor" href="#arg--value"></a></dt>

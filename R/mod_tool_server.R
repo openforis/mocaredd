@@ -218,7 +218,7 @@ mod_tool_server <- function(id, rv) {
     output$vb_dg_method <- renderText({
       req(rv$checks$check_data$all_ok)
       if (rv$checks$check_data$all_ok) {
-        if ("DG_ratio" %in% unique(cs$c_pool)){
+        if ("DG_ratio" %in% unique(rv$inputs$cs$c_pool)){
           paste0("Degradation ratio applied to ", rv$inputs$usr$dg_pool)
         } else {
           "Carbon stock difference"
@@ -561,7 +561,7 @@ mod_tool_server <- function(id, rv) {
 
     # output$dl_fp <- downloadHandler(
     #   filename = function(){"mocaredd - all forest plots for reporting"},
-    #   content  = function(file){write.csv(rv$checks$ari_res$ER, file)}
+    #   content  = function(file){utils::write.csv(rv$checks$ari_res$ER, file)}
     # )
 
     ## ++ Forest plots ---------------------------------------------------------

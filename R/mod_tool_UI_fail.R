@@ -1,7 +1,7 @@
 #' Tool module UI function
 #'
 #' @noRd
-mod_tool_UI <- function(id, i18n){
+mod_tool_UI_fail <- function(id, i18n){
 
   ## From https://shiny.rstudio.com/articles/modules.html
   # `NS(id)` returns a namespace function, which was save as `ns` and will
@@ -67,7 +67,7 @@ mod_tool_UI <- function(id, i18n){
         actionButton(
           inputId = ns("btn_run_checks"),
           label = "Run checks"
-        )
+       )
       ),
       style = "margin-top: 1rem;"
     )
@@ -108,7 +108,12 @@ mod_tool_UI <- function(id, i18n){
         )
       ),
       style = "margin-top: 1rem;"
+    ),
+    div(
+      #id = ns("res_show"),
+      actionButton(inputId = ns("btn_show_res"), label = "Show simulation results")
     )
+
   )
 
   ## ++ Accordion 3: Run Sensitivity -------------------------------------------
@@ -118,12 +123,11 @@ mod_tool_UI <- function(id, i18n){
     value = ns("ac_sens"),
 
     ## Content
-    h4("coming soon")
+    h4("Coming Soon")
   )
 
-  ## + Check panel =============================================================
+  ## + Initial message =========================================================
 
-  ## ++ Check Initial text -----------------------------------------------------------
   div_check_init <- div(
     id = ns("check_init_msg"),
     bsicons::bs_icon("arrow-left"), " Start with uploading your data in the sidebar.",
@@ -131,92 +135,7 @@ mod_tool_UI <- function(id, i18n){
     style = "font-style: italic;"
   )
 
-  ## ++ Check Progress bar -----------------------------------------------------------
-  div_check_progress <- shinyjs::hidden(div(
-    id = ns("check_progress"),
-    shinyWidgets::progressBar(
-      id = ns("prog_allchecks"),
-      value = 0,
-      title = "Data checks progress",
-      display_pct = TRUE
-    )
-  ))
 
-  div_btn_show_check <- shinyjs::hidden(div(
-    id = ns("check_show"),
-    actionButton(inputId = ns("btn_show_checks"), label = "Show data checks")
-  ))
-
-  ## ++ Check Value boxes ------------------------------------------------------------
-  vb_time <- value_box(
-    title = "Time periods",
-    value = htmlOutput(ns("vb_nb_time")),
-    showcase = bsicons::bs_icon("calendar3", size = "40px"),
-    theme = "primary",
-    textOutput(ns("vb_nb_ref")),
-    textOutput(ns("vb_nb_mon"))
-  )
-
-  vb_ad <- value_box(
-    title = "Land use transitions",
-    value = htmlOutput(ns("vb_nb_trans")),
-    showcase = bsicons::bs_icon("pin-map", size = "40px"),
-    theme = "secondary",
-    textOutput(ns("vb_nb_lu")),
-    textOutput(ns("vb_nb_redd"))
-  )
-
-  vb_cs <- value_box(
-    title = "Carbon stock",
-    value = htmlOutput(ns("vb_nb_pools")),
-    showcase = bsicons::bs_icon("arrow-repeat", size = "48px"),
-    theme = "warning",
-    textOutput(ns("vb_c_pools")),
-    textOutput(ns("vb_dg_method")),
-  )
-
-  ## Combine value boxes
-  div_check_vbs <- shinyjs::hidden(div(
-    id = ns("check_vbs"),
-    layout_column_wrap(
-      #width = "200px",
-      fill = FALSE,
-      vb_time, vb_ad, vb_cs
-    )
-  ))
-
-  ## ++ Check Cards ------------------------------------------------------------------
-  card_check_msg <- card(
-    h5(i18n$t("Check all column names are valid")),
-    gt::gt_output(ns("check_msg"))
-  )
-
-  card_arithmetic_gg <- card(
-    h5(i18n$t("Arithmetic mean emission reductions per period (tCO2e/y)")),
-    plotOutput(ns("check_arithmetic_gg"))
-  )
-
-  card_lumatrix <- card(
-    h5(i18n$t("Land use change matrix")),
-    layout_column_wrap(
-      width = "200px", fixed_width = TRUE,
-      uiOutput(outputId = ns("check_select_period_UI")),
-      div(
-        verbatimTextOutput(outputId = ns("check_show_period_type")),
-        style = "margin-top:29px;" ## 21px txt + 8px margin to align with selectInput
-      )
-    ),
-    gt::gt_output(ns("check_lumatrix"))
-  )
-
-  ## combine cards
-  div_check_cards <- shinyjs::hidden(div(
-    id = ns("check_cards"),
-    layout_columns(
-      card_check_msg, card_arithmetic_gg
-    ),
-    card_lumatrix
-  ))
 
 
   ## + Results panel ===========================================================
@@ -240,10 +159,10 @@ mod_tool_UI <- function(id, i18n){
     )
   ))
 
-  div_res_show <- shinyjs::hidden(div(
-    id = ns("res_show"),
-    actionButton(inputId = ns("btn_show_res"), label = "Show simulation results")
-  ))
+  # div_res_show <- shinyjs::hidden(div(
+  #   id = ns("res_show"),
+  #   actionButton(inputId = ns("btn_show_res"), label = "Show simulation results")
+  # ))
 
   ## ++ Res cards --------------------------------------------------------------
   card_res_dl <- card(
@@ -274,26 +193,22 @@ mod_tool_UI <- function(id, i18n){
   )
 
   card_res_fp <- card(
-    full_screen = T,
     h5(i18n$t("Emission reductions details")),
     gt::gt_output(ns("res_ER_fp"))
   )
 
   card_res_gg <- card(
-    full_screen = T,
     h5(i18n$t("Emission reductions histogram")),
     uiOutput(outputId = ns("res_select_ER_hist_UI")),
     plotOutput(ns("res_ER_hist"))
   )
 
   card_redd_fp <- card(
-    full_screen = T,
     h5(i18n$t("REDD+ Activity details")),
     gt::gt_output(ns("res_redd_fp"))
   )
 
   card_redd_hist <- card(
-    full_screen = T,
     h5(i18n$t("REDD+ activity histograms")),
     uiOutput(outputId = ns("res_select_redd_hist_UI")),
     uiOutput(outputId = ns("res_select_period_hist_UI")),
@@ -309,17 +224,10 @@ mod_tool_UI <- function(id, i18n){
   div_res_cards <- shinyjs::hidden(div(
     id = ns("res_cards"),
     card_res_dl,
-    layout_columns(col_widths = c(8, 4), card_res_fp, card_res_gg),
+    layout_columns(col_widths = c(6, 6), card_res_fp, card_res_gg),
     layout_columns(col_widths = c(8, 4), card_redd_fp, card_redd_hist),
     #card_trans_fp
   ))
-
-  ## + Sensitivity panel =======================================================
-  div_trans_forestplot <- div(
-    id = ns("trans_forestplot"),
-    gt::gt_output(ns("sens_trans_fp"))
-  )
-
 
   ##
   ## Layout UI elements with tagList() function ################################
@@ -331,7 +239,7 @@ mod_tool_UI <- function(id, i18n){
 
     br(),
 
-    navset_card_tab(
+    layout_sidebar(
       id = ns("tool_tabs"),
 
       ## + Sidebar =============================================================
@@ -344,55 +252,71 @@ mod_tool_UI <- function(id, i18n){
           ac_load,
           ac_mcs,
           ac_sens
-        )
+          )
       ),
 
-      ## Spacer to right align menu items
-      nav_spacer(),
+      div_check_init,
 
-      ## + Checks panel ========================================================
+      shinyjs::hidden(div(
+        id = ns("div_check_UI"),
+        submod_check_UI("tab_check", i18n = i18n)
+      )),
 
-      nav_panel(
-        title = i18n$t("Check your data"),
-        value = ns("check_panel"),
-        icon = icon("circle-check"),
-        #submod_check_UI("tab_check", i18n = i18n)
-        ## Initial msg
-        div_check_init,
-        ## progress bar
-        div_check_progress,
-        div_btn_show_check,
-        ## Checks
-        div_check_vbs,
-        br(),
-        div_check_cards
-      ),
+      # shinyjs::hidden(div(
+      #   id = ns("div_res_UI"),
+      #   submod_res_UI("tab_res", i18n = i18n)
+      # )),
+
+      # shinyjs::hidden(div(
+      #   id = ns("div_sens_UI"),
+      #   submod_sensitivity_UI("tab_sens", i18n = i18n)
+      #   )),
+
+
+      ##########
+
+
+      # nav_panel(
+      #   title = i18n$t("Check your data"),
+      #   value = ns("check_panel"),
+      #   icon = icon("circle-check"),
+      #   #submod_check_UI("tab_check", i18n = i18n)
+      #   ## Initial msg
+      #   div_check_init,
+      #   ## progress bar
+      #   div_check_progress,
+      #   div_btn_show_check,
+      #   ## Checks
+      #   div_check_vbs,
+      #   br(),
+      #   div_check_cards
+      # ),
 
       ## + MCS panel ===========================================================
 
-      nav_panel(
-        title = i18n$t("Results"),
-        value = ns("res_panel"),
-        icon = icon("chart-simple"),
-        #submod_res_UI("tab_res", i18n = i18n)
-        div_res_init,
-        ## progress bar
-        div_res_progress,
-        div_res_show,
-        ## cards
-        div_res_cards
-      ),
+      # nav_panel(
+      #   title = i18n$t("Results"),
+      #   value = ns("res_panel"),
+      #   icon = icon("chart-simple"),
+      #   #submod_res_UI("tab_res", i18n = i18n)
+      #   div_res_init,
+      #   ## progress bar
+      #   div_res_progress,
+      #   #div_res_show,
+      #   ## cards
+      #   div_res_cards
+      # ),
+      #
+      # ## + Sensitivity analysis panel ============================================
+      #
+      # nav_panel(
+      #   title = i18n$t("Sensitivity"),
+      #   value = ns("sensi_panel"),
+      #   icon = icon("magnifying-glass"),
+      #   submod_sensitivity_UI("tab_sensitivity", i18n = i18n)
+      # )
 
-      ## + Sensitivity analysis panel ============================================
-
-      nav_panel(
-        title = i18n$t("Sensitivity"),
-        value = ns("sensi_panel"),
-        icon = icon("magnifying-glass"),
-        div_trans_forestplot
-      )
-
-    ) ## END navset_card_tab()
+    ) ## END layout_sidebar()
 
   ) ## END tagList
 

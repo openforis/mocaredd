@@ -59,7 +59,7 @@ app_checklist <- list(
   cat_ptype  = c("REF", "REF[0-9]", "MON", "MON[0-9]"),
   cat_pdf    = c("normal", "beta"),
   col_usr    = c("trunc_pdf", "n_iter", "ran_seed", "c_unit", "c_fraction", "dg_pool",
-                 "dg_expool", "ad_annual", "conf_level"),
+                 "ad_annual", "conf_level"),
   col_time   = c("period_no", "year_start", "year_end", "period_type"),
   col_ad     = c("trans_no",	"trans_id",	"trans_period",	"redd_activity", "lu_initial_id",
                  "lu_initial",	"lu_final_id", "lu_final", "trans_area", "trans_se",

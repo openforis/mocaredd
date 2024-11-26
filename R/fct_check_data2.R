@@ -51,7 +51,7 @@
 #'   cat_ptype  = c("REF", "REF[0-9]", "MON", "MON[0-9]"),
 #'   cat_pdf    = c("normal", "beta"),
 #'   col_usr    = c("trunc_pdf", "n_iter", "ran_seed", "c_unit", "c_fraction", "dg_pool",
-#'                  "dg_expool", "ad_annual", "conf_level"),
+#'                  "ad_annual", "conf_level"),
 #'   col_time   = c("period_no", "year_start", "year_end", "period_type"),
 #'   col_ad     = c("trans_no",	"trans_id",	"trans_period",	"redd_activity", "lu_initial_id",
 #'                  "lu_initial",	"lu_final_id", "lu_final", "trans_area", "trans_se",
@@ -131,7 +131,7 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
     is.character(.usr$c_unit),
     #is.numeric(.usr$c_fraction), ## !!! C_fraction needs mean, sd if not NA, maybe better to have it in Cstock table
     is.character(.usr$dg_pool) | is.logical(.usr$dg_pool),
-    is.logical(.usr$dg_expool),
+    #is.logical(.usr$dg_expool),
     is.logical(.usr$ad_annual),
     is.numeric(.usr$conf_level)
   )

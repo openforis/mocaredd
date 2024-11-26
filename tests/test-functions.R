@@ -1,8 +1,8 @@
 
 
-# ## NEED TO CONVERT TO PROPER TESTING FROM TESTTHAT.
-# ## SEE tests/testthat.
-#
+## NEED TO CONVERT TO PROPER TESTING FROM TESTTHAT.
+## SEE tests/testthat.
+
 # library(tidyverse)
 # library(readxl)
 # library(mocaredd)
@@ -34,26 +34,37 @@
 #
 # res_trans <- sim_trans |> fct_calc_res(.id = trans_id, .sim = E_sim, .ci_alpha = usr$ci_alpha)
 #
-# gt_trans <- fct_forestplot(
-#   .data = res_trans,
-#   .id = trans_id,
-#   .value = E,
-#   .uperc = E_U,
-#   .cilower = E_cilower,
-#   .ciupper = E_ciupper,
-#   .id_colname = "REDD+ Activity",
-#   .conflevel = usr$conf_level_txt,
-#   .filename = NA
-#   )
+# # tictoc::tic()
+# # gt_trans <- fct_forestplot(
+# #   .data = res_trans,
+# #   .id = trans_id,
+# #   .value = E,
+# #   .uperc = E_U,
+# #   .cilower = E_cilower,
+# #   .ciupper = E_ciupper,
+# #   .id_colname = "REDD+ Activity",
+# #   .conflevel = usr$conf_level_txt,
+# #   .filename = "test-trans.png"
+# #   )
+# # tictoc::toc()
 #
 # sim_redd <- sim_trans |>
-#  dplyr::group_by(.data$sim_no, .data$time_period, .data$redd_activity) |>
-#   dplyr::summarise(E_sim = sum(.data$E_sim), .groups = "drop")
+#   dplyr::group_by(.data$sim_no, .data$time_period, .data$redd_activity) |>
+#   dplyr::summarise(E_sim = sum(.data$E_sim), .groups = "drop") |>
+#   dplyr::mutate(redd_id = paste0(.data$time_period, " - ", .data$redd_activity))
 #
 # ## Check
 # tt <- sim_redd |> filter(sim_no == 1)
 # tt
-# res_redd <- fct_calc_res(.data = sim_redd, .id = redd_activity, .sim = E_sim, .ci_alpha = usr$ci_alpha)
+#
+# res_redd <- fct_calc_res(.data = sim_redd, .id = redd_id, .sim = E_sim, .ci_alpha = usr$ci_alpha)
+#
+# gg_redd <- fct_histogram(.data = sim_redd, .res = res_redd, .id = redd_id, .value = E_sim, .value_type = "E")
+#
+# tt <- sim_redd |>
+#   filter(redd_id == "T1 - DF")
+#
+#
 #
 # ## FREL
 # sim_REF <- fct_combine_mcs_P(
@@ -77,16 +88,97 @@
 #   )
 #
 # res_MON <- sim_MON |>
-#   fct_calc_res(.id = period_type, .sim = E_sim, .ci_alpha = usr$ci_alpha) |>
+#   fct_calc_res(.id = period_type, .sim = E_sim, .ci_alpha = usr$ci_alpha)
+#
+# res_MON2 <- res_MON |>
 #   mutate(period_type = paste0("E-", period_type))
 #
 # sim_ER <- fct_combine_mcs_ER(.sim_ref = sim_REF, .sim_mon = sim_MON, .ad_annual = usr$ad_annual)
 #
 # res_ER <- sim_ER |>
-#   fct_calc_res(.id = period_type, .sim = ER_sim, .ci_alpha = usr$ci_alpha) |>
+#   fct_calc_res(.id = period_type, .sim = ER_sim, .ci_alpha = usr$ci_alpha)
+#
+# res_ER2 <- res_ER |>
 #   mutate(period_type = paste0("ER-", period_type))
+#
+# ## FINAL TABLE
+# ## Get arithmetic mean
+# res_ari <- fct_arithmetic_mean(.ad = ad, .cs = cs, .usr = usr, .time = time)
+#
+#
+# res_ER3 <- res_REF |>
+#   dplyr::bind_rows(res_MON2) |>
+#   dplyr::bind_rows(res_ER2) |>
+#   left_join(res_ari$ER, by = "period_type", suffix = c("", "_ari")) |>
+#   select("period_type", "E_ari", everything())
+#
+# res_ER3
+#
+# gt_all <- res_ER3 |>
+#   fct_forestplot(
+#     .id = period_type,
+#     .value_ari = E_ari,
+#     .value = E,
+#     .uperc = E_U,
+#     .cilower = E_cilower,
+#     .ciupper = E_ciupper,
+#     .id_colname = "Period",
+#     .conflevel = "90%",
+#     #.filename = "test.png"
+#   )
+#
+# ## Hists
+# input = "ER-MON2"
+#
+# if (input == "REF") {
+#
+#   sims <- sim_REF
+#   res  <- res_REF
+#   value <- quo(E_sim)
+#   value_type <- "E"
+#
+#   } else if (stringr::str_detect(input, "E-")) {
+#
+#   input_short <- stringr::str_remove(input, "E-")
+#
+#   sims <- sim_MON |> dplyr::filter(.data$period_type == input_short)
+#   res  <- res_MON |> dplyr::filter(.data$period_type == input_short)
+#   value <- quo(E_sim)
+#   value_type <- "E"
+#
+# } else if (stringr::str_detect(input, "ER-")) {
+#
+#   input_short <- stringr::str_remove(input, "ER-")
+#
+#   sims <- sim_ER |> dplyr::filter(.data$period_type == input_short)
+#   res  <- res_ER |> dplyr::filter(.data$period_type == input_short)
+#   value <- quo(ER_sim)
+#   value_type <- "ER"
+#
+# }
+#
+# gg <- fct_histogram(.data = sims, .res = res, .id = period_type, .value = !!value, .value_type = value_type)
+# gg
+#
+# res_ER3
+#
+# ## Test
+# unique(sim_trans$trans_id)
+#
+# sim_trans |>
+#   filter(trans_id == "T1_open_postdef_open") |>
+#   ggplot(aes(x = AD, y = EF)) +
+#   geom_point(alpha = 0.3, size = 0.4, col = "darkred") +
+#   theme_bw()
+#
+# sim_trans |>
+#   filter(trans_id == "T1_open_postdef_open") |>
+#   ggplot(aes(x = C_all_i, y = C_all_f)) +
+#   geom_point(alpha = 0.3, size = 0.4, col = "darkred") +
+#   theme_bw()
 
-# ## Combine results
+## Combine results
+# tictoc::tic()
 # gt_all <- res_REF |>
 #   bind_rows(res_MON) |>
 #   bind_rows(res_ER) |>
@@ -98,9 +190,18 @@
 #     .ciupper = E_ciupper,
 #     .id_colname = "Period",
 #     .conflevel = "90%",
-#     .filename = NA
+#     .filename = "test.png"
 #   )
+# tictoc::toc()
 # gt_all
+#
+# gg_ER <- fct_histogram(
+#     .dat = sim_REF,
+#     .res = res_REF,
+#     .id = period_type,
+#     .value = E_sim,
+#     .value_type = "E"
+#     )
 
 
 

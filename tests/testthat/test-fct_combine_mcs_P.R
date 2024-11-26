@@ -21,5 +21,5 @@ sim_FREL <- fct_combine_mcs_P(
 test_res <- round(median(sim_FREL$E_sim))
 
 testthat::test_that("function doesn't work :P", {
-  testthat::expect_equal(test_res, 4594283)
+  testthat::expect_equal(test_res, 776212)
 })

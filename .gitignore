@@ -1,6 +1,9 @@
 ## Custom gitignore
 .DS_Store
 ~$*
+vignettes/*.png
+vignettes/*.csv
+inst/extdata/example1_conf.xlsx
 
 # History files
 .Rhistory

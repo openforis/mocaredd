@@ -134,7 +134,7 @@ fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
     ggplot2::geom_col(ggplot2::aes(y = .data$REF), col = "darkgreen", fill = "lightgreen") +
     ggplot2::geom_col(ggplot2::aes(y = .data$E), col = "darkred", fill = "pink") +
     #ggplot2::scale_x_continuous(expand=c(0, .9)) +
-    ggplot2::theme_bw() +
+    ggplot2::theme_bw(base_size = 20) +
     ggplot2::labs(
       x = "Years",
       y = "Emissions (MtCO2e/y)"

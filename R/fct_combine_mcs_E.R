@@ -166,6 +166,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
       EF = .data$C_all_i - .data$C_all_f,
       E_sim  = .data$AD * .data$EF
     ) %>%
+    # dplyr::mutate(dplyr::across(c(.data$E_sim, .data$AD, .data$EF, .data$C_all_i, .data$C_all_f))) |>
     dplyr::select(
       "sim_no", "redd_activity", time_period = "trans_period", "trans_id",
       "AD", "EF", "E_sim", "C_form_i", "C_all_i", "C_form_f",

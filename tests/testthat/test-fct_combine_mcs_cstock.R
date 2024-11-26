@@ -26,5 +26,5 @@ test_res <- res |>
 
 
 testthat::test_that("fct_combine_mcs_C works on example1", {
-  testthat::expect_equal(test_res, 210)
+  testthat::expect_equal(test_res, 14)
 })

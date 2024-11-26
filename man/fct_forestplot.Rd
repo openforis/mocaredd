@@ -7,19 +7,22 @@
 fct_forestplot(
   .data,
   .id,
+  .value_ari = NULL,
   .value,
   .uperc,
   .cilower,
   .ciupper,
   .id_colname,
   .conflevel,
-  .filename
+  .filename = NA
 )
 }
 \arguments{
 \item{.data}{a data frame containing the simulation aggregated results}
 
 \item{.id}{the name of the ID column of the data frame}
+
+\item{.value_ari}{NULL if not relevant (most cases) or a column name with the arithmetic mean of Emission or emission reductions.}
 
 \item{.value}{the name of the value column of the data frame (i.e median of the simulations)}
 

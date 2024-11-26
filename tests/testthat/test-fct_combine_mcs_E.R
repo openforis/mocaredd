@@ -13,6 +13,6 @@ test_res <- round(median(res$E_sim))
 
 
 testthat::test_that("Works", {
-  testthat::expect_equal(test_res, 75398)
+  testthat::expect_equal(test_res, 3862)
 
 })

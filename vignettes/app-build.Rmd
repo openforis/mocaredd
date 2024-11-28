@@ -98,6 +98,6 @@ usethis::use_pkgdown_github_pages()
 
 ```{r}
 if (!require(remotes)) install.packages(remotes, dep =TRUE)
-remotes::install_github("openforis/mocaredd@v0.1.0")
+remotes::install_github("openforis/mocaredd@v0.2.0")
 mocaredd::shiny_run_mocaredd()
 ```

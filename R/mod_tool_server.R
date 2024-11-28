@@ -202,7 +202,9 @@ mod_tool_server <- function(id, rv) {
     output$vb_nb_pools <- renderUI({
       req(rv$checks$check_data$all_ok)
       if (rv$checks$check_data$all_ok) {
-        HTML(paste0(length(unique(rv$inputs$cs$c_pool)), "&nbsp;Carbon pools"))
+        pools <- unique(rv$inputs$cs$c_pool)
+        pools <- pools[pools %in% c("AGB", "BGB", "DW", "LI", "SOC")]
+        HTML(paste0(length(pools), "&nbsp;Carbon pools"))
       }
     })
 

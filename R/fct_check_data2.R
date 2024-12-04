@@ -50,8 +50,8 @@
 #'   cat_racti  = c("DF", "DG", "EN", "EN_AF", "EN_RE"),
 #'   cat_ptype  = c("REF", "REF[0-9]", "MON", "MON[0-9]"),
 #'   cat_pdf    = c("normal", "beta"),
-#'   col_usr    = c("trunc_pdf", "n_iter", "ran_seed", "c_unit", "c_fraction", "dg_pool",
-#'                  "ad_annual", "conf_level"),
+#'   col_usr    = c("trunc_pdf", "n_iter", "ran_seed", "c_unit", "c_fraction", "c_fraction_se",
+#'                  "c_fraction_pdf", "dg_ext", "dg_pool", "ad_annual", "conf_level"),
 #'   col_time   = c("period_no", "year_start", "year_end", "period_type"),
 #'   col_ad     = c("trans_no",	"trans_id",	"trans_period",	"redd_activity", "lu_initial_id",
 #'                  "lu_initial",	"lu_final_id", "lu_final", "trans_area", "trans_se",
@@ -60,7 +60,7 @@
 #'                	"c_se",	"c_pdf",	"c_pdf_a",	"c_pdf_b",	"c_pdf_c")
 #' )
 #'
-#' app_checklist$cat_cpools_all <- c(app_checklist$cat_cpools, "RS", "DG_ratio")
+#' app_checklist$cat_cpools_all <- c(app_checklist$cat_cpools, "RS", "DG_ratio", "C_all")
 #'
 #' fct_check_data2(.ad = ad, .cs = cs, .usr = usr, .time = time, .checklist = app_checklist)
 #'
@@ -79,7 +79,7 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
   tmp <- list()
   out <- list()
 
-  ## Check 1. tables have at least the correct columns
+  ## Check 1. tables have at least the correct columns #########################
   tmp$cols_usr_ok  <- all(.checklist$col_usr %in% names(.usr))
   tmp$cols_time_ok <- all(.checklist$col_time %in% names(.time))
   tmp$cols_ad_ok   <- all(.checklist$col_ad %in% names(.ad))
@@ -100,7 +100,7 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
     out$cols_pb <- c(tmp$cols_usr_pb, tmp$cols_time_pb, tmp$cols_ad_pb, tmp$cols_cs_pb)
   }
 
-  ## Check 2. tables dimensions
+  ## Check 2. tables dimensions ################################################
   tmp$size_usr_ok  <- nrow(.usr) == 1 ## usr has only one row
   tmp$size_time_ok <- nrow(.time) >= 2 ## at least one ref and one monitoring
   tmp$size_ad_ok   <- nrow(.ad) >= 2 ## at least one lu transition for ref and monitoring
@@ -122,7 +122,7 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
   }
 
 
-  ## Check 3. data types are correct
+  ## Check 3. data types are correct ###########################################
   ## - usr tab
   tmp$datatypes_usr_ok <- all(
     is.logical(.usr$trunc_pdf),
@@ -197,7 +197,7 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
     out$datatypes_pb <- c(tmp$datatypes_usr_pb, tmp$datatypes_time_pb, tmp$datatypes_ad_pb, tmp$datatypes_cs_pb)
   }
 
-  ## Check 4. category variables are correct
+  ## Check 4. category variables are correct ###################################
   ## - usr
   ## Get usr$dg_pool as vector
   ## ex. c("AGB", "BGB", "DW") %in% c("AGB", "BGB", "DW", "LI", "SOC", "ALL")
@@ -207,7 +207,7 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
 
   tmp$cats_usr_ok <- all(
     .usr$c_unit %in% .checklist$cat_cunits,
-    all(dg_pool %in% .checklist$cat_cpools)
+    all(dg_pool %in% .checklist$cat_cpools_all)
   )
 
   ## - time
@@ -249,7 +249,8 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
   }
 
 
-  ## 5. Check Unique IDs
+  ## Check 5. Check Unique IDs #################################################
+
   tmp$ids_time_ok <- nrow(.time) == length(unique(.time$period_no))
   tmp$ids_ad_ok   <- nrow(.ad) == length(unique(.ad$trans_id))
   tmp$ids_cs_ok   <- nrow(.cs) == length(unique(.cs$c_id))
@@ -266,7 +267,8 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
     out$ids_pb <- c(tmp$ids_time_pb, tmp$ids_ad_pb, tmp$ids_cs_pb)
   }
 
-  ## 6. Check matching and logical interactions
+
+  ## Check 6. Check matching and logical interactions ##########################
 
   ## - Period matching exactly between tables
   tmp$match_period_ad_ok <- all(sort(unique(.ad$trans_period)) == sort(unique(.time$period_no)))
@@ -282,7 +284,7 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
   lu_ad <- sort(c(unique(.ad$lu_initial_id), unique(.ad$lu_final_id)))
   lu_cs <- sort(unique(.cs$lu_id))
 
-  tmp$match_lu_ok <- all(lu_ad == lu_cs)
+  tmp$match_lu_ok <- all(lu_ad %in% lu_cs)
 
   ## - At least one ref and one monitoring period
   nb_ref <- .time %>% dplyr::filter(stringr::str_detect(.data$period_type, pattern = "REF|REF[0-9]"))
@@ -292,7 +294,22 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
   tmp$match_mon_ok <- nrow(nb_mon) > 0
 
   ## - CF if DM
-  ## TBD should add carbon fraction as row in c_stocks instead of user_inputs
+  tmp$match_dm_ok <- (.usr$c_unit == "DM" & is.numeric(.usr$c_fraction)) | .usr$c_unit == "C"
+
+  ## - DEG ext working
+  if (!is.na(.usr$dg_ext) & "DG_ratio" %in% unique(.cs$c_pool)) {
+    dg_lu <- .cs |>
+      dplyr::filter(.data$c_pool == "DG_ratio") |>
+      dplyr::pull("lu_id") |>
+      stringr::str_remove(pattern = .usr$dg_ext)
+
+    tmp$match_dg_ok <- all(dg_lu %in% unique(.cs$lu_id))
+
+  } else if (is.na(.usr$dg_ext) & "DG_ratio" %in% unique(.cs$c_pool)) {
+    tmp$match_dg_ok <- FALSE
+  } else {
+    tmp$match_dg_ok <- FALSE
+  }
 
   ## - DG method: either (1) dg_ratio applied to all pools, (2) dg_ratio applied to some pools other kept intact (dg_expool == T), (3) diff in Cstocks.
   ## NOT IMPLEMENTED YET
@@ -303,7 +320,9 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
     tmp$match_period_cs_ok,
     tmp$match_lu_ok,
     tmp$match_ref_ok,
-    tmp$match_mon_ok
+    tmp$match_mon_ok,
+    tmp$match_dm_ok,
+    tmp$match_dg_ok
   )
 
   if (out$matches_ok) {
@@ -314,8 +333,9 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
     if (tmp$match_lu_ok)        tmp$match_lu_pb        <- NULL else tmp$match_lu_pb        <- "land use mismatch between AD and CS"
     if (tmp$match_ref_ok)       tmp$match_ref_pb       <- NULL else tmp$match_ref_pb       <- "missing REF in time_periods"
     if (tmp$match_mon_ok)       tmp$match_mon_pb       <- NULL else tmp$match_mon_pb       <- "missing MON in time_periods"
-
-    out$matches_pb <- c(tmp$match_period_ad_pb, tmp$match_period_cs_pb, tmp$match_lu_pb, tmp$match_ref_pb, tmp$match_mon_pb)
+    if (tmp$match_dm_ok)        tmp$match_dm_pb        <- NULL else tmp$match_dm_pb        <- "user_inputs c_units is 'DM' but c_fraction missing"
+    if (tmp$match_dg_ok)        tmp$match_dg_pb        <- NULL else tmp$match_dg_pb        <- "missing dg_ext for DG_ratio or mismatch with dg_ext and AD"
+    out$matches_pb <- c(tmp$match_period_ad_pb, tmp$match_period_cs_pb, tmp$match_lu_pb, tmp$match_ref_pb, tmp$match_mon_pb, tmp$match_dm_pb, tmp$match_dg_pb)
 
   }
 

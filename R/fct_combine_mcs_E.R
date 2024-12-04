@@ -76,7 +76,8 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   mcs_trans <- purrr::map(vec_trans, function(x){
 
     ## !! FOR TESTING ONLY
-    # x = "T1_ev_wet_closed_dg_ev_wet_closed"
+    # x = "T1_H_H_deg" #"T1_P_Crop" #"T1_ev_wet_closed_dg_ev_wet_closed"
+    # print(x)
     ## !!
 
     ad_x   <- .ad %>% dplyr::filter(.data$trans_id == x)
@@ -127,33 +128,35 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
 
     }
 
-    ## If degradation is ratio, using .usr$dg_pool to calculate C_all_f
-    if (redd_x == "DG" & !is.na(.usr$dg_pool)) {
-
-      dg_pool <- stringr::str_split(.usr$dg_pool, pattern = ",") |> purrr::map(stringr::str_trim) |> unlist()
-      dg_pool_i <- paste0(dg_pool, "_i")
-
-      combi <- combi %>%
-        dplyr::rowwise() %>%
-        dplyr::mutate(C_all_f = .data$DG_ratio_f * sum(!!!rlang::syms(dg_pool_i)) * 44/12) %>%
-        dplyr::ungroup()
-
-      ## If degradation has unaffected pools, we identify them by difference and add them to final C stock
-      c_pools <- .cs |>
-        dplyr::filter(.data$lu_id == ad_x$lu_initial_id) |>
-        dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a))) |>
-        dplyr::pull("c_pool") |>
-        unique()
-      dg_expool <- paste0(setdiff(c_pools, dg_pool), "_i")
-
-      if (length(dg_expool) > 0) {
-        combi <- combi %>%
-          dplyr::rowwise() %>%
-          dplyr::mutate(C_all_f = .data$C_all_f + sum(!!!rlang::syms(dg_expool))) %>%
-          dplyr::ungroup()
-      }
-
-    }
+    # ## If degradation is ratio, using .usr$dg_pool to calculate C_all_f
+    # if (redd_x == "DG" & !is.na(.usr$dg_pool)) {
+    #
+    #   dg_pool <- stringr::str_split(.usr$dg_pool, pattern = ",") |> purrr::map(stringr::str_trim) |> unlist()
+    #   dg_pool_i <- paste0(dg_pool, "_i")
+    #
+    #   combi <- combi %>%
+    #     dplyr::rowwise() %>%
+    #     dplyr::mutate(C_all_f = .data$DG_ratio_f * sum(!!!rlang::syms(dg_pool_i))) %>%
+    #     dplyr::ungroup()
+    #
+    #   ## If degradation has unaffected pools, we identify them by difference and add them to final C stock
+    #   if (.usr$dg_pool != "C_all") {
+    #     c_pools <- .cs |>
+    #       dplyr::filter(.data$lu_id == ad_x$lu_initial_id) |>
+    #       dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a))) |>
+    #       dplyr::pull("c_pool") |>
+    #       unique()
+    #     dg_expool <- paste0(setdiff(c_pools, dg_pool), "_i")
+    #
+    #     if (length(dg_expool) > 0) {
+    #       combi <- combi %>%
+    #         dplyr::rowwise() %>%
+    #         dplyr::mutate(C_all_f = .data$C_all_f + sum(!!!rlang::syms(dg_expool))) %>%
+    #         dplyr::ungroup()
+    #     }
+    #   }
+#
+#     }
 
     combi
 
@@ -161,10 +164,10 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   ## END LOOP
 
   ## Re-arrange columns and add EF and E (emissions at transition level)
-  mcs_trans %>%
+  tt <- mcs_trans %>%
     dplyr::mutate(
-      EF = .data$C_all_i - .data$C_all_f,
-      E_sim  = .data$AD * .data$EF
+      EF = round((.data$C_all_i - .data$C_all_f) * 44/12, 0),
+      E_sim  = round(.data$AD * .data$EF, 0)
     ) %>%
     # dplyr::mutate(dplyr::across(c(.data$E_sim, .data$AD, .data$EF, .data$C_all_i, .data$C_all_f))) |>
     dplyr::select(

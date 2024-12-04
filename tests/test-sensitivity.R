@@ -2,24 +2,22 @@
 ## KEEP COMMENT BUT RUN ONE TIME
 devtools::load_all()
 
-library(ggplot2)
-
+library(tidyverse)
 
 ## LOAD DATA
 # path <- system.file("extdata/example1.xlsx", package = "mocaredd")
-path <- "inst/extdata/example1_conf.xlsx"
+path <- "inst/extdata/example2.xlsx"
 
 cs <- readxl::read_xlsx(path, sheet = "c_stocks", na = "NA")
 ad <- readxl::read_xlsx(path, sheet = "AD_lu_transitions", na = "NA")
 usr <- readxl::read_xlsx(path, sheet = "user_inputs", na = "NA")
 time <- readxl::read_xlsx(path, sheet = "time_periods", na = "NA")
 
-
-
 time <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
 
 usr$ci_alpha <- 1 - usr$conf_level
 usr$conf_level_txt = paste0(usr$conf_level * 100, "%")
+
 
 rv <- list()
 rv$inputs <- list()
@@ -53,6 +51,31 @@ fct_overall_UA <- function(.ad, .cs, .time, .usr, .seed = NA){
   ## LU TRANSITIONS
   sim_trans <- fct_combine_mcs_E(.ad = .ad, .cs = .cs, .usr = .usr)
 
+  ## Annualize REDD+ level
+  if (usr$ad_annual) {
+    time_periods <- unique(.time$period_type)
+    sim_trans2 <- purrr::map(time_periods, function(x){
+      nb_years <- .time |>
+        dplyr::filter(period_type == x) |>
+        dplyr::pull("nb_years") |>
+        sum()
+      period_ids <- .time |>
+        dplyr::filter(period_type == x) |>
+        dplyr::pull("period_no")
+      sim_trans |>
+        dplyr::filter(time_period %in% period_ids) |>
+        dplyr::mutate(E_sim = round(E_sim / nb_years, 0))
+    }) |> purrr::list_rbind()
+  } else {
+    sim_trans2 <- sim_trans
+  }
+
+  sim_redd <- sim_trans2 |>
+    dplyr::group_by(.data$sim_no, .data$time_period, .data$redd_activity) |>
+    dplyr::summarise(E_sim = sum(.data$E_sim), .groups = "drop") |>
+    dplyr::left_join(.time, by = c("time_period" = "period_no")) |>
+    dplyr::mutate(redd_id = paste0(.data$period_type, " - ", .data$redd_activity))
+
   ## AGGREGATES
   sim_REF <- fct_combine_mcs_P(
     .data = sim_trans,
@@ -69,8 +92,8 @@ fct_overall_UA <- function(.ad, .cs, .time, .usr, .seed = NA){
   sim_ER <- fct_combine_mcs_ER(.sim_ref = sim_REF, .sim_mon = sim_MON, .ad_annual = .usr$ad_annual)
 
   res_REF <- fct_calc_res(.data = sim_REF, .sim = E_sim, .id = period_type, .ci_alpha = .usr$ci_alpha)
-  res_MON <- fct_calc_res(.data = sim_MON, .sim = E_sim, .id = period_type, .ci_alpha = .usr$ci_alpha) |>
-    dplyr::mutate(period_type = paste0("E-", .data$period_type))
+  res_MON <- fct_calc_res(.data = sim_MON, .sim = E_sim, .id = period_type, .ci_alpha = .usr$ci_alpha)# |>
+    #dplyr::mutate(period_type = paste0("E-", .data$period_type))
   res_ER <- fct_calc_res(.data = sim_ER, .sim = ER_sim, .id = period_type, .ci_alpha = .usr$ci_alpha) |>
     dplyr::mutate(period_type = paste0("ER-", .data$period_type))
 
@@ -78,9 +101,21 @@ fct_overall_UA <- function(.ad, .cs, .time, .usr, .seed = NA){
     dplyr::bind_rows(res_MON) |>
     dplyr::bind_rows(res_ER)
 
+  res_redd  <- fct_calc_res(
+    .data = sim_redd,
+    .id = .data$redd_id,
+    .sim = .data$E_sim,
+    .ci_alpha = usr$ci_alpha
+  ) |>
+    dplyr::rename(period_type = "redd_id")
+
+  res_ER3 <- res_redd |>
+    dplyr::bind_rows(res_ER2) |>
+    dplyr::arrange(dplyr::desc(.data$period_type))
+
   ## OUTPUT
   list(
-    res_ER = res_ER2, sim_trans = sim_trans, sim_ER = sim_ER
+    res_ER = res_ER3, sim_trans = sim_trans, sim_ER = sim_ER
   )
 
 }
@@ -114,7 +149,6 @@ rv$inputs$cs_varBGB <- rv$inputs$cs |>
     c_se  = dplyr::if_else(c_pool != "BGB", 0, .data$c_se),
     c_pdf = dplyr::if_else(c_pool != "BGB", "normal", .data$c_pdf)
   )
-
 
 
 sens_varEF <- fct_overall_UA(
@@ -176,6 +210,8 @@ res_sens <- purrr::map(list_sens, function(x){
   dplyr::select("period_type", "U_all", "U_varAD", "U_varEF", dplyr::everything())
 
 res_sens
+
+
 
 res_sens |>
   tidyr::pivot_longer(cols = dplyr::starts_with("U_"), names_to = "U_cat", values_to = "U_perc") |>

@@ -42,7 +42,7 @@
 fct_combine_mcs_cpools <- function(.c_sub, .usr){
 
   ## !! FOR TESTING ONLY
-  # .c_sub  <- cs |> filter(lu_id == "postdef_open") ## "dg_ev_wet_closed"
+  # .c_sub  <- cs |> dplyr::filter(lu_id == "P_deg") ## "dg_ev_wet_closed" ## "ALL_P_AGB"
   # .usr    <- usr
   ## !!
 
@@ -79,14 +79,13 @@ fct_combine_mcs_cpools <- function(.c_sub, .usr){
   ## End map()
 
   ## ADD CF if needed
-  if (c_check$has_CF) {
-    params <- .c_sub %>% dplyr::filter(.data$c_pool == "CF")
+  if (c_check$has_CF & !("DG_ratio" %in% names(SIMS))) {
     SIMS$CF <- fct_make_mcs(
       .n_iter = .usr$n_iter,
-      .pdf    = params$c_pdf,
-      .mean   = params$c_value,
-      .se     = params$c_se,
-      .params = c(params$c_pdf_a, params$c_pdf_b, params$c_pdf_c),
+      .pdf    = .usr$c_fraction_pdf,
+      .mean   = .usr$c_fraction,
+      .se     = .usr$c_fraction_se,
+      #.params = c(params$c_pdf_a, params$c_pdf_b, params$c_pdf_c),
       .trunc  = .usr$trunc_pdf
     )
   }

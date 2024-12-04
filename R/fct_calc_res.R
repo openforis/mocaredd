@@ -43,6 +43,6 @@ fct_calc_res <- function(
       E_ME  = round((.data$E_ciupper - .data$E_cilower) / 2),
       E_U   = round(.data$E_ME / .data$E * 100),
     ) %>%
-    dplyr::select(!!col_id, .data$E, .data$E_U, .data$E_ME, .data$E_cilower, .data$E_ciupper)
+    dplyr::select(!!col_id, "E", "E_U", "E_ME", "E_cilower", "E_ciupper")
 
 }

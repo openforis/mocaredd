@@ -35,8 +35,8 @@
 #' @export
 fct_make_formula <- function(.c_check, .c_unit){
 
-  c_eq <- c("(", "(",  "AGB", " + ", "BGB", ")", " * ", "CF", " + ", "DW", " + ", "LI", " + ", "SOC", ")", " * ", "44/12")
-  names(c_eq) <- c("all_(", "cf_(", "AGB", "plus_bgb", "BGB", "cf_)", "times_cf", "CF", "plus_dw", "DW", "plus_li", "LI", "plus_soc", "SOC", "all_)", "times_mol", "mol")
+  c_eq <- c("(",  "AGB", " + ", "BGB", ")", " * ", "CF", " + ", "DW", " + ", "LI", " + ", "SOC")
+  names(c_eq) <- c("cf_(", "AGB", "plus_bgb", "BGB", "cf_)", "times_cf", "CF", "plus_dw", "DW", "plus_li", "LI", "plus_soc", "SOC")
 
   ## Handle dg_ratio
   if (.c_check$has_DG) return("DG_ratio")
@@ -75,7 +75,7 @@ fct_make_formula <- function(.c_check, .c_unit){
   }
 
   if (.c_check$has_AL){
-    c_eq_out <- "ALL * 44/12"
+    c_eq_out <- "ALL"
   }
 
   ## Output

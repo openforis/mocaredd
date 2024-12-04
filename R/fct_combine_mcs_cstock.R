@@ -57,6 +57,10 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
 
   mcs_c <- purrr::pmap(combi, function(lu, period){
 
+    ## !!! FOR TESTING ONLY
+    # lu = "P_deg"
+    # period = "ALL"
+    ## !!!
     c_sub <- .cs %>%
       dplyr::filter(.data$lu_id == lu, .data$c_period == period) %>%
       dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
@@ -69,7 +73,54 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
     dplyr::select("sim_no", "c_period", "lu_id", "C_all", "C_form", dplyr::everything())
 
   ## CHECK
-  # mcs_c |> dplyr::filter(.data$sim_no == 1)
+  # tt <- mcs_c |> dplyr::filter(.data$sim_no == 1)
+
+  if ("DG_ratio" %in% unique(mcs_c$C_form)) {
+
+    ## Get pools used for DG
+    if (.usr$dg_pool == "ALL") {
+      dg_pool <- "C_all"
+    } else {
+      dg_pool <- stringr::str_split(.usr$dg_pool, pattern = ",") |> purrr::map(stringr::str_trim) |> unlist()
+    }
+    dg_pool_intact <- paste0(dg_pool, "_intact")
+
+    ## Filter DG to modify formula and recalculate
+    mcs_dg <- mcs_c |>
+      dplyr::filter(.data$C_form == "DG_ratio") |>
+      dplyr::mutate(
+        lu_intact = stringr::str_remove(.data$lu_id, pattern = .usr$dg_ext)
+      )
+
+    mcs_join <- mcs_c |>
+      dplyr::filter(lu_id %in% unique(mcs_dg$lu_intact)) |>
+      dplyr::select("sim_no", lu_intact = "lu_id", !!!rlang::syms(dg_pool))
+
+    names(mcs_join)[!(names(mcs_join) %in% c("sim_no", "lu_intact"))] <- dg_pool_intact
+
+    mcs_dg2 <- mcs_dg |>
+      dplyr::left_join(mcs_join, by = c("sim_no", "lu_intact")) |>
+      dplyr::rowwise() |>
+      dplyr::mutate(
+        C_form = paste0(.data$C_form, " * (", paste0(dg_pool_intact, collapse = " + "), ")"),
+        C_all  = .data$C_all * sum(!!!rlang::syms(dg_pool_intact))
+      ) |>
+      dplyr::ungroup() |>
+      dplyr::select(-"lu_intact", -dplyr::all_of(dg_pool_intact))
+
+    mcs_c2 <- mcs_c |>
+      dplyr::filter(.data$C_form != "DG_ratio") |>
+      dplyr::bind_rows(mcs_dg2) |>
+      dplyr::distinct()
+
+  } else {
+    mcs_c2 <- mcs_c
+  }
+
+  mcs_c2
+
+  ## Check
+  # tt <- mcs_c2 |> dplyr::filter(.data$sim_no == 1)
 
 }
 

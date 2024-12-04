@@ -8,22 +8,21 @@
 # library(mocaredd)
 #
 # ## LOAD DATA
-# cs <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "c_stocks", na = "NA")
-# ad <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "AD_lu_transitions", na = "NA")
-# usr <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "user_inputs", na = "NA")
-# time <- readxl::read_xlsx(system.file("extdata/example1.xlsx", package = "mocaredd"), sheet = "time_periods", na = "NA")
-#
-# time <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
-#
-# usr$ci_alpha <- 1 - usr$conf_level
-# usr$conf_level_txt = paste0(usr$conf_level * 100, "%")
-#
-#
-# ##
-# ## test whole calculation chain ######
-# ##
-#
-# ari <- fct_arithmetic_mean(.ad = ad, .cs = cs, .usr = usr ,.time = time)
+cs <- readxl::read_xlsx(system.file("extdata/example2.xlsx", package = "mocaredd"), sheet = "c_stocks", na = "NA")
+ad <- readxl::read_xlsx(system.file("extdata/example2.xlsx", package = "mocaredd"), sheet = "AD_lu_transitions", na = "NA")
+usr <- readxl::read_xlsx(system.file("extdata/example2.xlsx", package = "mocaredd"), sheet = "user_inputs", na = "NA")
+time <- readxl::read_xlsx(system.file("extdata/example2.xlsx", package = "mocaredd"), sheet = "time_periods", na = "NA")
+
+time <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
+
+usr$ci_alpha <- 1 - usr$conf_level
+usr$conf_level_txt = paste0(usr$conf_level * 100, "%")
+
+##
+## test whole calculation chain ######
+##
+
+ari <- fct_arithmetic_mean(.ad = ad, .cs = cs, .usr = usr ,.time = time)
 #
 # sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .usr = usr)
 #

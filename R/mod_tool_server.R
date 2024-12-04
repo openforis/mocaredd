@@ -411,6 +411,25 @@ mod_tool_server <- function(id, rv) {
         .usr = rv$inputs$usr
       )
 
+      ## Annualize REDD+ level
+      if (!rv$inputs$usr$ad_annual) {
+        time_periods <- unique(rv$inputs$time$period_type)
+        rv$mcs$sim_trans2 <- purrr::map(time_periods, function(x){
+          nb_years <- rv$inputs$time |>
+            dplyr::filter(period_type == x) |>
+            dplyr::pull("nb_years") |>
+            sum()
+          period_ids <- rv$inputs$time |>
+            dplyr::filter(period_type == x) |>
+            dplyr::pull("period_no")
+          rv$mcs$sim_trans |>
+            dplyr::filter(time_period %in% period_ids) |>
+            dplyr::mutate(E_sim = round(E_sim / nb_years, 0))
+        }) |> purrr::list_rbind()
+      } else {
+        rv$mcs$sim_trans2 <- rv$mcs$sim_trans
+      }
+
       Sys.sleep(0.1)
 
       ## simulation aggregates -------------------------------------------------
@@ -419,7 +438,7 @@ mod_tool_server <- function(id, rv) {
         session = session, id = "prog_res", value = 40, status = "primary"
       )
 
-      rv$mcs$sim_redd <- rv$mcs$sim_trans |>
+      rv$mcs$sim_redd <- rv$mcs$sim_trans2 |>
         dplyr::group_by(.data$sim_no, .data$time_period, .data$redd_activity) |>
         dplyr::summarise(E_sim = sum(.data$E_sim), .groups = "drop") |>
         dplyr::mutate(redd_id = paste0(.data$time_period, " - ", .data$redd_activity))
@@ -442,30 +461,42 @@ mod_tool_server <- function(id, rv) {
 
       ## LU transition level results
       rv$mcs$res_trans <- fct_calc_res(
-        .data = rv$mcs$sim_trans,
+        .data = rv$mcs$sim_trans2,
         .id = .data$trans_id,
         .sim = .data$E_sim,
         .ci_alpha = rv$inputs$usr$ci_alpha
       )
 
-      rv$mcs$res_redd <- rv$mcs$sim_redd |>
-        fct_calc_res(
-          .id = .data$redd_id,
-          .sim = .data$E_sim,
-          .ci_alpha = rv$inputs$usr$ci_alpha
+      rv$mcs$res_redd <- fct_calc_res(
+        .data = rv$mcs$sim_redd,
+        .id = .data$redd_id,
+        .sim = .data$E_sim,
+        .ci_alpha = rv$inputs$usr$ci_alpha
+      )
+
+      rv$mcs$res_REF <- fct_calc_res(
+        .data = rv$mcs$sim_REF,
+        .id = .data$period_type,
+        .sim = .data$E_sim,
+        .ci_alpha = rv$inputs$usr$ci_alpha
         )
 
-      rv$mcs$res_REF <- rv$mcs$sim_REF |>
-        fct_calc_res(.id = .data$period_type, .sim = .data$E_sim, .ci_alpha = rv$inputs$usr$ci_alpha)
-
-      rv$mcs$res_MON <- rv$mcs$sim_MON |>
-        fct_calc_res(.id = .data$period_type, .sim = .data$E_sim, .ci_alpha = rv$inputs$usr$ci_alpha)
+      rv$mcs$res_MON <- fct_calc_res(
+        .data = rv$mcs$sim_MON,
+        .id = .data$period_type,
+        .sim = .data$E_sim,
+        .ci_alpha = rv$inputs$usr$ci_alpha
+        )
 
       rv$mcs$res_MON2 <- rv$mcs$res_MON |>
         dplyr::mutate(period_type = paste0("E-", .data$period_type))
 
-      rv$mcs$res_ER <- rv$mcs$sim_ER |>
-        fct_calc_res(.id = .data$period_type, .sim = .data$ER_sim, .ci_alpha = rv$inputs$usr$ci_alpha)
+      rv$mcs$res_ER <- fct_calc_res(
+        .data = rv$mcs$sim_ER,
+        .id = .data$period_type,
+        .sim = .data$ER_sim,
+        .ci_alpha = rv$inputs$usr$ci_alpha
+        )
 
       rv$mcs$res_ER2 <- rv$mcs$res_ER |>
         dplyr::mutate(period_type = paste0("ER-", .data$period_type))
@@ -475,7 +506,6 @@ mod_tool_server <- function(id, rv) {
         dplyr::bind_rows(rv$mcs$res_ER2) |>
         dplyr::left_join(rv$checks$ari_res$ER, by = "period_type", suffix = c("", "_ari")) |>
         dplyr::select("period_type", "E_ari", dplyr::everything())
-
 
       Sys.sleep(0.1)
 

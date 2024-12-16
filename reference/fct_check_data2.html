@@ -11,7 +11,7 @@ analysis: (1) column names, (2) tables' size, (3) data types,
 
     <a class="navbar-brand me-2" href="../index.html">mocaredd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,26 +87,12 @@ if FALSE.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/openforis/mocaredd" class="external-link">mocaredd</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://readxl.tidyverse.org" class="external-link">readxl</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"c_stocks"</span>,</span></span>
-<span class="r-in"><span>  na <span class="op">=</span> <span class="st">"NA"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"AD_lu_transitions"</span>,</span></span>
-<span class="r-in"><span>  na <span class="op">=</span> <span class="st">"NA"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">usr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"user_inputs"</span>,</span></span>
-<span class="r-in"><span>  na <span class="op">=</span> <span class="st">"NA"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"time_periods"</span>,</span></span>
-<span class="r-in"><span>  na <span class="op">=</span> <span class="st">"NA"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1-4pools.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"c_stocks"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"AD_lu_transitions"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">usr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"user_inputs"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"time_periods"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">app_checklist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  xlsx_tabs  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"user_inputs"</span>, <span class="st">"time_periods"</span>, <span class="st">"AD_lu_transitions"</span>, <span class="st">"c_stocks"</span><span class="op">)</span>,</span></span>
@@ -128,8 +114,30 @@ if FALSE.</p>
 <span class="r-in"><span><span class="va">app_checklist</span><span class="op">$</span><span class="va">cat_cpools_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">app_checklist</span><span class="op">$</span><span class="va">cat_cpools</span>, <span class="st">"RS"</span>, <span class="st">"DG_ratio"</span>, <span class="st">"C_all"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">fct_check_data2</span><span class="op">(</span>.ad <span class="op">=</span> <span class="va">ad</span>, .cs <span class="op">=</span> <span class="va">cs</span>, .usr <span class="op">=</span> <span class="va">usr</span>, .time <span class="op">=</span> <span class="va">time</span>, .checklist <span class="op">=</span> <span class="va">app_checklist</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Unknown or uninitialised column: `dg_ext`.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in if (!is.na(.usr$dg_ext) &amp; "DG_ratio" %in% unique(.cs$c_pool)) {    dg_lu &lt;- stringr::str_remove(dplyr::pull(dplyr::filter(.cs,         .data$c_pool == "DG_ratio"), "lu_id"), pattern = .usr$dg_ext)    tmp$match_dg_ok &lt;- all(dg_lu %in% unique(.cs$lu_id))} else if (is.na(.usr$dg_ext) &amp; "DG_ratio" %in% unique(.cs$c_pool)) {    tmp$match_dg_ok &lt;- FALSE} else {    tmp$match_dg_ok &lt;- FALSE}:</span> argument is of length zero</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cols_ok</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $size_ok</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $datatypes_ok</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $cats_ok</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ids_ok</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $matches_ok</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $all_ok</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $pbs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> named list()</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

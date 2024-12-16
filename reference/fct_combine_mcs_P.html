@@ -11,7 +11,7 @@ for each simulation."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">mocaredd</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,36 +83,18 @@ for each simulation.</p>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/openforis/mocaredd" class="external-link">mocaredd</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"c_stocks"</span>,</span></span>
-<span class="r-in"><span>  na <span class="op">=</span> <span class="st">"NA"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">ad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"AD_lu_transitions"</span>,</span></span>
-<span class="r-in"><span>  na <span class="op">=</span> <span class="st">"NA"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">usr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"user_inputs"</span>,</span></span>
-<span class="r-in"><span>  na <span class="op">=</span> <span class="st">"NA"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  sheet <span class="op">=</span> <span class="st">"time_periods"</span>,</span></span>
-<span class="r-in"><span>  na <span class="op">=</span> <span class="st">"NA"</span></span></span>
-<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1-4pools.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"c_stocks"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">ad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"AD_lu_transitions"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">usr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"user_inputs"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"time_periods"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">ad_clean</span> <span class="op">&lt;-</span> <span class="va">ad</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">trans_area</span><span class="op">)</span> <span class="op">|</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">trans_pdf_a</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">cs_clean</span> <span class="op">&lt;-</span> <span class="va">cs</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">c_value</span><span class="op">)</span> <span class="op">|</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">c_pdf_a</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">time_clean</span> <span class="op">&lt;-</span> <span class="va">time</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>nb_years <span class="op">=</span> <span class="va">year_end</span> <span class="op">-</span> <span class="va">year_start</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">sim_trans</span> <span class="op">&lt;-</span> <span class="fu"><a href="fct_combine_mcs_E.html">fct_combine_mcs_E</a></span><span class="op">(</span>.ad <span class="op">=</span> <span class="va">ad_clean</span>, .cs <span class="op">=</span> <span class="va">cs_clean</span>, .usr <span class="op">=</span> <span class="va">usr</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dplyr::mutate(dplyr::filter(mcs_c, .data$C_form == "DG_ratio"),     lu_intact = stringr::str_remove(.data$lu_id, pattern = .usr$dg_ext)):</span> <span style="color: #00BBBB;">ℹ</span> In argument: `lu_intact = stringr::str_remove(.data$lu_id, pattern =</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span>   .usr$dg_ext)`.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error in `str_replace()`:</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> `pattern` must be a string, not NULL.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">sim_FREL</span> <span class="op">&lt;-</span> <span class="fu">fct_combine_mcs_P</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  .data <span class="op">=</span> <span class="va">sim_trans</span>,</span></span>
@@ -120,14 +102,11 @@ for each simulation.</p>
 <span class="r-in"><span>  .period_type <span class="op">=</span> <span class="st">"REF"</span>,</span></span>
 <span class="r-in"><span>  .ad_annual <span class="op">=</span> <span class="va">usr</span><span class="op">$</span><span class="va">ad_annual</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in purrr::map(unique(time_ref$period_type), function(x) {    .data %&gt;% dplyr::left_join(time_ref, by = c(time_period = "period_no")) %&gt;%         dplyr::filter(.data$period_type == x) %&gt;% dplyr::group_by(.data$sim_no,         .data$period_type) %&gt;% dplyr::summarise(E_sim = sum(.data$E_sim *         .data$nb_years)/length_ref, .groups = "drop")}):</span> <span style="color: #00BBBB;">ℹ</span> In index: 1.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error:</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> object 'sim_trans' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">sim_FREL</span><span class="op">$</span><span class="va">E_sim</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'sim_FREL' not found</span>
+<span class="r-plt img"><img src="fct_combine_mcs_P-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">sim_FREL</span><span class="op">$</span><span class="va">E_sim</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'sim_FREL' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4965125</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

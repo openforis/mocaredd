@@ -30,12 +30,11 @@ library(mocaredd)
 library(readxl)
 library(dplyr)
 
-cs    <- read_xlsx(
-  path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-  sheet = "c_stocks",
-  na = "NA"
-  )
-c_lu  <- cs |> filter(lu_id == "dg_ev_wet_closed")
+path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+
+cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
+
+c_lu  <- cs |> filter(lu_id == "ev_wet_closed")
 
 c_check <- fct_check_pool(.c_lu = c_lu, .c_unit = "C", .c_fraction = NA)
 

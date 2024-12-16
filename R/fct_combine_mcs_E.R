@@ -13,28 +13,17 @@
 #'         transition, REDD+ activity or emission reductions level.
 #'
 #' @importFrom rlang .data
-#' @importFrom magrittr %>%
 #'
 #' @examples
 #' library(readxl)
 #' library(dplyr)
 #' library(mocaredd)
 #'
-#' cs <- read_xlsx(
-#'   system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "c_stocks",
-#'   na = "NA"
-#'   )
-#' ad <- read_xlsx(
-#'   system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "AD_lu_transitions",
-#'   na = "NA"
-#'   )
-#' usr <- read_xlsx(
-#'   system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "user_inputs",
-#'   na = "NA"
-#'   )
+#' path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+#'
+#' cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
+#' ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
+#' usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
 #'
 #' cs_clean <- cs |> filter(!is.na(c_value) | !is.na(c_pdf_a))
 #'
@@ -80,7 +69,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
     # print(x)
     ## !!
 
-    ad_x   <- .ad %>% dplyr::filter(.data$trans_id == x)
+    ad_x   <- .ad |> dplyr::filter(.data$trans_id == x)
     redd_x <- ad_x$redd_activity
 
     ## AD - Activity Data
@@ -134,9 +123,9 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
     #   dg_pool <- stringr::str_split(.usr$dg_pool, pattern = ",") |> purrr::map(stringr::str_trim) |> unlist()
     #   dg_pool_i <- paste0(dg_pool, "_i")
     #
-    #   combi <- combi %>%
-    #     dplyr::rowwise() %>%
-    #     dplyr::mutate(C_all_f = .data$DG_ratio_f * sum(!!!rlang::syms(dg_pool_i))) %>%
+    #   combi <- combi |>
+    #     dplyr::rowwise() |>
+    #     dplyr::mutate(C_all_f = .data$DG_ratio_f * sum(!!!rlang::syms(dg_pool_i))) |>
     #     dplyr::ungroup()
     #
     #   ## If degradation has unaffected pools, we identify them by difference and add them to final C stock
@@ -149,9 +138,9 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
     #     dg_expool <- paste0(setdiff(c_pools, dg_pool), "_i")
     #
     #     if (length(dg_expool) > 0) {
-    #       combi <- combi %>%
-    #         dplyr::rowwise() %>%
-    #         dplyr::mutate(C_all_f = .data$C_all_f + sum(!!!rlang::syms(dg_expool))) %>%
+    #       combi <- combi |>
+    #         dplyr::rowwise() |>
+    #         dplyr::mutate(C_all_f = .data$C_all_f + sum(!!!rlang::syms(dg_expool))) |>
     #         dplyr::ungroup()
     #     }
     #   }
@@ -164,11 +153,11 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   ## END LOOP
 
   ## Re-arrange columns and add EF and E (emissions at transition level)
-  tt <- mcs_trans %>%
+  mcs_trans |>
     dplyr::mutate(
       EF = round((.data$C_all_i - .data$C_all_f) * 44/12, 0),
       E_sim  = round(.data$AD * .data$EF, 0)
-    ) %>%
+    ) |>
     # dplyr::mutate(dplyr::across(c(.data$E_sim, .data$AD, .data$EF, .data$C_all_i, .data$C_all_f))) |>
     dplyr::select(
       "sim_no", "redd_activity", time_period = "trans_period", "trans_id",

@@ -1,6 +1,6 @@
 ^mocaredd\.Rproj$
 ^\.Rproj\.user$
-
+^\tests\workbooks\.xlsx$
 
 ^checks$
 ^_pkgdown\.yml$

@@ -5,6 +5,7 @@ vignettes/*.png
 vignettes/*.csv
 inst/extdata/example1_conf.xlsx
 inst/extdata/example2_conf.xlsx
+tests/workbooks
 
 # History files
 .Rhistory

@@ -1,6 +1,6 @@
 Package: mocaredd
 Title: Monte Carlo Simulation for REDD+ uncertainty analysis
-Version: 0.0.0.9000
+Version: 0.3.0
 Authors@R: c(
     person("Gael", "Sola", , "gaso.ella@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID")),

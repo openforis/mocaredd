@@ -13,28 +13,17 @@
 #'         transition, REDD+ activity or emission reductions level.
 #'
 #' @importFrom rlang .data
-#' @importFrom magrittr %>%
 #'
 #' @examples
 #' library(readxl)
 #' library(dplyr)
 #' library(mocaredd)
 #'
-#' cs <- read_xlsx(
-#'   system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "c_stocks",
-#'   na = "NA"
-#'   )
-#' ad <- read_xlsx(
-#'   system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "AD_lu_transitions",
-#'   na = "NA"
-#'   )
-#' usr <- read_xlsx(
-#'   system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "user_inputs",
-#'   na = "NA"
-#'   )
+#' path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+#'
+#' cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
+#' ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
+#' usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
 #'
 #' res <- fct_combine_mcs_cstock(.ad = ad, .cs = cs, .usr = usr)
 #' res |> filter(sim_no == 1)
@@ -61,8 +50,8 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
     # lu = "P_deg"
     # period = "ALL"
     ## !!!
-    c_sub <- .cs %>%
-      dplyr::filter(.data$lu_id == lu, .data$c_period == period) %>%
+    c_sub <- .cs |>
+      dplyr::filter(.data$lu_id == lu, .data$c_period == period) |>
       dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
 
     fct_combine_mcs_cpools(.c_sub = c_sub, .usr = .usr) |>
@@ -93,7 +82,7 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
       )
 
     mcs_join <- mcs_c |>
-      dplyr::filter(lu_id %in% unique(mcs_dg$lu_intact)) |>
+      dplyr::filter(.data$lu_id %in% unique(mcs_dg$lu_intact)) |>
       dplyr::select("sim_no", lu_intact = "lu_id", !!!rlang::syms(dg_pool))
 
     names(mcs_join)[!(names(mcs_join) %in% c("sim_no", "lu_intact"))] <- dg_pool_intact

@@ -15,7 +15,6 @@
 #'
 #' @return a ggplot or a named list of ggplots
 #'
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #' @importFrom ggplot2 ggplot aes geom_histogram after_stat geom_density geom_vline labs
 #'             scale_x_continuous guide_axis theme theme_classic coord_cartesian element_text

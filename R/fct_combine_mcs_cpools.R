@@ -12,23 +12,16 @@
 #' total carbon stock in tCO2/ha.
 #'
 #' @importFrom rlang .data
-#' @importFrom magrittr %>%
 #'
 #' @examples
 #' library(dplyr)
 #' library(readxl)
 #' library(mocaredd)
 #'
-#' usr <- read_xlsx(
-#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "user_inputs",
-#'   na = "NA"
-#'   )
-#' cs <- read_xlsx(
-#'   system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "c_stocks",
-#'   na = "NA"
-#'   )
+#' path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+#'
+#' usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
+#' cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
 #'
 #' cs_clean <- cs |> filter(!(is.na(c_value) & is.na(c_pdf_a)))
 #' c_sub <- cs_clean |> filter(lu_id == "ev_wet_closed")
@@ -59,7 +52,7 @@ fct_combine_mcs_cpools <- function(.c_sub, .usr){
     ## x = 'AGB'
     ## !!
 
-    params <- .c_sub %>% dplyr::filter(.data$c_pool == x)
+    params <- .c_sub |> dplyr::filter(.data$c_pool == x)
 
     sims <- fct_make_mcs(
       .n_iter = .usr$n_iter,

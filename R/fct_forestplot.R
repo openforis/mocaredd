@@ -19,7 +19,6 @@
 #' @return A character value with the formula for calculating total carbon stock for a specific land use.
 #'
 #' @importFrom rlang .data :=
-#' @importFrom magrittr %>%
 #' @importFrom ggplot2 ggplot aes geom_point geom_segment geom_vline theme_minimal
 #'             scale_y_discrete scale_x_continuous theme element_text labs
 #'             element_blank coord_cartesian

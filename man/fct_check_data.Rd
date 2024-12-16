@@ -24,16 +24,10 @@ TBD
 library(mocaredd)
 library(readxl)
 
-cs <- read_xlsx(
-  path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-   sheet = "c_stocks",
-   na = "NA"
-   )
-ad <- read_xlsx(
-  path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-  sheet = "AD_lu_transitions",
-  na = "NA"
-  )
+path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+
+cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
+ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
 
 .init <- init <- list(
   c_pools = c("AGB", "BGB", "RS", "DW", "LI", "SOC", "ALL", "DG_ratio"),

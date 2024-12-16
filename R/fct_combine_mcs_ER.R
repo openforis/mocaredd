@@ -10,7 +10,6 @@
 #'
 #' @return A tibble with simulations at the final estimate per type of period.
 #'
-#' @importFrom magrittr %>%
 #' @importFrom rlang .data
 #'
 #' @examples
@@ -18,26 +17,12 @@
 #' library(dplyr)
 #' library(mocaredd)
 #'
-#' cs <- read_xlsx(
-#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "c_stocks",
-#'   na = "NA"
-#'   )
-#' ad <- read_xlsx(
-#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "AD_lu_transitions",
-#'   na = "NA"
-#'   )
-#' usr <- read_xlsx(
-#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "user_inputs",
-#'   na = "NA"
-#'   )
-#' time <- read_xlsx(
-#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "time_periods",
-#'   na = "NA"
-#'   )
+#' path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+#'
+#' cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
+#' ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
+#' usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
+#' time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
 #'
 #' time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
 #'

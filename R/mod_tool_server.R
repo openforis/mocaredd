@@ -1,7 +1,6 @@
 #' Tool module server function
 #'
 #' @importFrom rlang .data
-#' @importFrom magrittr %>%
 #'
 #' @noRd
 mod_tool_server <- function(id, rv) {
@@ -16,8 +15,8 @@ mod_tool_server <- function(id, rv) {
 
     ## 1.1 Download example 1 if needed ========================================
     output$dl_template <- downloadHandler(
-      filename = function(){"template1.xlsx"},
-      content  = function(file){file.copy(system.file("extdata/example1.xlsx", package = "mocaredd"), file)}
+      filename = function(){"template1-4pools.xlsx"},
+      content  = function(file){file.copy(system.file("extdata/example1-4pools.xlsx", package = "mocaredd"), file)}
     )
 
     ## 1.2 Check uploaded file columns =========================================
@@ -423,7 +422,7 @@ mod_tool_server <- function(id, rv) {
             dplyr::filter(period_type == x) |>
             dplyr::pull("period_no")
           rv$mcs$sim_trans |>
-            dplyr::filter(time_period %in% period_ids) |>
+            dplyr::filter(.data$time_period %in% period_ids) |>
             dplyr::mutate(E_sim = round(E_sim / nb_years, 0))
         }) |> purrr::list_rbind()
       } else {

@@ -16,32 +16,17 @@
 #' if FALSE.
 #'
 #' @importFrom rlang .data
-#' @importFrom magrittr %>%
 #'
 #' @examples
 #' library(mocaredd)
 #' library(readxl)
 #'
-#' cs <- read_xlsx(
-#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "c_stocks",
-#'   na = "NA"
-#'   )
-#' ad <- read_xlsx(
-#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "AD_lu_transitions",
-#'   na = "NA"
-#'   )
-#' usr <- read_xlsx(
-#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "user_inputs",
-#'   na = "NA"
-#'   )
-#' time <- read_xlsx(
-#'   path = system.file("extdata/example1.xlsx", package = "mocaredd"),
-#'   sheet = "time_periods",
-#'   na = "NA"
-#'   )
+#' path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+#'
+#' cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
+#' ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
+#' usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
+#' time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
 #'
 #' app_checklist <- list(
 #'   xlsx_tabs  = c("user_inputs", "time_periods", "AD_lu_transitions", "c_stocks"),
@@ -273,7 +258,7 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
   ## - Period matching exactly between tables
   tmp$match_period_ad_ok <- all(sort(unique(.ad$trans_period)) == sort(unique(.time$period_no)))
 
-  cs_period <- .cs %>% dplyr::filter(.data$c_period != "ALL")
+  cs_period <- .cs |> dplyr::filter(.data$c_period != "ALL")
   if (nrow(cs_period) > 0) {
     tmp$match_period_cs_ok <- all(sort(unique(.cs$c_period)) == sort(unique(.time$period_no)))
   } else {
@@ -287,8 +272,8 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
   tmp$match_lu_ok <- all(lu_ad %in% lu_cs)
 
   ## - At least one ref and one monitoring period
-  nb_ref <- .time %>% dplyr::filter(stringr::str_detect(.data$period_type, pattern = "REF|REF[0-9]"))
-  nb_mon <- .time %>% dplyr::filter(stringr::str_detect(.data$period_type, pattern = "MON|MON[0-9]"))
+  nb_ref <- .time |> dplyr::filter(stringr::str_detect(.data$period_type, pattern = "REF|REF[0-9]"))
+  nb_mon <- .time |> dplyr::filter(stringr::str_detect(.data$period_type, pattern = "MON|MON[0-9]"))
 
   tmp$match_ref_ok <- nrow(nb_ref) > 0
   tmp$match_mon_ok <- nrow(nb_mon) > 0

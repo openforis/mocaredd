@@ -27,21 +27,11 @@ library(readxl)
 library(dplyr)
 library(mocaredd)
 
-cs <- read_xlsx(
-  system.file("extdata/example1.xlsx", package = "mocaredd"),
-  sheet = "c_stocks",
-  na = "NA"
-  )
-ad <- read_xlsx(
-  system.file("extdata/example1.xlsx", package = "mocaredd"),
-  sheet = "AD_lu_transitions",
-  na = "NA"
-  )
-usr <- read_xlsx(
-  system.file("extdata/example1.xlsx", package = "mocaredd"),
-  sheet = "user_inputs",
-  na = "NA"
-  )
+path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+
+cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
+ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
+usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
 
 cs_clean <- cs |> filter(!is.na(c_value) | !is.na(c_pdf_a))
 

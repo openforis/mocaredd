@@ -102,12 +102,12 @@ AGB and BGB can also be expressed in ton of dry matter (DM), then a carbon fract
 <span class="r-in"><span><span class="va">cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"c_stocks"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">c_lu</span> <span class="op">&lt;-</span> <span class="va">cs</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">lu_id</span> <span class="op">==</span> <span class="st">"ev_wet_closed"</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in filter(cs, lu_id == "ev_wet_closed"):</span> <span style="color: #00BBBB;">ℹ</span> In argument: `lu_id == "ev_wet_closed"`.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error:</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> object 'lu_id' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">fct_check_pool</span><span class="op">(</span>.c_lu <span class="op">=</span> <span class="va">c_lu</span>, .c_unit <span class="op">=</span> <span class="st">"C"</span>, .c_fraction <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>           lu_id                     lu_name has_AG has_BG has_RS has_DW has_LI</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 ev_wet_closed Closed Wet Evergreen Forest   TRUE   TRUE  FALSE   TRUE   TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   has_SO has_AL has_CF has_DG</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  FALSE  FALSE  FALSE  FALSE</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in fct_check_pool(.c_lu = c_lu, .c_unit = "C", .c_fraction = NA):</span> unused argument (.c_lu = c_lu)</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

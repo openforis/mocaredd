@@ -89,6 +89,7 @@ for each simulation.</p>
 <span class="r-in"><span><span class="va">time_clean</span> <span class="op">&lt;-</span> <span class="va">time</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>nb_years <span class="op">=</span> <span class="va">year_end</span> <span class="op">-</span> <span class="va">year_start</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">sim_trans</span> <span class="op">&lt;-</span> <span class="fu"><a href="fct_combine_mcs_E.html">fct_combine_mcs_E</a></span><span class="op">(</span>.ad <span class="op">=</span> <span class="va">ad</span>, .cs <span class="op">=</span> <span class="va">cs</span>, .usr <span class="op">=</span> <span class="va">usr</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pmap(combi, function(period, lu) {    c_sub &lt;- filter(.cs, .data$c_period == period, .data$c_lu_id ==         lu)    c_check &lt;- fct_check_pool(.c_sub = c_sub, .c_unit = .usr$c_unit,         .c_fraction = .usr$c_fraction)}):</span> could not find function "pmap"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">sim_REF</span> <span class="op">&lt;-</span> <span class="fu"><a href="fct_combine_mcs_P.html">fct_combine_mcs_P</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  .data <span class="op">=</span> <span class="va">sim_trans</span>,</span></span>
@@ -96,6 +97,9 @@ for each simulation.</p>
 <span class="r-in"><span>  .period_type <span class="op">=</span> <span class="st">"REF"</span>,</span></span>
 <span class="r-in"><span>  .ad_annual <span class="op">=</span> <span class="va">usr</span><span class="op">$</span><span class="va">ad_annual</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in purrr::map(unique(time_ref$period_type), function(x) {    dplyr::summarise(dplyr::group_by(dplyr::filter(dplyr::left_join(.data,         time_ref, by = c(time_period = "period_no")), .data$period_type ==         x), .data$sim_no, .data$period_type), E_sim = round(sum(.data$E_sim *         .data$nb_years)/length_ref, 0), .groups = "drop")}):</span> <span style="color: #00BBBB;">ℹ</span> In index: 1.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error:</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> object 'sim_trans' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">sim_MON</span> <span class="op">&lt;-</span> <span class="fu"><a href="fct_combine_mcs_P.html">fct_combine_mcs_P</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  .data <span class="op">=</span> <span class="va">sim_trans</span>,</span></span>
@@ -103,6 +107,9 @@ for each simulation.</p>
 <span class="r-in"><span>  .period_type <span class="op">=</span> <span class="st">"MON"</span>,</span></span>
 <span class="r-in"><span>  .ad_annual <span class="op">=</span> <span class="va">usr</span><span class="op">$</span><span class="va">ad_annual</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in purrr::map(unique(time_ref$period_type), function(x) {    dplyr::summarise(dplyr::group_by(dplyr::filter(dplyr::left_join(.data,         time_ref, by = c(time_period = "period_no")), .data$period_type ==         x), .data$sim_no, .data$period_type), E_sim = round(sum(.data$E_sim *         .data$nb_years)/length_ref, 0), .groups = "drop")}):</span> <span style="color: #00BBBB;">ℹ</span> In index: 1.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error:</span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> object 'sim_trans' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## !!! SIM MON and ER to be done</span></span></span>
 <span class="r-in"><span></span></span>

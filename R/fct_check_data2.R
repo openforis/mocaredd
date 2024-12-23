@@ -9,7 +9,6 @@
 #' @param .cs Carbon Stock input table for the shiny app (c_stocks)
 #' @param .usr User inputs' table for the shiny app (user_inputs)
 #' @param .time the 'time' table from the tool input file (see template)
-#' @param .checklist list of coded category variables used in the template.
 #'
 #' @return
 #' A dataframe with TRUE or FALSE (TRUE if each check passes), and broad error locations
@@ -28,47 +27,48 @@
 #' usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
 #' time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
 #'
-#' app_checklist <- list(
-#'   xlsx_tabs  = c("user_inputs", "time_periods", "AD_lu_transitions", "c_stocks"),
-#'   cat_cunits = c("DM", "C"),
-#'   cat_cpools = c("AGB", "BGB", "DW", "LI", "SOC", "ALL"),
-#'   cat_racti  = c("DF", "DG", "EN", "EN_AF", "EN_RE"),
-#'   cat_ptype  = c("REF", "REF[0-9]", "MON", "MON[0-9]"),
-#'   cat_pdf    = c("normal", "beta"),
-#'   col_usr    = c("trunc_pdf", "n_iter", "ran_seed", "c_unit", "c_fraction", "c_fraction_se",
-#'                  "c_fraction_pdf", "dg_ext", "dg_pool", "ad_annual", "conf_level"),
-#'   col_time   = c("period_no", "year_start", "year_end", "period_type"),
-#'   col_ad     = c("trans_no",	"trans_id",	"trans_period",	"redd_activity", "lu_initial_id",
-#'                  "lu_initial",	"lu_final_id", "lu_final", "trans_area", "trans_se",
-#'                  "trans_pdf", "trans_pdf_a", "trans_pdf_b", "trans_pdf_c"),
-#'   col_cs     = c("c_no",	"c_id", "c_period", "lu_id", "lu_name",	"c_pool",	"c_value",
-#'                	"c_se",	"c_pdf",	"c_pdf_a",	"c_pdf_b",	"c_pdf_c")
-#' )
-#'
-#' app_checklist$cat_cpools_all <- c(app_checklist$cat_cpools, "RS", "DG_ratio", "C_all")
-#'
-#' fct_check_data2(.ad = ad, .cs = cs, .usr = usr, .time = time, .checklist = app_checklist)
+#' fct_check_data2(.ad = ad, .cs = cs, .usr = usr, .time = time)
 #'
 #' @export
-fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
+fct_check_data2 <- function(.usr, .time, .ad, .cs){
 
   ## !! FOR TESTING ONLY
   # .usr <- usr
   # .time <- time
   # .ad <- ad
   # .cs <- cs
-  # .checklist <- app_checklist
   ## !!
+
+  ## Build checklist
+  app_checklist <- list(
+    xlsx_tabs  = c("user_inputs", "time_periods", "AD_lu_transitions", "c_stocks"),
+    cat_cunits = c("DM", "C"),
+    cat_cpools = c("AGB", "BGB", "DW", "LI", "SOC", "ALL"),
+    cat_racti  = c("DF", "DG", "EN", "EN_AF", "EN_RE"),
+    cat_ptype  = c("REF", "REF[0-9]", "MON", "MON[0-9]"),
+    cat_pdf    = c("normal", "beta"),
+    col_usr    = c("trunc_pdf", "n_iter", "ran_seed", "c_unit", "c_fraction", "c_fraction_se",
+                   "c_fraction_pdf", "dg_ext", "dg_pool", "ad_annual", "conf_level"),
+    col_time   = c("period_no", "year_start", "year_end", "period_type"),
+    col_ad     = c("trans_no",	"trans_id",	"trans_period",	"trans_placeholder",
+                   "trans_lu_initial_id", "trans_lu_final_id", "trans_area", "trans_se",
+                   "trans_pdf", "trans_pdf_a", "trans_pdf_b", "trans_pdf_c",
+                   "trans_lu_initial",	"trans_lu_final", "trans_redd_activity"),
+    col_cs     = c("c_no", "c_id", "c_period", "c_element", "c_lu_id", "c_placeholder",
+                   "c_value", "c_se", "c_pdf", "c_pdf_a",	"c_pdf_b", "c_pdf_c", "c_lu_name")
+  )
+
+  app_checklist$cat_c_elements <- c(app_checklist$cat_cpools, "RS", "DG_ratio", "C_all")
 
 
   tmp <- list()
   out <- list()
 
   ## Check 1. tables have at least the correct columns #########################
-  tmp$cols_usr_ok  <- all(.checklist$col_usr %in% names(.usr))
-  tmp$cols_time_ok <- all(.checklist$col_time %in% names(.time))
-  tmp$cols_ad_ok   <- all(.checklist$col_ad %in% names(.ad))
-  tmp$cols_cs_ok   <- all(.checklist$col_cs %in% names(.cs))
+  tmp$cols_usr_ok  <- all(app_checklist$col_usr %in% names(.usr))
+  tmp$cols_time_ok <- all(app_checklist$col_time %in% names(.time))
+  tmp$cols_ad_ok   <- all(app_checklist$col_ad %in% names(.ad))
+  tmp$cols_cs_ok   <- all(app_checklist$col_cs %in% names(.cs))
 
   out$cols_ok <- all(
     tmp$cols_usr_ok, tmp$cols_time_ok, tmp$cols_ad_ok, tmp$cols_cs_ok
@@ -154,7 +154,7 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
     is.character(.cs$c_period),
     is.character(.cs$lu_id),
     is.character(.cs$lu_name),
-    is.character(.cs$c_pool),
+    is.character(.cs$c_element),
     is.numeric(.cs$c_value) | is.logical(.cs$c_value),
     is.numeric(.cs$c_se) | is.logical(.cs$c_se),
     is.character(.cs$c_pdf),
@@ -191,12 +191,12 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
     unlist()
 
   tmp$cats_usr_ok <- all(
-    .usr$c_unit %in% .checklist$cat_cunits,
-    all(dg_pool %in% .checklist$cat_cpools_all)
+    .usr$c_unit %in% app_checklist$cat_cunits,
+    all(dg_pool %in% app_checklist$cat_c_elements)
   )
 
   ## - time
-  ptype_pattern <- paste0(.checklist$cat_ptype, collapse = "|")
+  ptype_pattern <- paste0(app_checklist$cat_ptype, collapse = "|")
 
   tmp$cats_time_ok <- all(
      stringr::str_detect(unique(.time$period_type), pattern = ptype_pattern)
@@ -204,14 +204,14 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
 
   ## - ad
   tmp$cats_ad_ok <- all(
-    unique(.ad$redd_activity) %in% .checklist$cat_racti,
-    unique(.ad$trans_pdf) %in% .checklist$cat_pdf
+    unique(.ad$redd_activity) %in% app_checklist$cat_racti,
+    unique(.ad$trans_pdf) %in% app_checklist$cat_pdf
   )
 
   ## - cs
   tmp$cats_cs_ok <- all(
-    unique(.cs$c_pool) %in% .checklist$cat_cpools_all,
-    unique(.cs$c_pdf) %in% .checklist$cat_pdf
+    unique(.cs$c_element) %in% app_checklist$cat_c_elements,
+    unique(.cs$c_pdf) %in% app_checklist$cat_pdf
   )
 
   ## - Combine
@@ -282,15 +282,15 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs, .checklist){
   tmp$match_dm_ok <- (.usr$c_unit == "DM" & is.numeric(.usr$c_fraction)) | .usr$c_unit == "C"
 
   ## - DEG ext working
-  if (!is.na(.usr$dg_ext) & "DG_ratio" %in% unique(.cs$c_pool)) {
+  if (!is.na(.usr$dg_ext) & "DG_ratio" %in% unique(.cs$c_element)) {
     dg_lu <- .cs |>
-      dplyr::filter(.data$c_pool == "DG_ratio") |>
+      dplyr::filter(.data$c_element == "DG_ratio") |>
       dplyr::pull("lu_id") |>
       stringr::str_remove(pattern = .usr$dg_ext)
 
     tmp$match_dg_ok <- all(dg_lu %in% unique(.cs$lu_id))
 
-  } else if (is.na(.usr$dg_ext) & "DG_ratio" %in% unique(.cs$c_pool)) {
+  } else if (is.na(.usr$dg_ext) & "DG_ratio" %in% unique(.cs$c_element)) {
     tmp$match_dg_ok <- FALSE
   } else {
     tmp$match_dg_ok <- FALSE

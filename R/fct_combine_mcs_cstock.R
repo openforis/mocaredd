@@ -15,11 +15,11 @@
 #' @importFrom rlang .data
 #'
 #' @examples
+#' library(mocaredd)
 #' library(readxl)
 #' library(dplyr)
-#' library(mocaredd)
 #'
-#' path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+#' path <- system.file("extdata/example2-with-sims.xlsx", package = "mocaredd")
 #'
 #' cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
 #' ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
@@ -37,29 +37,96 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
   # .usr <- usr
   ## !!!
 
-  ## Run sims for all carbon stocks and time periods
-  all_lu <- unique(c(.ad$lu_initial_id, .ad$lu_final_id))
-  c_lu   <- unique(.cs$lu_id[.cs$lu_id %in% all_lu])
-  c_period <- sort(unique(.cs$c_period))
+  ## STEPS:
+  ## 1. If AGB and/or BGB expressed as dry matter (DM), simulate carbon fraction (CF)
+  ## 2. Simulate C elements
+  ## 3. Get C stock formula and calculate C stock
+  ## 4. Calculate degraded C stocks if based on degradation ratios DG_ratio
 
-  combi <- tidyr::expand_grid(lu = c_lu, period = c_period)
 
-  mcs_c <- purrr::pmap(combi, function(lu, period){
+  ## 1. simulate CF ####
+
+  if (is.numeric(.usr$c_fraction)) {
+    sims_CF <- fct_make_mcs(
+      .n_iter = .usr$n_iter,
+      .pdf    = .usr$c_fraction_pdf,
+      .mean   = round(.usr$c_fraction, 3),
+      .se     = round(.usr$c_fraction_se, 3),
+      #.params = c(params$c_pdf_a, params$c_pdf_b, params$c_pdf_c),
+      .trunc  = .usr$trunc_pdf
+    ) |> round(3)
+  }
+
+  ## 2. simulate C elements ####
+
+  ## + Prepare loop over time periods, land uses and C elements
+  combi <- .cs |>
+    dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a))) |>
+    dplyr::select(period = "c_period", lu = "c_lu_id", c_el = "c_element") |>
+    dplyr::distinct()
+
+  ## + Run loop
+  sims_C <- purrr::pmap(combi, function(period, lu, c_el){
 
     ## !!! FOR TESTING ONLY
-    # lu = "P_deg"
     # period = "ALL"
+    # lu = "EV_deg"
+    # c_el = "DG_ratio"
     ## !!!
-    c_sub <- .cs |>
-      dplyr::filter(.data$lu_id == lu, .data$c_period == period) |>
-      dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
 
-    fct_combine_mcs_cpools(.c_sub = c_sub, .usr = .usr) |>
-      dplyr::mutate(lu_id = lu, c_period = period)
+    params <- .cs |>
+      dplyr::filter(.data$c_lu_id == lu, .data$c_period == period, .data$c_element == c_el)
 
-  }) |>
+    params_not_norm <- round(c(params$c_pdf_a, params$c_pdf_b, params$c_pdf_c), 3)
+
+    sims_el <- fct_make_mcs(
+      .n_iter = .usr$n_iter,
+      .pdf    = params$c_pdf,
+      .mean   = round(params$c_value, 3),
+      .se     = round(params$c_se, 3),
+      .params = params_not_norm,
+      .trunc  = .usr$trunc_pdf
+    )
+
+    dplyr::tibble(
+      sim_no = 1:.usr$n_iter,
+      period = period,
+      lu_id = lu,
+      c_element = c_el,
+      sims = sims_el
+    )
+
+    }) |>
     purrr::list_rbind() |>
-    dplyr::select("sim_no", "c_period", "lu_id", "C_all", "C_form", dplyr::everything())
+    tidyr::pivot_wider(names_from = c_element, values_from = sims)
+
+  ## CHECK
+  # tt <- sims_C |> dplyr::filter(.data$sim_no == 1)
+  # n_rows_expected <- cs |> dplyr::distinct(.data$c_period, .data$c_lu_id) |> nrow()
+  # nrow(sims_C) == .usr$n_iter * n_rows_expected
+
+  ## 3. Get C stock formula and calculate C stock ####
+
+  ## + Prepare loop
+  combi <- .cs |>
+    dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a))) |>
+    dplyr::select(period = "c_period", lu = "c_lu_id") |>
+    dplyr::distinct()
+
+  ## + Run loop
+  combi_formulas <- pmap(combi, function(period, lu){
+
+    c_sub <- .cs |> filter(.data$c_period == period, .data$c_lu_id == lu)
+
+    c_check <- fct_check_pool(.c_sub = c_sub, .c_unit = .usr$c_unit, .c_fraction = .usr$c_fraction)
+
+  })
+
+
+
+
+  #|>
+    #dplyr::select("sim_no", "c_period", "lu_id", "C_all", "C_form", dplyr::everything())
 
   ## CHECK
   # tt <- mcs_c |> dplyr::filter(.data$sim_no == 1)
@@ -92,7 +159,7 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
       dplyr::rowwise() |>
       dplyr::mutate(
         C_form = paste0(.data$C_form, " * (", paste0(dg_pool_intact, collapse = " + "), ")"),
-        C_all  = .data$C_all * sum(!!!rlang::syms(dg_pool_intact))
+        C_all  = round(.data$C_all * sum(!!!rlang::syms(dg_pool_intact)), 3)
       ) |>
       dplyr::ungroup() |>
       dplyr::select(-"lu_intact", -dplyr::all_of(dg_pool_intact))

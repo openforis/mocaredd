@@ -78,14 +78,14 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
       redd_activity = ad_x$redd_activity,
       trans_id = ad_x$trans_id,
       trans_period = ad_x$trans_period,
-      AD = fct_make_mcs(
+      AD = round(fct_make_mcs(
         .n_iter = .usr$n_iter,
         .pdf    = ad_x$trans_pdf,
-        .mean   = ad_x$trans_area,
-        .se     = ad_x$trans_se,
+        .mean   = round(ad_x$trans_area, 0),
+        .se     = round(ad_x$trans_se, 0),
         .params = c(ad_x$c_pdf_a, ad_x$c_pdf_b, ad_x$c_pdf_c),
         .trunc  = .usr$trunc_pdf
-      )
+      ), 0)
     )
 
     ## EF - Emissions Factors decomposed for each carbon pool
@@ -155,7 +155,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   ## Re-arrange columns and add EF and E (emissions at transition level)
   mcs_trans |>
     dplyr::mutate(
-      EF = round((.data$C_all_i - .data$C_all_f) * 44/12, 0),
+      EF = round((.data$C_all_i - .data$C_all_f) * 44/12, 3),
       E_sim  = round(.data$AD * .data$EF, 0)
     ) |>
     # dplyr::mutate(dplyr::across(c(.data$E_sim, .data$AD, .data$EF, .data$C_all_i, .data$C_all_f))) |>

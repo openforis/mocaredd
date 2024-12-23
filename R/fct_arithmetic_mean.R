@@ -20,16 +20,13 @@
 #' library(dplyr)
 #' library(mocaredd)
 #'
-#' path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+#' path <- system.file("extdata/example2-with-sims.xlsx", package = "mocaredd")
 #'
 #' cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
 #' ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
 #' usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
-#'
 #' time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
 #'
-#' #ad_clean <- ad |> dplyr::filter(!is.na(trans_area) | !is.na(trans_pdf_a))
-#' #cs_clean <- cs |> dplyr::filter(!is.na(c_value) | !is.na(c_pdf_a))
 #' time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
 #'
 #' res <- fct_arithmetic_mean(.ad = ad, .cs = cs, .usr = usr, .time = time_clean)

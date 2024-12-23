@@ -23,11 +23,11 @@ transition, REDD+ activity or emission reductions level.
 TBD
 }
 \examples{
+library(mocaredd)
 library(readxl)
 library(dplyr)
-library(mocaredd)
 
-path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+path <- system.file("extdata/example2-with-sims.xlsx", package = "mocaredd")
 
 cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
 ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")

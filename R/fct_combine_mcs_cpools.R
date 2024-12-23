@@ -35,15 +35,19 @@
 fct_combine_mcs_cpools <- function(.c_sub, .usr){
 
   ## !! FOR TESTING ONLY
-  # .c_sub  <- cs |> dplyr::filter(lu_id == "P_deg") ## "dg_ev_wet_closed" ## "ALL_P_AGB"
+  # .c_sub  <- cs |> dplyr::filter(lu_id == "EV_deg") ## "dg_ev_wet_closed" ## "ALL_P_AGB"
   # .usr    <- usr
   ## !!
 
   .c_sub <- .c_sub |> dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a)))
 
-  c_pools <- unique(.c_sub$c_pool)
-  c_check <- fct_check_pool(.c_lu = .c_sub, .c_unit = .usr$c_unit, .c_fraction = .usr$c_fraction)
-  c_form  <- fct_make_formula(.c_check = c_check, .c_unit = .usr$c_unit)
+  c_pools <- unique(.c_sub$c_element)
+
+  ## FOR V1.0: CF and formula implementation at cstock level:
+  ## + solves issue of generating one set of CF if needed
+  ## + integrate scenarios for degradation in formula
+  # c_check <- fct_check_pool(.c_lu = .c_sub, .c_unit = .usr$c_unit, .c_fraction = .usr$c_fraction)
+  # c_form  <- fct_make_formula(.c_check = c_check, .c_unit = .usr$c_unit)
 
   ## Create named list with simulations for all pools
   SIMS <- purrr::map(c_pools, function(x){
@@ -52,18 +56,20 @@ fct_combine_mcs_cpools <- function(.c_sub, .usr){
     ## x = 'AGB'
     ## !!
 
-    params <- .c_sub |> dplyr::filter(.data$c_pool == x)
+    params <- .c_sub |> dplyr::filter(.data$c_element == x)
+
+    params_not_norm <- round(c(params$c_pdf_a, params$c_pdf_b, params$c_pdf_c), 3)
 
     sims <- fct_make_mcs(
       .n_iter = .usr$n_iter,
       .pdf    = params$c_pdf,
-      .mean   = params$c_value,
-      .se     = params$c_se,
-      .params = c(params$c_pdf_a, params$c_pdf_b, params$c_pdf_c),
+      .mean   = round(params$c_value, 3),
+      .se     = round(params$c_se, 3),
+      .params = params_not_norm,
       .trunc  = .usr$trunc_pdf
     )
 
-    out <- as.data.frame(sims)
+    out <- as.data.frame(round(sims, 3))
     names(out) <- x
 
     out
@@ -72,23 +78,29 @@ fct_combine_mcs_cpools <- function(.c_sub, .usr){
   ## End map()
 
   ## ADD CF if needed
-  if (c_check$has_CF & !("DG_ratio" %in% names(SIMS))) {
-    SIMS$CF <- fct_make_mcs(
-      .n_iter = .usr$n_iter,
-      .pdf    = .usr$c_fraction_pdf,
-      .mean   = .usr$c_fraction,
-      .se     = .usr$c_fraction_se,
-      #.params = c(params$c_pdf_a, params$c_pdf_b, params$c_pdf_c),
-      .trunc  = .usr$trunc_pdf
-    )
-  }
+  ## FOR V1.0: CF and formula implementation at cstock level
+  # if (c_check$has_CF) {
+  #   SIMS$CF <- fct_make_mcs(
+  #     .n_iter = .usr$n_iter,
+  #     .pdf    = .usr$c_fraction_pdf,
+  #     .mean   = round(.usr$c_fraction, 3),
+  #     .se     = round(.usr$c_fraction_se, 3),
+  #     #.params = c(params$c_pdf_a, params$c_pdf_b, params$c_pdf_c),
+  #     .trunc  = .usr$trunc_pdf
+  #   ) |> round(3)
+  # }
+
+  ## FOR V1.0: CF and formula implementation at cstock level:
+  # SIMS |>
+  #   dplyr::mutate(
+  #     C_form = c_form,
+  #     C_all = round(eval(parse(text=c_form), SIMS), 3),
+  #     sim_no = 1:.usr$n_iter
+  #   ) |>
+  #   dplyr::select("sim_no", dplyr::everything())
 
   SIMS |>
-    dplyr::mutate(
-      C_form = c_form,
-      C_all = eval(parse(text=c_form), SIMS),
-      sim_no = 1:.usr$n_iter
-    ) |>
+    dplyr::mutate(sim_no = 1:.usr$n_iter) |>
     dplyr::select("sim_no", dplyr::everything())
 
 }

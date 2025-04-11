@@ -56,7 +56,7 @@ fct_make_formula <- function(.c_check, .c_unit){
   c_eq_out <- c_eq1
 
   if (.c_check$has_RS) {
-    c_eq_out["BGB"] <- "AGB*RS"
+    c_eq_out["BGB"] <- "AGB * RS"
   } else if (!.c_check$has_BG){
     c_eq_out <- c_eq_out[!(names(c_eq_out) %in% c("plus_bgb", "BGB"))]
   }

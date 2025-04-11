@@ -123,6 +123,10 @@ fct_combine_sims_C_allstock <- function(.ad, .cs, .usr){
 
     c_check <- fct_check_pool(.c_sub = c_sub, .c_unit = .usr$c_unit, .c_fraction = .usr$c_fraction)
     c_form  <- fct_make_formula(.c_check = c_check, .c_unit = .usr$c_unit)
+    c_pools <- stringr::str_remove_all(c_form, pattern = "\\+|\\*|\\(|\\)") |>
+      stringr::str_split(pattern = "  ") |>
+      unlist() |>
+      unique()
 
     tibble(
       period = period,
@@ -159,24 +163,30 @@ fct_combine_sims_C_allstock <- function(.ad, .cs, .usr){
 
   if ("DG_ratio" %in% unique(sims_C_all$c_form)) {
 
-    ## + Get pools used for DG
+    ## + Get elements used for DG
     if (.usr$dg_pool == "ALL") {
       dg_pool <- "C_all"
     } else {
       dg_pool <- stringr::str_split(.usr$dg_pool, pattern = ",") |> purrr::map(stringr::str_trim) |> unlist()
     }
-    dg_pool_intact <- paste0(dg_pool, "_intact")
+    #dg_pool_intact <- paste0(dg_pool, "_intact")
 
-    ## + Filter DG to modify formula and recalculate
+    ## + Filter DG_ratio elements
     sims_DG <- sims_C_all |>
       dplyr::filter(.data$c_form == "DG_ratio") |>
       dplyr::mutate(
         lu_intact = stringr::str_remove(.data$lu_id, pattern = .usr$dg_ext)
       )
 
+    ## + Filter intact elements associated with DG land uses
     sims_C_intact <- sims_C_all |>
-      dplyr::filter(.data$lu_id %in% unique(sims_DG$lu_intact)) |>
-      dplyr::select("sim_no", lu_intact = "lu_id", !!!rlang::syms(dg_pool))
+      dplyr::filter(.data$lu_id %in% unique(sims_DG$lu_intact))
+
+    intact_pools <- stringr::str_subset(  |>
+      dplyr::select("c_form") |>
+      purrr::discard(~all(is.na(.)))
+      #dplyr::select("sim_no", lu_intact = "lu_id", !!!rlang::syms(dg_pool))
+
 
     names(sims_C_intact)[!(names(sims_C_intact) %in% c("sim_no", "lu_intact"))] <- dg_pool_intact
 

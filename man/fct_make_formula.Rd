@@ -4,12 +4,12 @@
 \alias{fct_make_formula}
 \title{Check that the app's the input data has matching land uses and correct carbon pools and associated factors.}
 \usage{
-fct_make_formula(.c_check, .c_unit)
+fct_make_formula(.c_el, .c_unit)
 }
 \arguments{
-\item{.c_check}{output of fct_check_pool()}
-
 \item{.c_unit}{"DM" or "C",}
+
+\item{.c_check}{output of fct_check_pool()}
 }
 \value{
 A character value with the formula for calculating total carbon stock for a specific land use.

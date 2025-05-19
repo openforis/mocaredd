@@ -51,9 +51,9 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs){
                    "c_fraction_pdf", "dg_ext", "dg_pool", "ad_annual", "conf_level"),
     col_time   = c("period_no", "year_start", "year_end", "period_type"),
     col_ad     = c("trans_no",	"trans_id",	"trans_period",	"trans_placeholder",
-                   "trans_lu_initial_id", "trans_lu_final_id", "trans_area", "trans_se",
+                   "lu_initial_id", "lu_final_id", "trans_area", "trans_se",
                    "trans_pdf", "trans_pdf_a", "trans_pdf_b", "trans_pdf_c",
-                   "trans_lu_initial",	"trans_lu_final", "trans_redd_activity"),
+                   "lu_initial",	"lu_final", "redd_activity"),
     col_cs     = c("c_no", "c_id", "c_period", "c_element", "c_lu_id", "c_placeholder",
                    "c_value", "c_se", "c_pdf", "c_pdf_a",	"c_pdf_b", "c_pdf_c", "c_lu_name")
   )
@@ -152,8 +152,8 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs){
     is.numeric(.cs$c_no),
     is.character(.cs$c_id),
     is.character(.cs$c_period),
-    is.character(.cs$lu_id),
-    is.character(.cs$lu_name),
+    is.character(.cs$c_lu_id),
+    is.character(.cs$c_lu_name),
     is.character(.cs$c_element),
     is.numeric(.cs$c_value) | is.logical(.cs$c_value),
     is.numeric(.cs$c_se) | is.logical(.cs$c_se),
@@ -267,7 +267,7 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs){
 
   ## - LU matching between tables
   lu_ad <- sort(c(unique(.ad$lu_initial_id), unique(.ad$lu_final_id)))
-  lu_cs <- sort(unique(.cs$lu_id))
+  lu_cs <- sort(unique(.cs$c_lu_id))
 
   tmp$match_lu_ok <- all(lu_ad %in% lu_cs)
 
@@ -285,10 +285,10 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs){
   if (!is.na(.usr$dg_ext) & "DG_ratio" %in% unique(.cs$c_element)) {
     dg_lu <- .cs |>
       dplyr::filter(.data$c_element == "DG_ratio") |>
-      dplyr::pull("lu_id") |>
+      dplyr::pull("c_lu_id") |>
       stringr::str_remove(pattern = .usr$dg_ext)
 
-    tmp$match_dg_ok <- all(dg_lu %in% unique(.cs$lu_id))
+    tmp$match_dg_ok <- all(dg_lu %in% unique(.cs$c_lu_id))
 
   } else if (is.na(.usr$dg_ext) & "DG_ratio" %in% unique(.cs$c_element)) {
     tmp$match_dg_ok <- FALSE

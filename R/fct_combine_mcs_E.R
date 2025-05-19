@@ -15,9 +15,9 @@
 #' @importFrom rlang .data
 #'
 #' @examples
+#' library(mocaredd)
 #' library(readxl)
 #' library(dplyr)
-#' library(mocaredd)
 #'
 #' path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
 #'
@@ -117,7 +117,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
 
     }
 
-    # ## If degradation is ratio, using .usr$dg_pool to calculate C_all_f
+    # ## If degradation is ratio, using .usr$dg_pool to calculate c_stock_f
     # if (redd_x == "DG" & !is.na(.usr$dg_pool)) {
     #
     #   dg_pool <- stringr::str_split(.usr$dg_pool, pattern = ",") |> purrr::map(stringr::str_trim) |> unlist()
@@ -125,11 +125,11 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
     #
     #   combi <- combi |>
     #     dplyr::rowwise() |>
-    #     dplyr::mutate(C_all_f = .data$DG_ratio_f * sum(!!!rlang::syms(dg_pool_i))) |>
+    #     dplyr::mutate(c_stock_f = .data$DG_ratio_f * sum(!!!rlang::syms(dg_pool_i))) |>
     #     dplyr::ungroup()
     #
     #   ## If degradation has unaffected pools, we identify them by difference and add them to final C stock
-    #   if (.usr$dg_pool != "C_all") {
+    #   if (.usr$dg_pool != "c_stock") {
     #     c_pools <- .cs |>
     #       dplyr::filter(.data$lu_id == ad_x$lu_initial_id) |>
     #       dplyr::filter(!(is.na(.data$c_value) & is.na(.data$c_pdf_a))) |>
@@ -140,7 +140,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
     #     if (length(dg_expool) > 0) {
     #       combi <- combi |>
     #         dplyr::rowwise() |>
-    #         dplyr::mutate(C_all_f = .data$C_all_f + sum(!!!rlang::syms(dg_expool))) |>
+    #         dplyr::mutate(c_stock_f = .data$c_stock_f + sum(!!!rlang::syms(dg_expool))) |>
     #         dplyr::ungroup()
     #     }
     #   }
@@ -155,14 +155,14 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   ## Re-arrange columns and add EF and E (emissions at transition level)
   mcs_trans |>
     dplyr::mutate(
-      EF = round((.data$C_all_i - .data$C_all_f) * 44/12, 3),
+      EF = round((.data$c_stock_i - .data$c_stock_f) * 44/12, 3),
       E_sim  = round(.data$AD * .data$EF, 0)
     ) |>
-    # dplyr::mutate(dplyr::across(c(.data$E_sim, .data$AD, .data$EF, .data$C_all_i, .data$C_all_f))) |>
+    # dplyr::mutate(dplyr::across(c(.data$E_sim, .data$AD, .data$EF, .data$c_stock_i, .data$c_stock_f))) |>
     dplyr::select(
       "sim_no", "redd_activity", time_period = "trans_period", "trans_id",
-      "AD", "EF", "E_sim", "C_form_i", "C_all_i", "C_form_f",
-      "C_all_f", dplyr::everything()
+      "AD", "EF", "E_sim", "c_form_i", "c_stock_i", "c_form_f",
+      "c_stock_f", dplyr::everything()
     )
 
 }

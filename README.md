@@ -11,6 +11,16 @@ The apps takes an input XLSX file following a specific template meant to harmoni
 
 \  
 
+### Run the app
+
+Install the poackage and run the app:
+
+    if (!require(remotes)) install.packages("remotes")
+    if (!require(mocaredd)) remotes::instalkl_github()
+
+
+
+
 ### Workflow
 
 1. Input XSLX filled following provided template. (Note for v2.0, accept separated CSV files, other format tbd).

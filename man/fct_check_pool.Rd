@@ -4,10 +4,10 @@
 \alias{fct_check_pool}
 \title{Check which Carbon pool and what units are in the carbon stock data.}
 \usage{
-fct_check_pool(.c_lu, .c_unit, .c_fraction)
+fct_check_pool(.c_sub, .c_unit, .c_fraction)
 }
 \arguments{
-\item{.c_lu}{Subset of the Carbon Stock input table (c_stock) for a unique land use}
+\item{.c_sub}{Subset of the Carbon Stock input table (c_stock) for a unique land use}
 
 \item{.c_unit}{Unit used to report AGB (and BGB if included), from the shiny app or template user inputs.}
 
@@ -36,8 +36,8 @@ path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
 
 cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
 
-c_lu <- cs |> filter(lu_id == "ev_wet_closed")
+c_sub <- cs |> filter(lu_id == "ev_wet_closed")
 
-fct_check_pool(.c_lu = c_lu, .c_unit = "C", .c_fraction = NA)
+fct_check_pool(.c_sub = c_sub, .c_unit = "C", .c_fraction = NA)
 
 }

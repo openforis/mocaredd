@@ -27,11 +27,11 @@ fct_make_mcs <- function(.n_iter = 10000, .pdf, .mean = NA, .se = NA, .params = 
   if (.pdf == "normal") {
     SIMS <- stats::rnorm(n = .n_iter, mean = .mean, sd = .se)
     if (.trunc) SIMS[SIMS < 0] <- 0
-    SIMS
   } else if (.pdf == "beta") {
     SIMS <- stats::rbeta(n = .n_iter, shape1 = .params[1], shape2 = .params[2])
-    SIMS
   }
+
+  round(SIMS, 3)
 
 }
 

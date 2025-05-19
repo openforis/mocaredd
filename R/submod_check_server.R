@@ -52,8 +52,7 @@ submod_check_server <- function(id, rv) {
         .usr =  rv$inputs$usr,
         .time = rv$inputs$time,
         .ad =   rv$inputs$ad,
-        .cs =   rv$inputs$cs,
-        .checklist = rv$checklist
+        .cs =   rv$inputs$cs
       )
 
       Sys.sleep(0.1)

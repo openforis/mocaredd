@@ -67,14 +67,14 @@ AGB and BGB can also be expressed in ton of dry matter (DM), then a carbon fract
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fct_check_pool</span><span class="op">(</span><span class="va">.c_lu</span>, <span class="va">.c_unit</span>, <span class="va">.c_fraction</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fct_check_pool</span><span class="op">(</span><span class="va">.c_sub</span>, <span class="va">.c_unit</span>, <span class="va">.c_fraction</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg--c-lu">.c_lu<a class="anchor" aria-label="anchor" href="#arg--c-lu"></a></dt>
+<dl><dt id="arg--c-sub">.c_sub<a class="anchor" aria-label="anchor" href="#arg--c-sub"></a></dt>
 <dd><p>Subset of the Carbon Stock input table (c_stock) for a unique land use</p></dd>
 
 
@@ -101,13 +101,13 @@ AGB and BGB can also be expressed in ton of dry matter (DM), then a carbon fract
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"c_stocks"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">c_lu</span> <span class="op">&lt;-</span> <span class="va">cs</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">lu_id</span> <span class="op">==</span> <span class="st">"ev_wet_closed"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">c_sub</span> <span class="op">&lt;-</span> <span class="va">cs</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">lu_id</span> <span class="op">==</span> <span class="st">"ev_wet_closed"</span><span class="op">)</span></span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in filter(cs, lu_id == "ev_wet_closed"):</span> <span style="color: #00BBBB;">ℹ</span> In argument: `lu_id == "ev_wet_closed"`.</span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error:</span></span>
 <span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> object 'lu_id' not found</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">fct_check_pool</span><span class="op">(</span>.c_lu <span class="op">=</span> <span class="va">c_lu</span>, .c_unit <span class="op">=</span> <span class="st">"C"</span>, .c_fraction <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in fct_check_pool(.c_lu = c_lu, .c_unit = "C", .c_fraction = NA):</span> unused argument (.c_lu = c_lu)</span>
+<span class="r-in"><span><span class="fu">fct_check_pool</span><span class="op">(</span>.c_sub <span class="op">=</span> <span class="va">c_sub</span>, .c_unit <span class="op">=</span> <span class="st">"C"</span>, .c_fraction <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'c_sub' not found</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -120,7 +120,7 @@ AGB and BGB can also be expressed in ton of dry matter (DM), then a carbon fract
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>

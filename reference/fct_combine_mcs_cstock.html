@@ -83,9 +83,17 @@ transition, REDD+ activity or emission reductions level.</p>
 <span class="r-in"><span><span class="va">usr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"user_inputs"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">fct_combine_mcs_cstock</span><span class="op">(</span>.ad <span class="op">=</span> <span class="va">ad</span>, .cs <span class="op">=</span> <span class="va">cs</span>, .usr <span class="op">=</span> <span class="va">usr</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pmap(combi, function(period, lu) {    c_sub &lt;- filter(.cs, .data$c_period == period, .data$c_lu_id ==         lu)    c_check &lt;- fct_check_pool(.c_sub = c_sub, .c_unit = .usr$c_unit,         .c_fraction = .usr$c_fraction)}):</span> could not find function "pmap"</span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">sim_no</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 5 × 11</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># Rowwise: </span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   sim_no period lu_id    AGB     RS   ALL     CF c_form         c_stock DG_ratio</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span>      1 ALL    EV      311.  0.332    <span style="color: #BB0000;">NA</span>  0.468 (AGB + AGB * …    194.   <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span>      1 ALL    M       234.  0.433    <span style="color: #BB0000;">NA</span>  0.468 (AGB + AGB * …    157.   <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span>      1 ALL    Crop     <span style="color: #BB0000;">NA</span>  <span style="color: #BB0000;">NA</span>         0  0.468 ALL * CF            0    <span style="color: #BB0000;">NA</span>    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span>      1 ALL    EV_deg   <span style="color: #BB0000;">NA</span>  <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>     DG_ratio * (c…    138.    0.711</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span>      1 ALL    M_deg    <span style="color: #BB0000;">NA</span>  <span style="color: #BB0000;">NA</span>        <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>     DG_ratio * (c…    131.    0.835</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: c_stock_before &lt;dbl&gt;</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -98,7 +106,7 @@ transition, REDD+ activity or emission reductions level.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>

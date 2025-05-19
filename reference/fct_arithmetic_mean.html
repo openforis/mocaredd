@@ -88,24 +88,28 @@ transition, REDD+ activity or emission reductions level.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>     intersect, setdiff, setequal, union</span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/openforis/mocaredd" class="external-link">mocaredd</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1-4pools.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example2-with-sims.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"c_stocks"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">ad</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"AD_lu_transitions"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">usr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"user_inputs"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">time</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"time_periods"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#ad_clean &lt;- ad |&gt; dplyr::filter(!is.na(trans_area) | !is.na(trans_pdf_a))</span></span></span>
-<span class="r-in"><span><span class="co">#cs_clean &lt;- cs |&gt; dplyr::filter(!is.na(c_value) | !is.na(c_pdf_a))</span></span></span>
 <span class="r-in"><span><span class="va">time_clean</span> <span class="op">&lt;-</span> <span class="va">time</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>nb_years <span class="op">=</span> <span class="va">year_end</span> <span class="op">-</span> <span class="va">year_start</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu">fct_arithmetic_mean</span><span class="op">(</span>.ad <span class="op">=</span> <span class="va">ad</span>, .cs <span class="op">=</span> <span class="va">cs</span>, .usr <span class="op">=</span> <span class="va">usr</span>, .time <span class="op">=</span> <span class="va">time_clean</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pmap(combi, function(period, lu) {    c_sub &lt;- filter(.cs, .data$c_period == period, .data$c_lu_id ==         lu)    c_check &lt;- fct_check_pool(.c_sub = c_sub, .c_unit = .usr$c_unit,         .c_fraction = .usr$c_fraction)}):</span> could not find function "pmap"</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">res</span><span class="op">$</span><span class="va">emissions</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 6</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   period_type year_start year_end nb_years sim_no E_sim</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> REF               <span style="text-decoration: underline;">2</span>016     <span style="text-decoration: underline;">2</span>020        5      1    <span style="color: #BB0000;">NA</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> MON1              <span style="text-decoration: underline;">2</span>021     <span style="text-decoration: underline;">2</span>022        2      1    <span style="color: #BB0000;">NA</span></span>
 <span class="r-in"><span><span class="va">res</span><span class="op">$</span><span class="va">gg_emissions</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res' not found</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing missing values or values outside the scale range</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_col()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 2 rows containing missing values or values outside the scale range</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_col()`).</span>
+<span class="r-plt img"><img src="fct_arithmetic_mean-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -118,7 +122,7 @@ transition, REDD+ activity or emission reductions level.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>

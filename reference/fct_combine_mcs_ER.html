@@ -89,7 +89,7 @@ for each simulation.</p>
 <span class="r-in"><span><span class="va">time_clean</span> <span class="op">&lt;-</span> <span class="va">time</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>nb_years <span class="op">=</span> <span class="va">year_end</span> <span class="op">-</span> <span class="va">year_start</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">sim_trans</span> <span class="op">&lt;-</span> <span class="fu"><a href="fct_combine_mcs_E.html">fct_combine_mcs_E</a></span><span class="op">(</span>.ad <span class="op">=</span> <span class="va">ad</span>, .cs <span class="op">=</span> <span class="va">cs</span>, .usr <span class="op">=</span> <span class="va">usr</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in pmap(combi, function(period, lu) {    c_sub &lt;- filter(.cs, .data$c_period == period, .data$c_lu_id ==         lu)    c_check &lt;- fct_check_pool(.c_sub = c_sub, .c_unit = .usr$c_unit,         .c_fraction = .usr$c_fraction)}):</span> could not find function "pmap"</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in fct_combine_mcs_cstock(.ad = .ad, .cs = .cs, .usr = .usr):</span> object 'sims_CF' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">sim_REF</span> <span class="op">&lt;-</span> <span class="fu"><a href="fct_combine_mcs_P.html">fct_combine_mcs_P</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  .data <span class="op">=</span> <span class="va">sim_trans</span>,</span></span>
@@ -124,7 +124,7 @@ for each simulation.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer></div>

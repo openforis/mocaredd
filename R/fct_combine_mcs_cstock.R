@@ -103,14 +103,14 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
     dplyr::mutate(
       c_form = fct_make_formula(.c_el = c_el, .c_unit = .usr$c_unit)
     ) |>
-    ungroup() |>
+    dplyr::ungroup() |>
     dplyr::select(period = "c_period", lu_id = "c_lu_id", "c_form")
 
   sims_C_noDG_calc <- sims_C_noDG |>
     dplyr::left_join(c_elements, by = c("period", "lu_id")) |>
     dplyr::rowwise() |>
     dplyr::mutate(c_stock = round(eval(parse(text=c_form)), 3)) |>
-    ungroup() |>
+    dplyr::ungroup() |>
     dplyr::select("sim_no", tidyr::everything())
 
 

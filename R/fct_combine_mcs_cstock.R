@@ -83,7 +83,7 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
 
   sims_C_noDG <- sims_cols_noDG |>
     dplyr::select(period = "c_period", lu_id = "c_lu_id", "c_element", "SIMS") |>
-    tidyr::unnest(.data$SIMS) |>
+    tidyr::unnest("SIMS") |>
     dplyr::mutate(sim_no = rep(1:.usr$n_iter, nrow(sims_cols_noDG))) |>
     tidyr::pivot_wider(names_from = c_element, values_from = SIMS) |>
     dplyr::left_join(sims_CF, by = "sim_no")
@@ -103,12 +103,14 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
     dplyr::mutate(
       c_form = fct_make_formula(.c_el = c_el, .c_unit = .usr$c_unit)
     ) |>
+    ungroup() |>
     dplyr::select(period = "c_period", lu_id = "c_lu_id", "c_form")
 
   sims_C_noDG_calc <- sims_C_noDG |>
     dplyr::left_join(c_elements, by = c("period", "lu_id")) |>
     dplyr::rowwise() |>
     dplyr::mutate(c_stock = round(eval(parse(text=c_form)), 3)) |>
+    ungroup() |>
     dplyr::select("sim_no", tidyr::everything())
 
 
@@ -160,7 +162,7 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
 
     sims_DG <- sims_cols_DG |>
       dplyr::select(period = "c_period", lu_id = "c_lu_id", "c_element", "SIMS") |>
-      tidyr::unnest(SIMS) |>
+      tidyr::unnest("SIMS") |>
       dplyr::mutate(sim_no = rep(1:.usr$n_iter, nrow(sims_cols_DG))) |>
       tidyr::pivot_wider(names_from = c_element, values_from = SIMS) |>
       dplyr::mutate(lu_before = stringr::str_remove(lu_id, .usr$dg_ext))

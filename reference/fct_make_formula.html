@@ -6,16 +6,18 @@ different carbon pools coded:
 - DW for deadwood,
 - LI for litter and
 - SOC for soil organic carbon.
-All pools can be expressed in tons of Carbon (C) or CO2.
-AGB and BGB can also be expressed in ton of dry matter (DM), then a carbon fraction (CF) is also needed."><meta property="og:description" content="The expected input carbon stock table for the tool contains carbon values of
+All pools can be expressed in tons of carbon (C), except AGB and BGB
+which can also be expressed in ton of dry matter (DM) if a carbon fraction
+'CF' is provided."><meta property="og:description" content="The expected input carbon stock table for the tool contains carbon values of
 different carbon pools coded:
 - AGB for aboveground biomass,
 - BGB or RS (Root-to-Shoot ratio) for the belowground biomass,
 - DW for deadwood,
 - LI for litter and
 - SOC for soil organic carbon.
-All pools can be expressed in tons of Carbon (C) or CO2.
-AGB and BGB can also be expressed in ton of dry matter (DM), then a carbon fraction (CF) is also needed."></head><body>
+All pools can be expressed in tons of carbon (C), except AGB and BGB
+which can also be expressed in ton of dry matter (DM) if a carbon fraction
+'CF' is provided."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -61,8 +63,9 @@ different carbon pools coded:
 - DW for deadwood,
 - LI for litter and
 - SOC for soil organic carbon.
-All pools can be expressed in tons of Carbon (C) or CO2.
-AGB and BGB can also be expressed in ton of dry matter (DM), then a carbon fraction (CF) is also needed.</p>
+All pools can be expressed in tons of carbon (C), except AGB and BGB
+which can also be expressed in ton of dry matter (DM) if a carbon fraction
+'CF' is provided.</p>
     </div>
 
     <div class="section level2">
@@ -74,39 +77,27 @@ AGB and BGB can also be expressed in ton of dry matter (DM), then a carbon fract
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg--c-unit">.c_unit<a class="anchor" aria-label="anchor" href="#arg--c-unit"></a></dt>
+<dl><dt id="arg--c-el">.c_el<a class="anchor" aria-label="anchor" href="#arg--c-el"></a></dt>
+<dd><p>Vector of carbon elements, inc. "A::</p></dd>
+
+
+<dt id="arg--c-unit">.c_unit<a class="anchor" aria-label="anchor" href="#arg--c-unit"></a></dt>
 <dd><p>"DM" or "C",</p></dd>
-
-
-<dt id="arg--c-check">.c_check<a class="anchor" aria-label="anchor" href="#arg--c-check"></a></dt>
-<dd><p>output of fct_check_pool()</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A character value with the formula for calculating total carbon stock for a specific land use.</p>
+    <p>A character value with the formula for calculating total carbon stock.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/openforis/mocaredd" class="external-link">mocaredd</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://readxl.tidyverse.org" class="external-link">readxl</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/example1-4pools.xlsx"</span>, package <span class="op">=</span> <span class="st">"mocaredd"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">c_el</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AGB"</span>, <span class="st">"RS"</span>, <span class="st">"DW"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">cs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readxl.tidyverse.org/reference/read_excel.html" class="external-link">read_xlsx</a></span><span class="op">(</span>path <span class="op">=</span> <span class="va">path</span>, sheet <span class="op">=</span> <span class="st">"c_stocks"</span>, na <span class="op">=</span> <span class="st">"NA"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">c_lu</span>  <span class="op">&lt;-</span> <span class="va">cs</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">lu_id</span> <span class="op">==</span> <span class="st">"ev_wet_closed"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in filter(cs, lu_id == "ev_wet_closed"):</span> <span style="color: #00BBBB;">ℹ</span> In argument: `lu_id == "ev_wet_closed"`.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Caused by error:</span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BBBB00;">!</span> object 'lu_id' not found</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">c_check</span> <span class="op">&lt;-</span> <span class="fu"><a href="fct_check_pool.html">fct_check_pool</a></span><span class="op">(</span>.c_lu <span class="op">=</span> <span class="va">c_lu</span>, .c_unit <span class="op">=</span> <span class="st">"C"</span>, .c_fraction <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in fct_check_pool(.c_lu = c_lu, .c_unit = "C", .c_fraction = NA):</span> unused argument (.c_lu = c_lu)</span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">fct_make_formula</span><span class="op">(</span>.c_check <span class="op">=</span> <span class="va">c_check</span>, .c_unit <span class="op">=</span> <span class="st">"C"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in fct_make_formula(.c_check = c_check, .c_unit = "C"):</span> unused argument (.c_check = c_check)</span>
+<span class="r-in"><span><span class="fu">fct_make_formula</span><span class="op">(</span>.c_el <span class="op">=</span> <span class="va">c_el</span>, .c_unit <span class="op">=</span> <span class="st">"DM"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "(AGB + AGB * RS) * CF + DW"</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

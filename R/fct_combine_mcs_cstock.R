@@ -57,6 +57,11 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
         .trunc  = .usr$trunc_pdf
       ), 3)
     )
+  } else {
+    sims_CF <- dplyr::tibble(
+      sim_no = 1:.usr$n_iter,
+      CF     = rep("NA", .usr$n_iter)
+    )
   }
 
   ## 2. simulate C elements except DG_ratio ####
@@ -70,8 +75,8 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
       SIMS = list(fct_make_mcs(
         .n_iter = .usr$n_iter,
         .pdf    = .data$c_pdf,
-        .mean   = round(c_value, 3),
-        .se     = round(c_se, 3),
+        .mean   = round(.data$c_value, 3),
+        .se     = round(.data$c_se, 3),
         .params = .data$params_not_norm,
         .trunc  = .usr$trunc_pdf
       ))
@@ -79,13 +84,13 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
     dplyr::ungroup()
 
   ## + Make long table with C elements as columns
-  sims_cols_noDG <- sims_cols |> dplyr::filter(c_element != "DG_ratio")
+  sims_cols_noDG <- sims_cols |> dplyr::filter(.data$c_element != "DG_ratio")
 
   sims_C_noDG <- sims_cols_noDG |>
     dplyr::select(period = "c_period", lu_id = "c_lu_id", "c_element", "SIMS") |>
     tidyr::unnest("SIMS") |>
     dplyr::mutate(sim_no = rep(1:.usr$n_iter, nrow(sims_cols_noDG))) |>
-    tidyr::pivot_wider(names_from = c_element, values_from = SIMS) |>
+    tidyr::pivot_wider(names_from = "c_element", values_from = "SIMS") |>
     dplyr::left_join(sims_CF, by = "sim_no")
 
   ## CHECK
@@ -101,7 +106,7 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
     dplyr::summarise(c_el = list(c(.data$c_element)), .by = c("c_period", "c_lu_id")) |>
     dplyr::rowwise() |>
     dplyr::mutate(
-      c_form = fct_make_formula(.c_el = c_el, .c_unit = .usr$c_unit)
+      c_form = fct_make_formula(.c_el = .data$c_el, .c_unit = .usr$c_unit)
     ) |>
     dplyr::ungroup() |>
     dplyr::select(period = "c_period", lu_id = "c_lu_id", "c_form")
@@ -109,7 +114,7 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
   sims_C_noDG_calc <- sims_C_noDG |>
     dplyr::left_join(c_elements, by = c("period", "lu_id")) |>
     dplyr::rowwise() |>
-    dplyr::mutate(c_stock = round(eval(parse(text=c_form)), 3)) |>
+    dplyr::mutate(c_stock = round(eval(parse(text = .data$c_form)), 3)) |>
     dplyr::ungroup() |>
     dplyr::select("sim_no", tidyr::everything())
 
@@ -158,14 +163,14 @@ fct_combine_mcs_cstock <- function(.ad, .cs, .usr){
     # }
 
     ## + Get DG_ratio simulations as long table
-    sims_cols_DG <- sims_cols |> dplyr::filter(c_element == "DG_ratio")
+    sims_cols_DG <- sims_cols |> dplyr::filter(.data$c_element == "DG_ratio")
 
     sims_DG <- sims_cols_DG |>
       dplyr::select(period = "c_period", lu_id = "c_lu_id", "c_element", "SIMS") |>
       tidyr::unnest("SIMS") |>
       dplyr::mutate(sim_no = rep(1:.usr$n_iter, nrow(sims_cols_DG))) |>
-      tidyr::pivot_wider(names_from = c_element, values_from = SIMS) |>
-      dplyr::mutate(lu_before = stringr::str_remove(lu_id, .usr$dg_ext))
+      tidyr::pivot_wider(names_from = "c_element", values_from = "SIMS") |>
+      dplyr::mutate(lu_before = stringr::str_remove(.data$lu_id, .usr$dg_ext))
 
     ## + Join intact pools C to degraded land uses, remake formula and calculate new Cstock
     sims_DG_calc <- sims_DG |>

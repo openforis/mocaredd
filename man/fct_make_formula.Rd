@@ -7,12 +7,12 @@
 fct_make_formula(.c_el, .c_unit)
 }
 \arguments{
-\item{.c_unit}{"DM" or "C",}
+\item{.c_el}{Vector of carbon elements, inc. "A::}
 
-\item{.c_check}{output of fct_check_pool()}
+\item{.c_unit}{"DM" or "C",}
 }
 \value{
-A character value with the formula for calculating total carbon stock for a specific land use.
+A character value with the formula for calculating total carbon stock.
 }
 \description{
 The expected input carbon stock table for the tool contains carbon values of
@@ -22,22 +22,15 @@ different carbon pools coded:
 - DW for deadwood,
 - LI for litter and
 - SOC for soil organic carbon.
-All pools can be expressed in tons of Carbon (C) or CO2.
-AGB and BGB can also be expressed in ton of dry matter (DM), then a carbon fraction (CF) is also needed.
+All pools can be expressed in tons of carbon (C), except AGB and BGB
+which can also be expressed in ton of dry matter (DM) if a carbon fraction
+'CF' is provided.
 }
 \examples{
 library(mocaredd)
-library(readxl)
-library(dplyr)
 
-path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+c_el <- c("AGB", "RS", "DW")
 
-cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
-
-c_lu  <- cs |> filter(lu_id == "ev_wet_closed")
-
-c_check <- fct_check_pool(.c_lu = c_lu, .c_unit = "C", .c_fraction = NA)
-
-fct_make_formula(.c_check = c_check, .c_unit = "C")
+fct_make_formula(.c_el = c_el, .c_unit = "DM")
 
 }

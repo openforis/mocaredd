@@ -23,9 +23,9 @@ transition, REDD+ activity or emission reductions level.
 TBD
 }
 \examples{
+library(mocaredd)
 library(readxl)
 library(dplyr)
-library(mocaredd)
 
 path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
 

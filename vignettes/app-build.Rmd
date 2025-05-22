@@ -81,10 +81,7 @@ devtools::check()
 
 ## Run one time 
 # usethis::use_testthat()
-
-usethis::use_r("fct_check_data")
-usethis::use_test("fct_check_data")
-usethis::use_test("fct_combine_mcs_P")
+# usethis::use_test("fct_combine_mcs_P")
 ```
 
 

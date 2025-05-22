@@ -3,7 +3,7 @@ library(readxl)
 library(dplyr)
 library(mocaredd)
 
-path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+path <- system.file("extdata/example2-with-sims.xlsx", package = "mocaredd")
 
 cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
 ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
@@ -24,9 +24,8 @@ sim_FREL <- fct_combine_mcs_P(
   .ad_annual = usr$ad_annual
 )
 
-
 test_res <- round(median(sim_FREL$E_sim))
 
 testthat::test_that("function doesn't work :P", {
-  testthat::expect_equal(test_res, 4964082)
+  testthat::expect_equal(test_res, 20713690)
 })

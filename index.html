@@ -62,15 +62,23 @@
 <div class="section level3">
 <h3 id="run-the-app">Run the app<a class="anchor" aria-label="anchor" href="#run-the-app"></a>
 </h3>
-<p>Install the poackage and run the app:</p>
+<p>The app require R version 3.4 minimum. RStudio is recommended as Integrated Development Environment. With Windows machines, Rtools should also be installed:</p>
+<ul>
+<li><a href="">https://cloud.r-project.org/</a></li>
+<li><a href="">https://posit.co/download/rstudio-desktop/</a></li>
+<li><a href="">https://cran.r-project.org/bin/windows/Rtools/</a></li>
+</ul>
+<p>Install the package and run the app:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(remotes)) <span class="fu">install.packages</span>(<span class="st">"remotes"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(mocaredd)) remotes<span class="sc">::</span><span class="fu">instalkl_github</span>()</span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(mocaredd)) remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"openforis/mocaredd"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>mocaredd<span class="sc">::</span><span class="fu">shiny_run_mocaredd</span>()</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="workflow">Workflow<a class="anchor" aria-label="anchor" href="#workflow"></a>
 </h3>
 <ol style="list-style-type: decimal">
-<li>Input XSLX filled following provided template. (Note for v2.0, accept separated CSV files, other format tbd).</li>
+<li>Input XSLX file following provided template.</li>
 <li>Checks are run to ensure the entity codes are unique and matching between tables.</li>
 <li>Simulations are produced and results can be seen as forest plots, simulations densities and comparison between simulations and arithmetic means for the final emission reductions.</li>
 <li>Sensitivity analysis shows the impact of AE vs EF, REDD+ activities, time periods.</li>
@@ -79,7 +87,16 @@
 <div class="section level3">
 <h3 id="calculation-steps">Calculation steps<a class="anchor" aria-label="anchor" href="#calculation-steps"></a>
 </h3>
-<p>TBD</p>
+<ol style="list-style-type: decimal">
+<li>Check that the template is followed correctly and that the tables are correctly linked (keys link time to land use changes and land use changes to carbon stock elements)</li>
+<li>Generate simulations for all probability distribution functions</li>
+<li>Calculate carbon stocks based on carbon stock elements reported.</li>
+<li>Calculate Emission factors for each land use change and time period</li>
+<li>Calculate Emissions from IPCC formula Eij = EFij x ADij for each land use change i and time period j.</li>
+<li>Aggregate Emissions per time period</li>
+<li>Aggregate Emissions for the reference and monitoring periods</li>
+<li>Calculate Emission Reductions as the difference between annualized emissions during the reference period and annualized emissions during each of the monitoring periods.</li>
+</ol>
 </div>
 <div class="section level3">
 <h3 id="template">Template<a class="anchor" aria-label="anchor" href="#template"></a>
@@ -102,9 +119,15 @@
 <li>
 <strong>c_unit</strong>: for AGB abd BGB, is the unit dry matter (DM) or carbon (C)?</li>
 <li>
+<strong>c_fraction</strong>: Carbon fraction to convert dry matter to carbon, if c_unit is “DM”.</li>
+<li>
+<strong>c_fraction_se</strong>: standard error of the carbon fraction</li>
+<li>
+<strong>c_fraction_pdf</strong>: probability distribution function of the carbon fraction.</li>
+<li>
 <strong>dg_pool</strong>: If degradation is a ratio of intact forest Cstock, list of pools separated by coma to which the ratio applies.</li>
 <li>
-<strong>dg_expool</strong>: (experimental) Pools that are excluded from degradation process (may be redundant).</li>
+<strong>dg_ext</strong>: Extension used in the land use IDs for degraded land uses, for example if Evergreen forest is coded “EV” and degraded evergreen forest “EV_deg”, dg_ext is “_deg”. Necessary to automatically link intact forest carbon stock with its degradation ratio.</li>
 </ul>
 </li>
 <li>
@@ -190,7 +213,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>

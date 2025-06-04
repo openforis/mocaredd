@@ -31,11 +31,12 @@ fct_make_formula <- function(.c_el, .c_unit){
   c_eq <- c("(",  "AGB", " + ", "BGB", ")", " * ", "CF", " + ", "DW", " + ", "LI", " + ", "SOC")
   names(c_eq) <- c("cf_(", "AGB", "plus_bgb", "BGB", "cf_)", "times_cf", "CF", "plus_dw", "DW", "plus_li", "LI", "plus_soc", "SOC")
 
-  ## + ALL pools combined
-  if (.c_el[1] == "ALL") {
-    if(.c_unit == "C") c_eq <- "ALL" else c_eq <- "ALL * CF"
-    return(c_eq)
-  }
+  ## + ALL pools combined - !!! ALL should only be possible for non-forest, which is usually expressed as ton C
+  if (.c_el[1] == "ALL") return("ALL")
+  # if (.c_el[1] == "ALL") {
+  #   if(.c_unit == "C") c_eq <- "ALL" else c_eq <- "ALL * CF"
+  #   return(c_eq)
+  # }
 
   ## + Taylor formula
   if (.c_unit == "C"){

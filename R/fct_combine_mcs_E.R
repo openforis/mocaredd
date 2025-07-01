@@ -57,6 +57,16 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   ## 2.2. Simulate all C elements in Cstock table.
   ## 2.3. Simulate AD for each time period and land use change
 
+  ## 3. Prepare SIMS for combining AD and EF
+  ## 3.1. Make long table with 1 row a unique combination of sim_no, time_period and lu_id or trans_id
+  ## 3.2. Add formulas and Cstock to CEL sims (ex. DG_ratio)
+  ## 3.2.1. If DG_ratio used calulate Cstock of other land uses
+  ## 3.2.2. Get Cstock of intact land uses associated with degradation
+  ## 3.2.3. Add C of pools excluded from degradation
+  ## 3.2.4. Combine intact C with DG_ratio and calculate Cstock
+  ## 3.2.5. Combine all land uses
+
+  ## 4. Make Cstock initial and final for each LU transition
 
 
 
@@ -189,8 +199,6 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
     tidyr::pivot_wider(names_from = "c_element", values_from = "SIMS") |>
     dplyr::left_join(sims_CF, by = "sim_no")
 
-
-
   ## + 3.2. Add formulas and Cstock to CEL sims (ex. DG_ratio) ####
 
   if ("DG_ratio" %in% .cs$c_element) {
@@ -265,14 +273,34 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
     c_cols <- names(sims_C)[!names(sims_C) %in% c("period", "lu_id", "sim_no")]
 
     sims_CI <- sims_C |>
+      dplyr::select(-"period") |>
       dplyr::rename_with(.cols = dplyr::all_of(c_cols), paste0, "_i")
 
     sims_CF <- sims_C |>
+      dplyr::select(-"period") |>
       dplyr::rename_with(.cols = dplyr::all_of(c_cols), paste0, "_f")
+
+    sims_E <- sims_AD_long |>
+      dplyr::left_join(sims_CI, by = c("lu_initial_id" = "lu_id", "sim_no")) |>
+      dplyr::left_join(sims_CF, by = c("lu_final_id"   = "lu_id", "sim_no")) |>
+      dplyr::mutate(
+        EF = round(.data$c_stock_i - .data$c_stock_f, 3),
+        E = round(.data$AD * .data$EF, 3)
+        ) |>
+      dplyr::select(
+        "period", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity",
+        "sim_no", "E", "AD", "EF", "c_stock_i", "c_stock_f", dplyr::everything()
+        )
+
+  } else {
+
+    ## TBD
+    ## Get annual AD
+    ## get initial CS at beginning of period, final CS and delta CS per year.
+    ## Reconstruct AD and EF for est period REF adn MON_X
 
   }
 
-  sims_E <- sims_AD |>
 
 
 

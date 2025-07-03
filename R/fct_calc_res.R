@@ -30,18 +30,21 @@ fct_calc_res <- function(
   col_id <- rlang::enquo(.id)
   col_sim <- rlang::enquo(.sim)
 
+  tmp_name <- "E_sim" ## avoid E on both side of = in summarise()
+
   .data |>
+    dplyr::rename(E_sim := !!col_sim) |>
     dplyr::group_by(!!col_id) |>
     dplyr::summarise(
-      E = round(stats::median(!!col_sim)),
-      E_cilower = round(stats::quantile(!!col_sim, .ci_alpha/2)),
-      E_ciupper = round(stats::quantile(!!col_sim, 1 - .ci_alpha/2)),
+      E = round(stats::median(.data$E_sim)),
+      E_cilower = round(stats::quantile(.data$E_sim, .ci_alpha/2)),
+      E_ciupper = round(stats::quantile(.data$E_sim, 1 - .ci_alpha/2)),
       .groups = "drop"
     ) |>
     dplyr::mutate(
       E_ME  = round((.data$E_ciupper - .data$E_cilower) / 2),
       E_U   = round(.data$E_ME / .data$E * 100),
     ) |>
-    dplyr::select(!!col_id, "E", "E_U", "E_ME", "E_cilower", "E_ciupper")
+    dplyr::select(rlang::as_label(col_id), "E", "E_U", "E_ME", "E_cilower", "E_ciupper")
 
 }

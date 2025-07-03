@@ -119,8 +119,8 @@ shiny_run_mocaredd <- function(...) {
         primary = "#4991B0",
         secondary = "#77AB16",
       ),
+      navbar_options = navbar_options(bg = "#f8f9fa"),
       fillable = FALSE, ## Not needed for now, make a tab fill the whole browser, cool for leaflets
-      bg = "#f8f9fa",
       # inverse = FALSE, ## Not working well with yeti, overridden in assets/styles.css
 
       ## + Panels ####

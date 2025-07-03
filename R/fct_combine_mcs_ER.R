@@ -64,7 +64,7 @@ fct_combine_mcs_ER <- function(
     out <- .sim_mon |>
       dplyr::filter(.data$period_type == x) |>
       dplyr::inner_join(.sim_ref, by = "sim_no", suffix = c("", "_R")) |>
-      dplyr::mutate(ER_sim = .data$E_sim_R - .data$E_sim)
+      dplyr::mutate(ER_sim = .data$E_R - .data$E)
 
   }) |> purrr::list_rbind()
 

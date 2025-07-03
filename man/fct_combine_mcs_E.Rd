@@ -27,7 +27,7 @@ library(mocaredd)
 library(readxl)
 library(dplyr)
 
-path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+path <- system.file("extdata/example2-with-sims.xlsx", package = "mocaredd")
 
 cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
 ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
@@ -40,7 +40,6 @@ res <- fct_combine_mcs_E(.ad = ad, .cs = cs_clean, .usr = usr)
 get_trans <- sample(res$trans_id, 1)
 res_sub <- res |> filter(trans_id == get_trans)
 
-hist(res_sub$E_sim)
-round(median(res_sub$E_sim))
+hist(res_sub$E)
 
 }

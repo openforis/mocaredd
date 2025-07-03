@@ -48,7 +48,7 @@ sim_FREL <- fct_combine_mcs_P(
   .ad_annual = usr$ad_annual
 )
 
-hist(sim_FREL$E_sim)
-round(median(sim_FREL$E_sim))
+hist(sim_FREL$E)
+round(median(sim_FREL$E))
 
 }

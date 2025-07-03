@@ -70,6 +70,19 @@ mod_tool_server <- function(id, rv) {
 
       Sys.sleep(0.1)
 
+      ## FOR TESTING ONLY
+      # rv <- list()
+      # rv$inputs <- list()
+      # rv$mcs <- list()
+      # path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+      # .cs <- rv$inputs$cs <- readxl::read_xlsx(path = path, sheet = "c_stocks", na = "NA")
+      # .ad <- rv$inputs$ad <- readxl::read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
+      # .usr <- rv$inputs$usr <- readxl::read_xlsx(path = path, sheet = "user_inputs", na = "NA")
+      # .time <- rv$inputs$time <- readxl::read_xlsx(path = path, sheet = "time_periods", na = "NA")
+      ##
+
+
+
       ## ++ Run checks ---------------------------------------------------------
       shinyWidgets::updateProgressBar(
         title = "Checking input file...",
@@ -200,7 +213,7 @@ mod_tool_server <- function(id, rv) {
     output$vb_nb_pools <- renderUI({
       req(rv$checks$check_data$all_ok)
       if (rv$checks$check_data$all_ok) {
-        pools <- unique(rv$inputs$cs$c_pool)
+        pools <- unique(rv$inputs$cs$c_element)
         pools <- pools[pools %in% c("AGB", "BGB", "DW", "LI", "SOC")]
         HTML(paste0(length(pools), "&nbsp;Carbon pools"))
       }
@@ -209,7 +222,7 @@ mod_tool_server <- function(id, rv) {
     output$vb_c_pools <- renderText({
       req(rv$checks$check_data$all_ok)
       if (rv$checks$check_data$all_ok) {
-        pools <- unique(rv$inputs$cs$c_pool)
+        pools <- unique(rv$inputs$cs$c_element)
         pools <- pools[pools %in% c("AGB", "BGB", "DW", "LI", "SOC")]
         paste(pools, collapse = ", ")
       }
@@ -218,7 +231,7 @@ mod_tool_server <- function(id, rv) {
     output$vb_dg_method <- renderText({
       req(rv$checks$check_data$all_ok)
       if (rv$checks$check_data$all_ok) {
-        if ("DG_ratio" %in% unique(rv$inputs$cs$c_pool)){
+        if ("DG_ratio" %in% unique(rv$inputs$cs$c_element)){
           paste0("Degradation ratio applied to ", rv$inputs$usr$dg_pool)
         } else {
           "Carbon stock difference"
@@ -422,10 +435,10 @@ mod_tool_server <- function(id, rv) {
             dplyr::pull("period_no")
           rv$mcs$sim_trans |>
             dplyr::filter(.data$time_period %in% period_ids) |>
-            dplyr::mutate(E_sim = round(E_sim / nb_years, 0))
+            dplyr::mutate(E = round(E / nb_years, 0))
         }) |> purrr::list_rbind()
       } else {
-        rv$mcs$sim_trans2 <- rv$mcs$sim_trans
+        tt <- rv$mcs$sim_trans2 <- rv$mcs$sim_trans
       }
 
       Sys.sleep(0.1)
@@ -438,13 +451,13 @@ mod_tool_server <- function(id, rv) {
 
       rv$mcs$sim_redd <- rv$mcs$sim_trans2 |>
         dplyr::group_by(.data$sim_no, .data$time_period, .data$redd_activity) |>
-        dplyr::summarise(E_sim = sum(.data$E_sim), .groups = "drop") |>
+        dplyr::summarise(E = sum(.data$E), .groups = "drop") |>
         dplyr::mutate(redd_id = paste0(.data$time_period, " - ", .data$redd_activity))
 
-      rv$mcs$sim_REF <- rv$mcs$sim_trans |>
+      rv$mcs$sim_REF <- rv$mcs$sim_trans2 |>
         fct_combine_mcs_P(.time = rv$inputs$time, .period_type = "REF", .ad_annual = rv$inputs$usr$ad_annual)
 
-      rv$mcs$sim_MON <- rv$mcs$sim_trans |>
+      rv$mcs$sim_MON <- rv$mcs$sim_trans2 |>
         fct_combine_mcs_P(.time = rv$inputs$time, .period_type = "MON", .ad_annual = rv$inputs$usr$ad_annual)
 
       rv$mcs$sim_ER <- fct_combine_mcs_ER(.sim_ref = rv$mcs$sim_REF, .sim_mon = rv$mcs$sim_MON, .ad_annual = rv$inputs$usr$ad_annual)
@@ -461,28 +474,28 @@ mod_tool_server <- function(id, rv) {
       rv$mcs$res_trans <- fct_calc_res(
         .data = rv$mcs$sim_trans2,
         .id = .data$trans_id,
-        .sim = .data$E_sim,
+        .sim = .data$E,
         .ci_alpha = rv$inputs$usr$ci_alpha
       )
 
       rv$mcs$res_redd <- fct_calc_res(
         .data = rv$mcs$sim_redd,
         .id = .data$redd_id,
-        .sim = .data$E_sim,
+        .sim = .data$E,
         .ci_alpha = rv$inputs$usr$ci_alpha
       )
 
       rv$mcs$res_REF <- fct_calc_res(
         .data = rv$mcs$sim_REF,
         .id = .data$period_type,
-        .sim = .data$E_sim,
+        .sim = .data$E,
         .ci_alpha = rv$inputs$usr$ci_alpha
         )
 
       rv$mcs$res_MON <- fct_calc_res(
         .data = rv$mcs$sim_MON,
         .id = .data$period_type,
-        .sim = .data$E_sim,
+        .sim = .data$E,
         .ci_alpha = rv$inputs$usr$ci_alpha
         )
 
@@ -516,7 +529,7 @@ mod_tool_server <- function(id, rv) {
       ## no binding hack in R cmd check
       trans_id <- redd_id <- period_type <- NULL
       E <- E_ari <- E_U <- E_cilower <- E_ciupper <- NULL
-      E_sim <- ER_sim <- NULL
+      E <- ER_sim <- NULL
 
 
       rv$mcs$fp_trans <- fct_forestplot(
@@ -635,7 +648,7 @@ mod_tool_server <- function(id, rv) {
 
         sims <- rv$mcs$sim_REF
         res  <- rv$mcs$res_REF
-        value <- rlang::quo(E_sim)
+        value <- rlang::quo(E)
         value_type <- "E"
 
       } else if (stringr::str_detect(input$res_select_ER_hist, "E-")) {
@@ -644,7 +657,7 @@ mod_tool_server <- function(id, rv) {
 
         sims <- rv$mcs$sim_MON |> dplyr::filter(.data$period_type == input_short)
         res  <- rv$mcs$res_MON |> dplyr::filter(.data$period_type == input_short)
-        value <- rlang::quo(E_sim)
+        value <- rlang::quo(E)
         value_type <- "E"
 
       } else if (stringr::str_detect(input$res_select_ER_hist, "ER-")) {
@@ -686,7 +699,7 @@ mod_tool_server <- function(id, rv) {
 
       sims <- rv$mcs$sim_redd |> dplyr::filter(.data$redd_id == sel_redd_id)
       res  <- rv$mcs$res_redd |> dplyr::filter(.data$redd_id == sel_redd_id)
-      value <- rlang::quo(E_sim)
+      value <- rlang::quo(E)
       value_type <- "E"
 
 

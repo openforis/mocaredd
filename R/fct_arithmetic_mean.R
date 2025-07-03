@@ -21,6 +21,7 @@
 #' library(mocaredd)
 #'
 #' path <- system.file("extdata/example2-with-sims.xlsx", package = "mocaredd")
+#' path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
 #'
 #' cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
 #' ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
@@ -51,7 +52,7 @@ fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
 
   ari_trans <- fct_combine_mcs_E(.ad = ad_ari, .cs = cs_ari, .usr = usr_ari)
 
-  ari_REF  <- fct_combine_mcs_P(
+  ari_REF <- fct_combine_mcs_P(
     .data = ari_trans,
     .time = .time,
     .period_type = "REF",
@@ -69,10 +70,10 @@ fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
     dplyr::mutate(period_type = paste0("ER-", .data$period_type)) |>
     dplyr::select("period_type", E = "ER_sim")
 
-  ari_REF2 <- ari_REF |> dplyr::select("period_type", E = "E_sim")
+  ari_REF2 <- ari_REF |> dplyr::select("period_type", "E")
   ari_MON2 <- ari_MON |>
     dplyr::mutate(period_type = paste0("E-", .data$period_type)) |>
-    dplyr::select("period_type", E = "E_sim")
+    dplyr::select("period_type", "E")
 
   ari_combi <- ari_REF2 |>
     dplyr::bind_rows(ari_MON2) |>
@@ -88,41 +89,97 @@ fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
     dplyr::arrange(.data$year_start) |>
     dplyr::left_join(dplyr::bind_rows(ari_REF, ari_MON), by = "period_type")
 
-  mon <- out_combi |> dplyr::filter(stringr::str_detect(.data$period_type, pattern = "MON"))
 
-  years_mon <- min(mon$year_start):max(mon$year_end)
+  # mon <- out_combi |> dplyr::filter(stringr::str_detect(.data$period_type, pattern = "MON"))
+  #
+  # years_mon <- min(mon$year_start):max(mon$year_end)
+  #
+  # ggdat <- purrr::map(years_mon, function(x){
+  #
+  #   REF <- out_combi |>
+  #     dplyr::filter(.data$period_type == "REF") |>
+  #     dplyr::pull("E")
+  #
+  #   REF  <- round(REF / 10^6, 2)
+  #
+  #   E <- mon |>
+  #     dplyr::filter(.data$year_start <= x, .data$year_end >= x) |>
+  #     dplyr::pull("E")
+  #
+  #   E <- round(E / 10^6, 2)
+  #
+  #   data.frame(year = x, E = E, REF = REF)
+  #
+  # }) |> purrr::list_rbind()
+  #
+  # out_gg <- ggdat |>
+  #   ggplot2::ggplot(ggplot2::aes(x = .data$year)) +
+  #   #ggplot2::geom_col(ggplot2::aes(y = .data$REF), col = "darkgreen", fill = "lightgreen") +
+  #   ggplot2::geom_line(ggplot2::aes(y = .data$REF), col = "darkgreen") +
+  #   ggplot2::geom_col(ggplot2::aes(y = .data$E), col = "darkred", fill = "pink", width = 0.1) +
+  #   ggplot2::scale_x_continuous(breaks = min(ggdat$year):max(ggdat$year), minor_breaks = NULL) +
+  #   ggplot2::theme_bw(base_size = 20) +
+  #   ggplot2::labs(
+  #     x = "Years",
+  #     y = "Emissions (MtCO2e/y)"
+  #   )
 
-  ggdat <- purrr::map(years_mon, function(x){
+  ## Add yearly table
+  out_yearly <- purrr::map(out_combi$period_type, function(x){
 
-    REF <- out_combi |>
-      dplyr::filter(.data$period_type == "REF") |>
-      dplyr::pull("E_sim")
+    tt <- out_combi |> dplyr::filter(.data$period_type == x)
+    year_start <- tt$year_start
+    year_end   <- tt$year_end
+    E          <- round(tt$E / 10^6, 2)
 
-    REF  <- round(REF / 10^6, 2)
-
-    E <- mon |>
-      dplyr::filter(.data$year_start <= x, .data$year_end >= x) |>
-      dplyr::pull("E_sim")
-
-    E <- round(E / 10^6, 2)
-
-    data.frame(year = x, E = E, REF = REF)
+    dplyr::tibble(
+      year = year_start:year_end,
+      E = rep(E, length(year_start:year_end)),
+      period_type = x,
+      FREL = round(ari_REF$E / 10^6, 2)
+    )
 
   }) |> purrr::list_rbind()
 
-  out_gg <- ggdat |>
-    # mutate(year = lubridate::year(.data$year)) |>
+  out_gg2 <- out_yearly |>
     ggplot2::ggplot(ggplot2::aes(x = .data$year)) +
-    ggplot2::geom_col(ggplot2::aes(y = .data$REF), col = "darkgreen", fill = "lightgreen") +
-    ggplot2::geom_col(ggplot2::aes(y = .data$E), col = "darkred", fill = "pink") +
-    #ggplot2::scale_x_continuous(expand=c(0, .9)) +
+    ggplot2::geom_col(ggplot2::aes(y = .data$FREL), col = "darkgreen", fill = "lightgreen", width = 0.3) +
+    ggplot2::geom_col(ggplot2::aes(y = .data$E), col = "darkred", fill = "pink", width = 0.3) +
+    ggplot2::scale_x_continuous(breaks = min(out_yearly$year):max(out_yearly$year), minor_breaks = NULL) +
     ggplot2::theme_bw(base_size = 20) +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1)) +
     ggplot2::labs(
       x = "Years",
       y = "Emissions (MtCO2e/y)"
     )
 
-  list(ER = ari_combi, emissions = out_combi, gg_emissions = out_gg)
+  out_yearly_mon <- out_yearly |> dplyr::filter(stringr::str_detect(period_type, "MON"))
+  out_gg3 <- out_yearly |>
+    ggplot2::ggplot(ggplot2::aes(x = .data$year)) +
+    ggplot2::geom_line(
+      ggplot2::aes(y = .data$FREL),
+      col = "pink", linewidth = 1
+      ) +
+    ggplot2::geom_point(ggplot2::aes(y = .data$E, colour = period_type), size = 2) +
+    ggplot2::geom_segment(
+      data = out_yearly_mon,
+      ggplot2::aes(xend = .data$year, y = .data$FREL, yend = .data$E),
+      col = "forestgreen",
+      arrow = grid::arrow(length = grid::unit(0.2, "cm"), ends = "both")
+      ) +
+    ggplot2::scale_x_continuous(breaks = min(out_yearly$year):max(out_yearly$year), minor_breaks = NULL) +
+    ggplot2::scale_y_continuous(limits = c(0, NA)) +
+    ggplot2::theme_bw(base_size = 20) +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+      legend.position = "bottom") +
+    ggplot2::labs(
+      x = "Years",
+      y = "Emissions (MtCO2e/y)",
+      color = ""
+    )
+
+  list(ER = ari_combi, emissions = out_combi, gg_emissions = out_gg3)
 
 }
 

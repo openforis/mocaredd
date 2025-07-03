@@ -32,8 +32,7 @@
 #' get_trans <- sample(res$trans_id, 1)
 #' res_sub <- res |> filter(trans_id == get_trans)
 #'
-#' hist(res_sub$E_sim)
-#' round(median(res_sub$E_sim))
+#' hist(res_sub$E)
 #'
 #' @export
 fct_combine_mcs_E <- function(.ad, .cs, .usr){
@@ -96,22 +95,22 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
       c_form = fct_make_formula(.c_el = .data$c_el, .c_unit = .usr$c_unit)
     ) |>
     dplyr::ungroup() |>
-    dplyr::select(period = "c_period", lu_id = "c_lu_id", "c_form")
+    dplyr::select(time_period = "c_period", lu_id = "c_lu_id", "c_form")
 
 
   ## + 1.2. correct degradation formula if degradation elements with ratio ####
   degrat_lu <- .cs |>
-    filter(.data$c_element == "DG_ratio") |>
-    pull("c_lu_id")
+    dplyr::filter(.data$c_element == "DG_ratio") |>
+    dplyr::pull("c_lu_id")
 
-  degrat_lu_intact <- stringr::str_remove(degrat_elements, .usr$dg_ext)
+  degrat_lu_intact <- stringr::str_remove(degrat_lu, .usr$dg_ext)
 
   if (length(degrat_lu) > 0) {
     c_formula <- c_formula |>
-      mutate(
-        c_form = case_when(
-          .data$lu_id %in% DG_ratio_elements & .usr$dg_pool == "ALL" ~ "DG_ratio * c_intact",
-          .data$lu_id %in% DG_ratio_elements & .usr$dg_pool != "ALL" ~ "DG_ratio * c_intact + (1 - DG_ratio) * c_intact_noDG",
+      dplyr::mutate(
+        c_form = dplyr::case_when(
+          .data$lu_id %in% degrat_lu & .usr$dg_pool == "ALL" ~ "DG_ratio * c_intact",
+          .data$lu_id %in% degrat_lu & .usr$dg_pool != "ALL" ~ "DG_ratio * c_intact + (1 - DG_ratio) * c_intact_noDG",
           TRUE ~ c_form
         )
       )
@@ -188,12 +187,12 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   ## + 3.1. Make long table with 1 row a unique combination of sim_no, time_period and lu_id or trans_id ####
 
   sims_AD_long <- sims_AD |>
-    select(period = "trans_period", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity", AD = "SIMS") |>
+    dplyr::select(time_period = "trans_period", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity", AD = "SIMS") |>
     tidyr::unnest("AD") |>
     dplyr::mutate(sim_no = rep(1:.usr$n_iter, nrow(sims_AD)))
 
   sims_CEL_long <- sims_CEL |>
-    dplyr::select(period = "c_period", lu_id = "c_lu_id", "c_element", "SIMS") |>
+    dplyr::select(time_period = "c_period", lu_id = "c_lu_id", "c_element", "SIMS") |>
     tidyr::unnest("SIMS") |>
     dplyr::mutate(sim_no = rep(1:.usr$n_iter, nrow(sims_CEL))) |>
     tidyr::pivot_wider(names_from = "c_element", values_from = "SIMS") |>
@@ -206,7 +205,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
     ## ++ 3.2.1. If DG_ratio used calulate Cstock of other land uses ####
     sims_C_nodegrat <- sims_CEL_long |>
       dplyr::filter(is.na(.data$DG_ratio)) |>
-      dplyr::left_join(c_formula, by = c("period", "lu_id")) |>
+      dplyr::left_join(c_formula, by = c("time_period", "lu_id")) |>
       dplyr::rowwise() |>
       dplyr::mutate(c_stock = round(eval(parse(text = .data$c_form)), 3)) |>
       dplyr::ungroup()
@@ -214,7 +213,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
     ## ++ 3.2.2. Get Cstock of intact land uses associated with degradation ####
     sims_C_lu_intact <- sims_C_nodegrat |>
       dplyr::filter(.data$lu_id %in% degrat_lu_intact) |>
-      dplyr::select("period", lu_intact = "lu_id", "sim_no", c_intact = "c_stock")
+      dplyr::select("time_period", lu_intact = "lu_id", "sim_no", c_intact = "c_stock")
 
     ## ++ 3.2.3. Add C of pools excluded from degradation ####
     if (.usr$dg_pool == "ALL") {
@@ -228,19 +227,19 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
 
       sims_C_lu_intact_expool <- sims_C_nodegrat |>
         dplyr::filter(.data$lu_id %in% degrat_lu_intact) |>
-        dplyr::select("period", lu_intact = "lu_id", "sim_no", c_intact = "c_stock", !!!rlang::syms(dg_expool)) |>
+        dplyr::select("time_period", lu_intact = "lu_id", "sim_no", c_intact = "c_stock", !!!rlang::syms(dg_expool)) |>
         dplyr::rowwise() |>
-        dplyr::mutate(c_intact_noDG = sum(!!!syms(dg_expool))) |>
+        dplyr::mutate(c_intact_noDG = sum(!!!rlang::syms(dg_expool))) |>
         dplyr::ungroup() |>
-        dplyr::select("period", "lu_intact", "sim_no", "c_intact", "c_intact_noDG")
+        dplyr::select("time_period", "lu_intact", "sim_no", "c_intact", "c_intact_noDG")
     }
 
     ## ++ 3.2.4. Combine intact C with DG_ratio and calculate Cstock ####
     sims_C_degrat <- sims_CEL_long |>
       dplyr::filter(!is.na(.data$DG_ratio)) |>
       dplyr::mutate(lu_intact = stringr::str_remove(.data$lu_id, .usr$dg_ext)) |>
-      dplyr::left_join(sims_C_lu_intact_expool, by = c("period", "lu_intact", "sim_no")) |>
-      dplyr::left_join(c_formula, by = c("period", "lu_id")) |>
+      dplyr::left_join(sims_C_lu_intact_expool, by = c("time_period", "lu_intact", "sim_no")) |>
+      dplyr::left_join(c_formula, by = c("time_period", "lu_id")) |>
       dplyr::rowwise() |>
       dplyr::mutate(c_stock = round(eval(parse(text = .data$c_form)), 3)) |>
       dplyr::ungroup()
@@ -249,7 +248,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
     sims_C <- sims_C_nodegrat |>
       dplyr::bind_rows(sims_C_degrat) |>
       dplyr::select(dplyr::where(~ !all(is.na(.)))) |>
-      dplyr::select("period", "lu_id", "sim_no", "c_stock", "c_form", dplyr::everything())
+      dplyr::select("time_period", "lu_id", "sim_no", "c_stock", "c_form", dplyr::everything())
 
     ## CHECK
     ## tt <- sims_C |> filter(sim_no == 1)
@@ -257,7 +256,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   } else {
 
     sims_C <- sims_CEL_long |>
-      dplyr::left_join(c_formula, by = c("period", "lu_id")) |>
+      dplyr::left_join(c_formula, by = c("time_period", "lu_id")) |>
       dplyr::rowwise() |>
       dplyr::mutate(c_stock = round(eval(parse(text = .data$c_form)), 3)) |>
       dplyr::ungroup()
@@ -270,14 +269,14 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
 
   if (all(.cs$c_period == "ALL")) {
 
-    c_cols <- names(sims_C)[!names(sims_C) %in% c("period", "lu_id", "sim_no")]
+    c_cols <- names(sims_C)[!names(sims_C) %in% c("time_period", "lu_id", "sim_no")]
 
     sims_CI <- sims_C |>
-      dplyr::select(-"period") |>
+      dplyr::select(-"time_period") |>
       dplyr::rename_with(.cols = dplyr::all_of(c_cols), paste0, "_i")
 
     sims_CF <- sims_C |>
-      dplyr::select(-"period") |>
+      dplyr::select(-"time_period") |>
       dplyr::rename_with(.cols = dplyr::all_of(c_cols), paste0, "_f")
 
     sims_E <- sims_AD_long |>
@@ -288,7 +287,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
         E = round(.data$AD * .data$EF, 3)
         ) |>
       dplyr::select(
-        "period", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity",
+        "time_period", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity",
         "sim_no", "E", "AD", "EF", "c_stock_i", "c_stock_f", dplyr::everything()
         )
 
@@ -300,16 +299,6 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
     ## Reconstruct AD and EF for est period REF adn MON_X
 
   }
-
-
-
-
-
-
-
-
-
-
 
 } ## END FUNCTION
 
@@ -345,7 +334,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   #   dplyr::select(period = "c_period", lu_id = "c_lu_id", "c_form")
   #
   # sims_C_noDG_calc <- sims_C_noDG |>
-  #   dplyr::left_join(c_elements, by = c("period", "lu_id")) |>
+  #   dplyr::left_join(c_elements, by = c("time_period", "lu_id")) |>
   #   dplyr::rowwise() |>
   #   dplyr::mutate(c_stock = round(eval(parse(text = .data$c_form)), 3)) |>
   #   dplyr::ungroup() |>
@@ -380,7 +369,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   #     dplyr::filter(.data$lu_id %in% dg_lu_before) |>
   #     purrr::discard(~all(is.na(.))) |>
   #     dplyr::rename_with(.cols = tidyr::all_of(dg_pool), .fn = paste0, "_before") |>
-  #     dplyr::select("sim_no", "period", lu_before = "lu_id", tidyr::ends_with("_before"))
+  #     dplyr::select("sim_no", "time_period", lu_before = "lu_id", tidyr::ends_with("_before"))
   #
   #   ## GS: NOT NEEDED / TO BE CHECKED USING DIRECTLY 'dg_pool'
   #   ## + Check if some pools are not affected by degradation
@@ -407,7 +396,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   #
   #   ## + Join intact pools C to degraded land uses, remake formula and calculate new Cstock
   #   sims_DG_calc <- sims_DG |>
-  #     dplyr::left_join(sims_C_before, by = c("sim_no", "period", "lu_before")) |>
+  #     dplyr::left_join(sims_C_before, by = c("sim_no", "time_period", "lu_before")) |>
   #     dplyr::rowwise() |>
   #     dplyr::mutate(
   #       c_form = paste0("DG_ratio * (", paste0(dg_pool_before, collapse = " + "), ")"),
@@ -424,97 +413,97 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
 
 
 
-  ## Seed for random simulation
-  ## Implemented outside function now
-  # if (!is.na(.usr$ran_seed)){
-  #   set.seed(.usr$ran_seed)
-  #   message("Random simulations with seed: ", .usr$ran_seed)
-  # } else {
-  #   app_ran_seed <- sample(1:100, 1)
-  #   set.seed(app_ran_seed)
-  #   message("Seed for random simulations: ", app_ran_seed)
-  # }
-
-  ## Get all Cstock simulations
-  mcs_c <- fct_combine_mcs_cstock(.ad = .ad, .cs = .cs, .usr = .usr)
-
-  ## Get all land use transition
-  vec_trans <- unique(.ad$trans_id)
-
-  ## For each transition, calculate simulations for each element of the calculation chain
-  mcs_trans <- purrr::map(vec_trans, function(x){
-
-    ## !! FOR TESTING ONLY
-    # x = "T1_H_H_deg" #"T1_P_Crop" #"T1_ev_wet_closed_dg_ev_wet_closed"
-    # x = "T1_EV_Crop"
-    ## !!
-
-    ad_x   <- .ad |> dplyr::filter(.data$trans_id == x)
-    redd_x <- ad_x$redd_activity
-
-    ## AD - Activity Data
-    SIMS_AD <- dplyr::tibble(
-      sim_no = 1:.usr$n_iter,
-      redd_activity = ad_x$redd_activity,
-      trans_id = ad_x$trans_id,
-      trans_period = ad_x$trans_period,
-      AD = round(fct_make_mcs(
-        .n_iter = .usr$n_iter,
-        .pdf    = ad_x$trans_pdf,
-        .mean   = round(ad_x$trans_area, 0),
-        .se     = round(ad_x$trans_se, 0),
-        .params = c(ad_x$c_pdf_a, ad_x$c_pdf_b, ad_x$c_pdf_c),
-        .trunc  = .usr$trunc_pdf
-      ), 0)
-    )
-
-    ## EF - Emissions Factors decomposed for each carbon pool
-    ## Carbon stock of initial land use
-    SIMS_CI <- mcs_c |>
-      dplyr::filter(.data$lu_id == ad_x$lu_initial_id) |>
-      dplyr::select("sim_no", "period", lu_id_i = "lu_id", c_form_i = "c_form", c_stock_i = "c_stock")
-
-    ## Carbon stock of final land use
-    SIMS_CF <- mcs_c |>
-      dplyr::filter(.data$lu_id == ad_x$lu_final_id) |>
-      dplyr::select("sim_no", "period", lu_id_f = "lu_id", c_form_f = "c_form", c_stock_f = "c_stock")
-
-    ## Combine AD and EF by land use and if needed time period
-    if (unique(SIMS_CI$period) == "ALL" &  unique(SIMS_CF$period) == "ALL") {
-
-      SIMS_CI <- SIMS_CI |> dplyr::select(-"period")
-      SIMS_CF <- SIMS_CF |> dplyr::select(-"period")
-
-      combi <- SIMS_AD |>
-        dplyr::left_join(SIMS_CI, by = "sim_no") |>
-        dplyr::left_join(SIMS_CF, by = "sim_no")
-
-    } else {
-
-      combi <- SIMS_AD |>
-        dplyr::left_join(SIMS_CI, by = c("sim_no", "trans_period" = "period")) |>
-        dplyr::left_join(SIMS_CF, by = c("sim_no", "trans_period" = "period"))
-
-    }
-
-    combi
-
-  }) |> purrr::list_rbind()
-  ## END LOOP
-
-  ## Re-arrange columns and add EF and E (emissions at transition level)
-  mcs_trans |>
-    dplyr::mutate(
-      EF = round((.data$c_stock_i - .data$c_stock_f) * 44/12, 3),
-      E_sim  = round(.data$AD * .data$EF, 0)
-    ) |>
-    dplyr::select(
-      "sim_no", "redd_activity", time_period = "trans_period", "trans_id",
-      "AD", "EF", "E_sim", "c_form_i", "c_stock_i", "c_form_f",
-      "c_stock_f", dplyr::everything()
-    )
-
-}
+#   ## Seed for random simulation
+#   ## Implemented outside function now
+#   # if (!is.na(.usr$ran_seed)){
+#   #   set.seed(.usr$ran_seed)
+#   #   message("Random simulations with seed: ", .usr$ran_seed)
+#   # } else {
+#   #   app_ran_seed <- sample(1:100, 1)
+#   #   set.seed(app_ran_seed)
+#   #   message("Seed for random simulations: ", app_ran_seed)
+#   # }
+#
+#   ## Get all Cstock simulations
+#   mcs_c <- fct_combine_mcs_cstock(.ad = .ad, .cs = .cs, .usr = .usr)
+#
+#   ## Get all land use transition
+#   vec_trans <- unique(.ad$trans_id)
+#
+#   ## For each transition, calculate simulations for each element of the calculation chain
+#   mcs_trans <- purrr::map(vec_trans, function(x){
+#
+#     ## !! FOR TESTING ONLY
+#     # x = "T1_H_H_deg" #"T1_P_Crop" #"T1_ev_wet_closed_dg_ev_wet_closed"
+#     # x = "T1_EV_Crop"
+#     ## !!
+#
+#     ad_x   <- .ad |> dplyr::filter(.data$trans_id == x)
+#     redd_x <- ad_x$redd_activity
+#
+#     ## AD - Activity Data
+#     SIMS_AD <- dplyr::tibble(
+#       sim_no = 1:.usr$n_iter,
+#       redd_activity = ad_x$redd_activity,
+#       trans_id = ad_x$trans_id,
+#       trans_period = ad_x$trans_period,
+#       AD = round(fct_make_mcs(
+#         .n_iter = .usr$n_iter,
+#         .pdf    = ad_x$trans_pdf,
+#         .mean   = round(ad_x$trans_area, 0),
+#         .se     = round(ad_x$trans_se, 0),
+#         .params = c(ad_x$c_pdf_a, ad_x$c_pdf_b, ad_x$c_pdf_c),
+#         .trunc  = .usr$trunc_pdf
+#       ), 0)
+#     )
+#
+#     ## EF - Emissions Factors decomposed for each carbon pool
+#     ## Carbon stock of initial land use
+#     SIMS_CI <- mcs_c |>
+#       dplyr::filter(.data$lu_id == ad_x$lu_initial_id) |>
+#       dplyr::select("sim_no", "time_period", lu_id_i = "lu_id", c_form_i = "c_form", c_stock_i = "c_stock")
+#
+#     ## Carbon stock of final land use
+#     SIMS_CF <- mcs_c |>
+#       dplyr::filter(.data$lu_id == ad_x$lu_final_id) |>
+#       dplyr::select("sim_no", "time_period", lu_id_f = "lu_id", c_form_f = "c_form", c_stock_f = "c_stock")
+#
+#     ## Combine AD and EF by land use and if needed time period
+#     if (unique(SIMS_CI$period) == "ALL" &  unique(SIMS_CF$period) == "ALL") {
+#
+#       SIMS_CI <- SIMS_CI |> dplyr::select(-"time_period")
+#       SIMS_CF <- SIMS_CF |> dplyr::select(-"time_period")
+#
+#       combi <- SIMS_AD |>
+#         dplyr::left_join(SIMS_CI, by = "sim_no") |>
+#         dplyr::left_join(SIMS_CF, by = "sim_no")
+#
+#     } else {
+#
+#       combi <- SIMS_AD |>
+#         dplyr::left_join(SIMS_CI, by = c("sim_no", "trans_period" = "time_period")) |>
+#         dplyr::left_join(SIMS_CF, by = c("sim_no", "trans_period" = "time_period"))
+#
+#     }
+#
+#     combi
+#
+#   }) |> purrr::list_rbind()
+#   ## END LOOP
+#
+#   ## Re-arrange columns and add EF and E (emissions at transition level)
+#   mcs_trans |>
+#     dplyr::mutate(
+#       EF = round((.data$c_stock_i - .data$c_stock_f) * 44/12, 3),
+#       E_sim  = round(.data$AD * .data$EF, 0)
+#     ) |>
+#     dplyr::select(
+#       "sim_no", "redd_activity", time_period = "trans_period", "trans_id",
+#       "AD", "EF", "E_sim", "c_form_i", "c_stock_i", "c_form_f",
+#       "c_stock_f", dplyr::everything()
+#     )
+#
+# }
 
 
 

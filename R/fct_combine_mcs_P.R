@@ -38,8 +38,8 @@
 #'   .ad_annual = usr$ad_annual
 #' )
 #'
-#' hist(sim_FREL$E_sim)
-#' round(median(sim_FREL$E_sim))
+#' hist(sim_FREL$E)
+#' round(median(sim_FREL$E))
 #'
 #' @export
 fct_combine_mcs_P <- function(
@@ -72,7 +72,7 @@ fct_combine_mcs_P <- function(
         dplyr::left_join(time_ref, by = c("time_period" = "period_no")) |>
         dplyr::filter(.data$period_type == x) |>
         dplyr::group_by(.data$sim_no, .data$period_type) |>
-        dplyr::summarise(E_sim = round(sum(.data$E_sim * .data$nb_years) / length_ref, 0), .groups = "drop")
+        dplyr::summarise(E = round(sum(.data$E * .data$nb_years) / length_ref, 0), .groups = "drop")
     }) |> purrr::list_rbind()
 
   } else {
@@ -83,7 +83,7 @@ fct_combine_mcs_P <- function(
         dplyr::left_join(time_ref, by = c("time_period" = "period_no")) |>
         dplyr::filter(.data$period_type == x) |>
         dplyr::group_by(.data$sim_no, .data$period_type) |>
-        dplyr::summarise(E_sim = round(sum(.data$E_sim) / length_ref), .groups = "drop")
+        dplyr::summarise(E = round(sum(.data$E) / length_ref), .groups = "drop")
     }) |> purrr::list_rbind()
 
   }

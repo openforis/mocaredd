@@ -160,11 +160,11 @@ fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
       ggplot2::aes(y = .data$FREL),
       col = "pink", linewidth = 1
       ) +
-    ggplot2::geom_point(ggplot2::aes(y = .data$E, colour = .data$period_type), size = 2) +
+    ggplot2::geom_point(ggplot2::aes(y = .data$E, colour = .data$period_type), size = 4) +
     ggplot2::geom_segment(
       data = out_yearly_mon,
       ggplot2::aes(xend = .data$year, y = .data$FREL, yend = .data$E),
-      col = "forestgreen",
+      col = "limegreen", linewidth = 1,
       arrow = grid::arrow(length = grid::unit(0.2, "cm"), ends = "both")
       ) +
     ggplot2::scale_x_continuous(breaks = min(out_yearly$year):max(out_yearly$year), minor_breaks = NULL) +

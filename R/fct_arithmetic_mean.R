@@ -153,14 +153,14 @@ fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
       y = "Emissions (MtCO2e/y)"
     )
 
-  out_yearly_mon <- out_yearly |> dplyr::filter(stringr::str_detect(period_type, "MON"))
+  out_yearly_mon <- out_yearly |> dplyr::filter(stringr::str_detect(.data$period_type, "MON"))
   out_gg3 <- out_yearly |>
     ggplot2::ggplot(ggplot2::aes(x = .data$year)) +
     ggplot2::geom_line(
       ggplot2::aes(y = .data$FREL),
       col = "pink", linewidth = 1
       ) +
-    ggplot2::geom_point(ggplot2::aes(y = .data$E, colour = period_type), size = 2) +
+    ggplot2::geom_point(ggplot2::aes(y = .data$E, colour = .data$period_type), size = 2) +
     ggplot2::geom_segment(
       data = out_yearly_mon,
       ggplot2::aes(xend = .data$year, y = .data$FREL, yend = .data$E),

@@ -2,14 +2,10 @@ Package: mocaredd
 Title: Monte Carlo Simulation for REDD+ uncertainty analysis
 Version: 0.3.0
 Authors@R: c(
-    person("Gael", "Sola", , "gaso.ella@gmail.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID")),
-    person("Javier", "Garcia Perez", , "doctorgamarra@gmail.com", role = c("aut"),
-          comment = c(ORCID = "YOUR-ORCID-ID")),
-    person("Jimena", "Saucedo Miranda", , "jimenasaucedomiranda@gmail.com", role = c("aut"),
-           comment = c(ORCID = "YOUR-ORCID-ID")),
-    person("Lauri", "Vesa", , "lauri.vesa@gmail.com", role = c("aut"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+    person("Gael", "Sola", , "gaso.ella@gmail.com", role = c("aut", "cre")),
+    person("Javier", "Garcia Perez", , "doctorgamarra@gmail.com", role = c("aut")),
+    person("Jimena", "Saucedo Miranda", , "jimenasaucedomiranda@gmail.com", role = c("aut")),
+    person("Lauri", "Vesa", , "lauri.vesa@gmail.com", role = c("aut"))
     )
 Description: functions and a shiny app for (1) setting up, (2) running Monte Carlo 
     Simulations and (3) producing improved estimates of and confidence intervals around 

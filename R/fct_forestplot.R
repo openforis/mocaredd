@@ -1,6 +1,6 @@
 #' Make a forest plot to show Monte Carlo simulation results
 #'
-#' @description Produce a [gt] table with the median and confidence interval of
+#' @description Produce a [gt::gt()] table with the median and confidence interval of
 #'              Monte Carlo simulations for each category of a level of the analysis
 #'              (land use transition, REDD+ activity, time period) and a forest plot
 #'              showing the median and CI together.
@@ -22,6 +22,7 @@
 #' @importFrom ggplot2 ggplot aes geom_point geom_segment geom_vline theme_minimal
 #'             scale_y_discrete scale_x_continuous theme element_text labs
 #'             element_blank coord_cartesian
+#' @importFrom gt gt
 #'
 #' @export
 fct_forestplot <- function(

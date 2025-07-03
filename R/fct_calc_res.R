@@ -33,7 +33,7 @@ fct_calc_res <- function(
   tmp_name <- "E_sim" ## avoid E on both side of = in summarise()
 
   .data |>
-    dplyr::rename(E_sim := !!col_sim) |>
+    dplyr::rename("E_sim" := !!col_sim) |>
     dplyr::group_by(!!col_id) |>
     dplyr::summarise(
       E = round(stats::median(.data$E_sim)),

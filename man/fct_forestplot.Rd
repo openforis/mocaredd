@@ -42,7 +42,7 @@ fct_forestplot(
 A character value with the formula for calculating total carbon stock for a specific land use.
 }
 \description{
-Produce a \link{gt} table with the median and confidence interval of
+Produce a \code{\link[gt:gt]{gt::gt()}} table with the median and confidence interval of
 Monte Carlo simulations for each category of a level of the analysis
 (land use transition, REDD+ activity, time period) and a forest plot
 showing the median and CI together.

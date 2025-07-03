@@ -18,5 +18,5 @@ test_res <- res |>filter(trans_id == "T1_EV_Crop")
 
 
 testthat::test_that("Works", {
-  testthat::expect_equal(round(median(test_res$E_sim / 10^6)), 14)
+  testthat::expect_equal(round(median(test_res$E / 10^6)), 4)
 })

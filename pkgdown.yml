@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   app-build: app-build.html
   app-desc: app-desc.html
-last_built: 2025-07-03T14:09Z
+last_built: 2025-07-03T14:43Z
 urls:
   reference: https://openforis.github.io/mocaredd/reference
   article: https://openforis.github.io/mocaredd/articles

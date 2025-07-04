@@ -2,6 +2,29 @@
 [![R-CMD-check](https://github.com/openforis/mocaredd/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/openforis/mocaredd/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
+**THIS TOOL IS UNDER DEVELOPMENT**
+**Current development version 0.3.0**
+
+<i>
+Features:
+
+- Download a demo template with user inputs, time periods, land use change areas, carbon elements.
+- User filled template submission to the tool,
+- Verification of template integrity,
+- Build calculation chain from input data to greenhouse gas emission reductions (ER)
+- Calculate arithmetic mean ERs from input data
+- Run simulations for all variables and reproduce calculation chain for each simulation
+- Calculate the median of simulated ERs as a better estimate than the arithmetic mean
+- Calculate uncertainty as quantiles of simulations at the chosen level
+- Show medians and confidence intervals at intermediate level (REDD+ activities, activity data and emission factors) 
+
+Planned features:
+
+- Tutorial on filling in the template with examples for various country circumstances
+- Additional template tab and calculations for annual processes (removals, soil organic carbon degradation)
+- Sensitivity analysis for activity data vs emission factors, REDD+ activities, different land use changes
+</i>
+
 
 # {mocaredd}:  Monte Carlo Simulations for REDD+ uncertainty analysis
 
@@ -23,7 +46,7 @@ With Windows machines, Rtools should also be installed:
 Install the package and run the app:
 
     if (!require(remotes)) install.packages("remotes")
-    if (!require(mocaredd)) remotes::install_github("openforis/mocaredd")
+    if (!require(mocaredd)) remotes::install_github("openforis/mocaredd@v0.3.0")
     
     mocaredd::shiny_run_mocaredd()
 
@@ -51,7 +74,7 @@ Install the package and run the app:
 
 ### Template
 
-(ADD Link to template from github here)
+(ADD Link to a template from github here)
 
 The template includes 4 tabs:
 
@@ -83,11 +106,4 @@ TBD
 #### Carbon stocks (c_stocks)
 
 TBD
-
-
-### Road map of future developements
-
-1. load input as csv
-1. Include various soil organic carbon method
-1. Include removals
 

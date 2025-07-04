@@ -53,6 +53,25 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9">
+<p><strong>THIS TOOL IS UNDER DEVELOPMENT</strong> <strong>Current development version 0.3.0</strong></p>
+<p><i> Features:</i></p>
+<ul>
+<li>Download a demo template with user inputs, time periods, land use change areas, carbon elements.</li>
+<li>User filled template submission to the tool,</li>
+<li>Verification of template integrity,</li>
+<li>Build calculation chain from input data to greenhouse gas emission reductions (ER)</li>
+<li>Calculate arithmetic mean ERs from input data</li>
+<li>Run simulations for all variables and reproduce calculation chain for each simulation</li>
+<li>Calculate the median of simulated ERs as a better estimate than the arithmetic mean</li>
+<li>Calculate uncertainty as quantiles of simulations at the chosen level</li>
+<li>Show medians and confidence intervals at intermediate level (REDD+ activities, activity data and emission factors)</li>
+</ul>
+<p>Planned features:</p>
+<ul>
+<li>Tutorial on filling in the template with examples for various country circumstances</li>
+<li>Additional template tab and calculations for annual processes (removals, soil organic carbon degradation)</li>
+<li>Sensitivity analysis for activity data vs emission factors, REDD+ activities, different land use changes </li>
+</ul>
 <div class="section level1">
 <div class="page-header"><h1 id="mocaredd-monte-carlo-simulations-for-redd-uncertainty-analysis">{mocaredd}: Monte Carlo Simulations for REDD+ uncertainty analysis<a class="anchor" aria-label="anchor" href="#mocaredd-monte-carlo-simulations-for-redd-uncertainty-analysis"></a>
 </h1></div>
@@ -70,7 +89,7 @@
 </ul>
 <p>Install the package and run the app:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(remotes)) <span class="fu">install.packages</span>(<span class="st">"remotes"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(mocaredd)) remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"openforis/mocaredd"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(mocaredd)) remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"openforis/mocaredd@v0.3.0"</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>mocaredd<span class="sc">::</span><span class="fu">shiny_run_mocaredd</span>()</span></code></pre></div>
 </div>
@@ -101,7 +120,7 @@
 <div class="section level3">
 <h3 id="template">Template<a class="anchor" aria-label="anchor" href="#template"></a>
 </h3>
-<p>(ADD Link to template from github here)</p>
+<p>(ADD Link to a template from github here)</p>
 <p>The template includes 4 tabs:</p>
 <div class="section level4">
 <h4 id="user-inputs-user_inputs">User inputs (user_inputs)<a class="anchor" aria-label="anchor" href="#user-inputs-user_inputs"></a>
@@ -151,15 +170,6 @@
 </h4>
 <p>TBD</p>
 </div>
-</div>
-<div class="section level3">
-<h3 id="road-map-of-future-developements">Road map of future developements<a class="anchor" aria-label="anchor" href="#road-map-of-future-developements"></a>
-</h3>
-<ol style="list-style-type: decimal">
-<li>load input as csv</li>
-<li>Include various soil organic carbon method</li>
-<li>Include removals</li>
-</ol>
 </div>
 </div>
 

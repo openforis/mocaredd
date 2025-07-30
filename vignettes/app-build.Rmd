@@ -95,7 +95,7 @@ usethis::use_pkgdown_github_pages()
 ## Install specific version
 
 ```{r}
-if (!require(remotes)) install.packages(remotes, dep =TRUE)
+if (!require(remotes)) install.packages(remotes, dep = TRUE)
 remotes::install_github("openforis/mocaredd@v0.2.0")
 mocaredd::shiny_run_mocaredd()
 ```

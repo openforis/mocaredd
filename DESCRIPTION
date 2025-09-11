@@ -43,3 +43,5 @@ Imports:
     chromote,
     scales,
     readxl
+Config/Needs/website:
+    r-lib/pkgdown

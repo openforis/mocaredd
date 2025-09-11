@@ -3,6 +3,9 @@
 ~$*
 vignettes/*.png
 vignettes/*.csv
+vignettes/*.docx
+vignettes/*.html
+vignettes/*.pdf
 inst/extdata/example1_conf.xlsx
 inst/extdata/example2_conf.xlsx
 tests/workbooks

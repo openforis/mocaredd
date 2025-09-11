@@ -1,0 +1,68 @@
+---
+title: "Guideline for filling in the {mocaredd} template"
+number-sections: true
+toc: true
+toc-depth: 2
+#highlight-style: github
+theme: 
+  light: flatly
+  dark: darkly
+format: 
+  html: 
+    toc-location: left
+    embed-resources: true
+  pdf: 
+    documentclass: scrartcl
+    papersize: A4
+    colorlinks: true
+    geometry:
+      - top=20mm
+      - bottom=20mm
+      - left=20mm
+      - right=20mm
+      - heightrounded
+  docx: default
+editor: visual
+---
+
+# Context {.unnumbered}
+
+Simplifying simulation-based uncertainty analysis of REDD+ greenhouse gas emission reductions may not be possible or desirable. Over-simplification could result in uncontrolled bias or misrepresent the actual uncertainty around volumes of emission reductions.
+
+However, many countries approach to uncertainty has focused on large spreadsheet tables that are near-impossible to navigate for anyone but their developers, reducing transparency and effectiveness of verification.
+
+the {mocaredd} tool aims at solving two critical issues with over-complicated spreadsheets based calculations:
+
+1.  Split the information into several tables with keys to merge data for calculations. Inspired for database management systems for their efficiency and simplification of data structure.
+2.  Process the simulations with a statistical langage rather that spreadsheet tool, again for efficiency purpose. The authors also believe that once the carbon accounting calculation chain is well understood by parties, adding the simulations doesn't need to be visually highlighted, and are safer run programmatically than on spreadsheets.
+
+This guideline provides instructions on how to fill in the template to ensure all matrices of land use change and no-change are reported, with their associated carbon stock, for all the reported time periods.
+
+# Overview of the template
+
+The template is built around 4 tables that aim to encompass all the information necessary to re-construct the arithmetic mean (not based on simulations) of:
+
+-   the Emission and Removal Levels for the reference period,
+
+-   the Emission and Removal Levels for the monitoring period,
+
+-   the Emission Reductions and/or increased removals.
+
+Each table contains additional columns to generate simulations for each step of the calculation and recalculate emissions and emission reductions from the simulations, and with uncertainty estimates.
+
+The 4 tables are designed to store data to describe :
+
+1.  User inputs to bring flexibility to the calculation algorithm. For example are the land use change expressed in hectares per year or in hectares, or are the carbon stock expressed in tons of dry matter or tons of carbon.
+2.  Time periods for the different datasets used in the calculations and with REDD+ period do they belong to, reference or monitoring.
+3.  Areas of land use change, for each time period and each combination of land use, what is the area and it's standard error.
+4.  Carbon elements, combining carbon pools and other carbon related elements such as carbon fraction, or degradation ratios if expressed as a percentage of their intact land use.
+
+Detailed information for each table is presented in the following sections.
+
+# Global parameters
+
+# Time periods
+
+# Land use change areas
+
+# Carbon elements

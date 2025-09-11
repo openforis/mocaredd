@@ -44,4 +44,5 @@ Imports:
     scales,
     readxl
 Config/Needs/website:
-    r-lib/pkgdown
+    r-lib/pkgdown,
+    quarto

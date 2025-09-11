@@ -11,3 +11,6 @@
 
 ^app.R$
 ^inst/extdata/example1_conf.xlsx$
+^vignettes/articles/\.quarto$
+^vignettes/articles/*_files$
+^vignettes/articles$

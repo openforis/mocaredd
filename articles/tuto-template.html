@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>tuto-template • mocaredd</title>
+<title>Guideline for building {mocaredd} workbook • mocaredd</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><script src="tuto-template_files/libs/quarto-html/popper.min.js"></script><script src="tuto-template_files/libs/quarto-html/tippy.umd.min.js"></script><link href="tuto-template_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="tuto-template_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="tuto-template">
+<!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Guideline for building {mocaredd} workbook">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -37,7 +37,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/app-build.html">mocaredd - package creation steps</a></li>
     <li><a class="dropdown-item" href="../articles/app-desc.html">app-description</a></li>
-    <li><a class="dropdown-item" href="../articles/tuto-template.html">tuto-template</a></li>
+    <li><a class="dropdown-item" href="../articles/tuto-template.html">Guideline for building {mocaredd} workbook</a></li>
   </ul>
 </li>
       </ul>
@@ -55,7 +55,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>tuto-template</h1>
+      <h1>Guideline for building {mocaredd} workbook</h1>
 
 
 
@@ -69,30 +69,28 @@
 
 
 
-    <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/openforis/mocaredd" class="external-link">mocaredd</a></span><span class="op">)</span></span></code></pre></div>
-</div>
-<section class="section level2"><h2 class="unnumbered" id="context">Context<a class="anchor" aria-label="anchor" href="#context"></a>
+    <section class="section level2"><h2 class="unnumbered" id="context">Context<a class="anchor" aria-label="anchor" href="#context"></a>
 </h2>
+<p>In the context of greenhouse gas emission reductions from the forestry sector and REDD+, many countries and jurisdictions’ approach to uncertainty around estimates has focused on large spreadsheet tables that are near-impossible to navigate for anyone but their developers, reducing transparency and effectiveness of verification.</p>
 <p>Simplifying simulation-based uncertainty analysis of REDD+ greenhouse gas emission reductions may not be possible or desirable. Over-simplification could result in uncontrolled bias or misrepresent the actual uncertainty around volumes of emission reductions.</p>
-<p>However, many countries approach to uncertainty has focused on large spreadsheet tables that are near-impossible to navigate for anyone but their developers, reducing transparency and effectiveness of verification.</p>
-<p>the {mocaredd} tool aims at solving two critical issues with over-complicated spreadsheets based calculations:</p>
+<p>The {mocaredd} tool aims at solving two critical issues with over-complicated spreadsheets-based calculations:</p>
 <ol type="1">
 <li>Split the information into several tables with keys to merge data for calculations. Inspired for database management systems for their efficiency and simplification of data structure.</li>
-<li>Process the simulations with a statistical langage rather that spreadsheet tool, again for efficiency purpose. The authors also believe that once the carbon accounting calculation chain is well understood by parties, adding the simulations doesn’t need to be visually highlighted, and are safer run programmatically than on spreadsheets.</li>
+<li>Process the simulations with a statistical language rather that spreadsheet tool, again for efficiency purpose. The authors also believe that once the carbon accounting calculation chain is well understood by parties, adding the simulations doesn’t need to be visually highlighted, and are safer run programmatically than on spreadsheets.</li>
 </ol>
-<p>This guideline provides instructions on how to fill in the template to ensure all matrices of land use change and no-change are reported, with their associated carbon stock, for all the reported time periods.</p>
-</section><section class="section level2"><h2 id="overview-of-the-template">Overview of the template<a class="anchor" aria-label="anchor" href="#overview-of-the-template"></a>
+<p>To do so, {mocaredd} is built as a R package that provides calculation functions and a XLSX workbook that contain the initial data in a structured and easy to navigate way.</p>
+<p>This guideline provides instructions on how to fill in the template workbook to ensure all matrices of land use change are reported, with all their associated carbon elements, and for all the reported time periods.</p>
+</section><section class="section level2" data-number="1"><h2 data-number="1" id="overview-of-the-template">
+<span class="header-section-number">1</span> Overview of the template<a class="anchor" aria-label="anchor" href="#overview-of-the-template"></a>
 </h2>
-<p>The template is built around 4 tables that aim to encompass all the information necessary to re-construct the arithmetic mean (not based on simulations) of:</p>
-<ul>
-<li><p>the Emission and Removal Levels for the reference period,</p></li>
-<li><p>the Emission and Removal Levels for the monitoring period,</p></li>
-<li><p>the Emission Reductions and/or increased removals.</p></li>
-</ul>
-<p>Each table contains additional columns to generate simulations for each step of the calculation and recalculate emissions and emission reductions from the simulations, and with uncertainty estimates.</p>
-<p>The 4 tables are designed to store data to describe :</p>
+<p>The template is built around four tables to encompass all the information necessary to:</p>
+<ol type="1">
+<li>re-construct the arithmetic means (not based on simulations) of all emissions and removals and emission reductions (ERs).</li>
+<li>run simulations for all the input variables of areas and carbon elements,</li>
+<li>Get simulation-based emission reductions with their associated uncertainties.</li>
+<li>Run sensitivity analysis to highlight the main contributors to the ERs uncertainty.</li>
+</ol>
+<p>These four tables are designed to describe separately:</p>
 <ol type="1">
 <li>User inputs to bring flexibility to the calculation algorithm. For example are the land use change expressed in hectares per year or in hectares, or are the carbon stock expressed in tons of dry matter or tons of carbon.</li>
 <li>Time periods for the different datasets used in the calculations and with REDD+ period do they belong to, reference or monitoring.</li>
@@ -100,13 +98,93 @@
 <li>Carbon elements, combining carbon pools and other carbon related elements such as carbon fraction, or degradation ratios if expressed as a percentage of their intact land use.</li>
 </ol>
 <p>Detailed information for each table is presented in the following sections.</p>
-</section><section class="section level2"><h2 id="global-parameters">Global parameters<a class="anchor" aria-label="anchor" href="#global-parameters"></a>
+</section><section class="section level2" data-number="2"><h2 data-number="2" id="user-inputs">
+<span class="header-section-number">2</span> User inputs<a class="anchor" aria-label="anchor" href="#user-inputs"></a>
 </h2>
-</section><section class="section level2"><h2 id="time-periods">Time periods<a class="anchor" aria-label="anchor" href="#time-periods"></a>
+<p>This table contains a few parameters to allow the tool to handle as many configurations as possible.</p>
+<table class="table caption-top">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 28%">
+<col style="width: 29%">
+<col style="width: 10%">
+<col style="width: 10%">
+</colgroup>
+<thead><tr class="header">
+<th>Col. name</th>
+<th>Label</th>
+<th>Type of value</th>
+<th>Example</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>trunc_pdf</td>
+<td>use truncated PDFs?</td>
+<td>TRUE/FALSE</td>
+<td>FALSE</td>
+<td>Specify if truncated PDFs should be used or not.</td>
+</tr>
+<tr class="even">
+<td>n_iter</td>
+<td>Number of iterations</td>
+<td>integer</td>
+<td>10000</td>
+<td>Specify the number of simulations to run for each PDF.</td>
+</tr>
+<tr class="odd">
+<td>ran_seed</td>
+<td>Random seed</td>
+<td>integer or NULL</td>
+<td>31</td>
+<td>If NULL, the tool generates a random seed each time. Set a seed number to fix the random number and make the analysis reproducible.</td>
+</tr>
+<tr class="even">
+<td>dg_ext</td>
+<td>Degradation extension</td>
+<td>text</td>
+<td>“_deg”</td>
+<td>Specify to suffix used to differentiate degraded and intact versions of the same land use. Required if degradation is a carbon ratio.</td>
+</tr>
+<tr class="odd">
+<td>dg_pool</td>
+<td>Degradation pools</td>
+<td>text, comma separated</td>
+<td>AGB, BGB</td>
+<td>List the pools affected by degradation (experimental, should always be AGB, BGB, DW)</td>
+</tr>
+<tr class="even">
+<td>ad_annual</td>
+<td>Is AD annual</td>
+<td>TRUE/FALSE</td>
+<td>TRUE</td>
+<td>Specify if the Activity Data is reported in hectares (ha) or hectares/year</td>
+</tr>
+<tr class="odd">
+<td>conf_level</td>
+<td>Confidence level <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>
+</td>
+<td>numeric <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="postfix">]</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="false" form="prefix">[</mo></mrow><annotation encoding="application/x-tex">]0,1[</annotation></semantics></math>
+</td>
+<td>0.9</td>
+<td>Confidence level of the uncertainty. The quantiles representing the upper ad lower bound of the confidence interval.</td>
+</tr>
+<tr class="even">
+<td>round_digits</td>
+<td>Rounding number of digits</td>
+<td>integer</td>
+<td>3</td>
+<td>Number of digits to round calculations.</td>
+</tr>
+</tbody>
+</table></section><section class="section level2" data-number="3"><h2 data-number="3" id="time-periods">
+<span class="header-section-number">3</span> Time periods<a class="anchor" aria-label="anchor" href="#time-periods"></a>
 </h2>
-</section><section class="section level2"><h2 id="land-use-change-areas">Land use change areas<a class="anchor" aria-label="anchor" href="#land-use-change-areas"></a>
+</section><section class="section level2" data-number="4"><h2 data-number="4" id="land-use-change-areas">
+<span class="header-section-number">4</span> Land use change areas<a class="anchor" aria-label="anchor" href="#land-use-change-areas"></a>
 </h2>
-</section><section class="section level2"><h2 id="carbon-elements">Carbon elements<a class="anchor" aria-label="anchor" href="#carbon-elements"></a>
+</section><section class="section level2" data-number="5"><h2 data-number="5" id="carbon-elements">
+<span class="header-section-number">5</span> Carbon elements<a class="anchor" aria-label="anchor" href="#carbon-elements"></a>
 </h2>
 </section><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {

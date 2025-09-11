@@ -15,18 +15,18 @@ format:
   html: 
     toc-location: left
     embed-resources: true
-  docx:
-    reference-doc: custom-reference-doc.docx
-  pdf: 
-    documentclass: scrartcl
-    papersize: A4
-    colorlinks: true
-    geometry:
-      - top=20mm
-      - bottom=20mm
-      - left=20mm
-      - right=20mm
-      - heightrounded
+  # docx:
+  #   reference-doc: custom-reference-doc.docx
+  # pdf: 
+  #   documentclass: scrartcl
+  #   papersize: A4
+  #   colorlinks: true
+  #   geometry:
+  #     - top=20mm
+  #     - bottom=20mm
+  #     - left=20mm
+  #     - right=20mm
+  #     - heightrounded
 editor: visual
 ---
 
@@ -83,4 +83,3 @@ This table contains a few parameters to allow the tool to handle as many configu
 # Land use change areas
 
 # Carbon elements
-

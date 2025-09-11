@@ -90,6 +90,7 @@ devtools::check()
 ```{r}
 #pkgdown::build_site() 
 usethis::use_pkgdown_github_pages()
+usethis::use_article("tuto-template.qmd")
 ```
 
 ## Install specific version

@@ -1,42 +1,60 @@
 ---
-title: "tuto-template"
+title: "Guideline for building {mocaredd} workbook"
 knitr:
   opts_chunk:
     collapse: true
     comment: '#>'
+number-sections: true
+toc: true
+toc-depth: 2
+#highlight-style: github
+theme: 
+  light: flatly
+  dark: darkly
+format: 
+  html: 
+    toc-location: left
+    embed-resources: true
+  docx:
+    reference-doc: custom-reference-doc.docx
+  pdf: 
+    documentclass: scrartcl
+    papersize: A4
+    colorlinks: true
+    geometry:
+      - top=20mm
+      - bottom=20mm
+      - left=20mm
+      - right=20mm
+      - heightrounded
+editor: visual
 ---
-
-```{r}
-#| label: setup
-library(mocaredd)
-```
 
 # Context {.unnumbered}
 
+In the context of greenhouse gas emission reductions from the forestry sector and REDD+, many countries and jurisdictions' approach to uncertainty around estimates has focused on large spreadsheet tables that are near-impossible to navigate for anyone but their developers, reducing transparency and effectiveness of verification.
+
 Simplifying simulation-based uncertainty analysis of REDD+ greenhouse gas emission reductions may not be possible or desirable. Over-simplification could result in uncontrolled bias or misrepresent the actual uncertainty around volumes of emission reductions.
 
-However, many countries approach to uncertainty has focused on large spreadsheet tables that are near-impossible to navigate for anyone but their developers, reducing transparency and effectiveness of verification.
-
-the {mocaredd} tool aims at solving two critical issues with over-complicated spreadsheets based calculations:
+The {mocaredd} tool aims at solving two critical issues with over-complicated spreadsheets-based calculations:
 
 1.  Split the information into several tables with keys to merge data for calculations. Inspired for database management systems for their efficiency and simplification of data structure.
-2.  Process the simulations with a statistical langage rather that spreadsheet tool, again for efficiency purpose. The authors also believe that once the carbon accounting calculation chain is well understood by parties, adding the simulations doesn't need to be visually highlighted, and are safer run programmatically than on spreadsheets.
+2.  Process the simulations with a statistical language rather that spreadsheet tool, again for efficiency purpose. The authors also believe that once the carbon accounting calculation chain is well understood by parties, adding the simulations doesn't need to be visually highlighted, and are safer run programmatically than on spreadsheets.
 
-This guideline provides instructions on how to fill in the template to ensure all matrices of land use change and no-change are reported, with their associated carbon stock, for all the reported time periods.
+To do so, {mocaredd} is built as a R package that provides calculation functions and a XLSX workbook that contain the initial data in a structured and easy to navigate way.
+
+This guideline provides instructions on how to fill in the template workbook to ensure all matrices of land use change are reported, with all their associated carbon elements, and for all the reported time periods.
 
 # Overview of the template
 
-The template is built around 4 tables that aim to encompass all the information necessary to re-construct the arithmetic mean (not based on simulations) of:
+The template is built around four tables to encompass all the information necessary to:
 
--   the Emission and Removal Levels for the reference period,
+1.  re-construct the arithmetic means (not based on simulations) of all emissions and removals and emission reductions (ERs).
+2.  run simulations for all the input variables of areas and carbon elements,
+3.  Get simulation-based emission reductions with their associated uncertainties.
+4.  Run sensitivity analysis to highlight the main contributors to the ERs uncertainty.
 
--   the Emission and Removal Levels for the monitoring period,
-
--   the Emission Reductions and/or increased removals.
-
-Each table contains additional columns to generate simulations for each step of the calculation and recalculate emissions and emission reductions from the simulations, and with uncertainty estimates.
-
-The 4 tables are designed to store data to describe :
+These four tables are designed to describe separately:
 
 1.  User inputs to bring flexibility to the calculation algorithm. For example are the land use change expressed in hectares per year or in hectares, or are the carbon stock expressed in tons of dry matter or tons of carbon.
 2.  Time periods for the different datasets used in the calculations and with REDD+ period do they belong to, reference or monitoring.
@@ -45,10 +63,24 @@ The 4 tables are designed to store data to describe :
 
 Detailed information for each table is presented in the following sections.
 
-# Global parameters
+# User inputs
+
+This table contains a few parameters to allow the tool to handle as many configurations as possible.
+
+| Col. name | Label | Type of value | Example | Description |
+|---------------|---------------------|----------------------|--------|--------|
+| trunc_pdf | use truncated PDFs? | TRUE/FALSE | FALSE | Specify if truncated PDFs should be used or not. |
+| n_iter | Number of iterations | integer | 10000 | Specify the number of simulations to run for each PDF. |
+| ran_seed | Random seed | integer or NULL | 31 | If NULL, the tool generates a random seed each time. Set a seed number to fix the random number and make the analysis reproducible. |
+| dg_ext | Degradation extension | text | "\_deg" | Specify to suffix used to differentiate degraded and intact versions of the same land use. Required if degradation is a carbon ratio. |
+| dg_pool | Degradation pools | text, comma separated | AGB, BGB | List the pools affected by degradation (experimental, should always be AGB, BGB, DW) |
+| ad_annual | Is AD annual | TRUE/FALSE | TRUE | Specify if the Activity Data is reported in hectares (ha) or hectares/year |
+| conf_level | Confidence level $\alpha$ | numeric $]0,1[$ | 0.9 | Confidence level of the uncertainty. The quantiles representing the upper ad lower bound of the confidence interval. |
+| round_digits | Rounding number of digits | integer | 3 | Number of digits to round calculations. |
 
 # Time periods
 
 # Land use change areas
 
 # Carbon elements
+

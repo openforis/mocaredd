@@ -65,20 +65,24 @@ Detailed information for each table is presented in the following sections.
 
 # User inputs
 
-This table contains a few parameters to allow the tool to handle as many configurations as possible.
+This table contains a few parameters to allow the tool to handle as many configurations as possible. This is were users specify the number of simulation iterations, if there is a random seed to reproduce the same numbers and options regarding degradation, units and rounding digits.
 
-| Col. name | Label | Type of value | Example | Description |
-|---------------|---------------------|----------------------|--------|--------|
+| Col. name | Label | Type | Example | Description |
+|---------------|---------------|---------------|---------------|---------------|
 | trunc_pdf | use truncated PDFs? | TRUE/FALSE | FALSE | Specify if truncated PDFs should be used or not. |
 | n_iter | Number of iterations | integer | 10000 | Specify the number of simulations to run for each PDF. |
 | ran_seed | Random seed | integer or NULL | 31 | If NULL, the tool generates a random seed each time. Set a seed number to fix the random number and make the analysis reproducible. |
-| dg_ext | Degradation extension | text | "\_deg" | Specify to suffix used to differentiate degraded and intact versions of the same land use. Required if degradation is a carbon ratio. |
+| dg_ext | Degradation extension | text | "\_deg" | Suffix used to differentiate degraded and intact versions of the same land use. Required if degradation is a carbon ratio. |
 | dg_pool | Degradation pools | text, comma separated | AGB, BGB | List the pools affected by degradation (experimental, should always be AGB, BGB, DW) |
-| ad_annual | Is AD annual | TRUE/FALSE | TRUE | Specify if the Activity Data is reported in hectares (ha) or hectares/year |
+| ad_annual | Is AD annual | TRUE/FALSE | TRUE | Specify if the Activity Data is reported in hectares (ha) or ha/year |
 | conf_level | Confidence level $\alpha$ | numeric $]0,1[$ | 0.9 | Confidence level of the uncertainty. The quantiles representing the upper ad lower bound of the confidence interval. |
 | round_digits | Rounding number of digits | integer | 3 | Number of digits to round calculations. |
 
+: {tbl-colwidths="\[10,20,10,10,50\]"}
+
 # Time periods
+
+Time period
 
 # Land use change areas
 

@@ -220,10 +220,22 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
       sims_C_lu_intact_expool <- sims_C_lu_intact |>
         dplyr::mutate(c_intact_noDG = NA)
     } else {
-      dg_expool <- .cs |>
+      ## DG not working when dg_pool != ALL
+      # dg_expool <- .cs |>
+      #   dplyr::filter(.data$c_lu_id %in% degrat_lu_intact) |>
+      #   dplyr::pull("c_element") |>
+      #   unique()
+
+      ## EXCLUDING dg_pool from list of all C pools
+      dg_allpool <- .cs |>
         dplyr::filter(.data$c_lu_id %in% degrat_lu_intact) |>
         dplyr::pull("c_element") |>
         unique()
+      dg_pool <- stringr::str_split(stringr::str_trim(.usr$dg_pool), pattern = ",") |>
+        purrr::map(stringr::str_trim) |>
+        unlist()
+
+      dg_expool <- setdiff(dg_allpool, dg_pool)
 
       sims_C_lu_intact_expool <- sims_C_nodegrat |>
         dplyr::filter(.data$lu_id %in% degrat_lu_intact) |>

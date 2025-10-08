@@ -295,7 +295,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
       dplyr::left_join(sims_CI, by = c("lu_initial_id" = "lu_id", "sim_no")) |>
       dplyr::left_join(sims_CF, by = c("lu_final_id"   = "lu_id", "sim_no")) |>
       dplyr::mutate(
-        EF = round(.data$c_stock_i - .data$c_stock_f, 3),
+        EF = round((.data$c_stock_i - .data$c_stock_f) * 44 / 12, 3),
         E = round(.data$AD * .data$EF, 3)
         ) |>
       dplyr::select(

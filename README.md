@@ -36,6 +36,15 @@ The apps takes an input XLSX file following a specific template meant to harmoni
 
 ### Run the app
 
+#### Online (experimental)
+
+https://gaelsola.shinyapps.io/mocaredd/
+
+
+#### Locally on your computer.
+
+Although a bit ore cumbersome, the installation of R and Rstudio is now straightforward for the mast majority of computers.
+
 The app require R version 3.4 minimum. RStudio is recommended as Integrated Development Environment.
 With Windows machines, Rtools should also be installed:
 

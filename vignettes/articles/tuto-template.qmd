@@ -68,7 +68,7 @@ Detailed information for each table is presented in the following sections.
 This table contains a few parameters to allow the tool to handle as many configurations as possible. This is were users specify the number of simulation iterations, if there is a random seed to reproduce the same numbers and options regarding degradation, units and rounding digits.
 
 | Col. name | Label | Type | Example | Description |
-|---------------|---------------|---------------|---------------|---------------|
+|----|----|----|----|----|
 | trunc_pdf | use truncated PDFs? | TRUE/FALSE | FALSE | Specify if truncated PDFs should be used or not. |
 | n_iter | Number of iterations | integer | 10000 | Specify the number of simulations to run for each PDF. |
 | ran_seed | Random seed | integer or NULL | 31 | If NULL, the tool generates a random seed each time. Set a seed number to fix the random number and make the analysis reproducible. |
@@ -99,7 +99,7 @@ In this case, the reference period's baseline emission level is constructed from
 To allow the script to adjust to different scenario, the template requires a time period ID, the start and end years and a reference of monitoring code (REF is unique, but MON can be subdivided into MON1, MON2, etc.).
 
 | Col. name | Label | Type | Example | Description |
-|------------|------------|------------|------------|------------|
+|----|----|----|----|----|
 | period_no | Time period ID | text | T1 | ID of the time period |
 | year_start | Start year | integer | 2006 | What is the start year of the time period |
 | year_end | End year | integer | 2010 | What is the end year of the time period |

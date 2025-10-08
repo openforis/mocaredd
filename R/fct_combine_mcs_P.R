@@ -52,8 +52,8 @@ fct_combine_mcs_P <- function(
   ## !!! FOR TESTING ONLY
   # .data = sim_trans
   # .time = time_clean
-  # .period_type = "REF"
-  # .ad$annual = usr$ad_annual
+  # .period_type = "MON2"
+  # .ad_annual = usr$ad_annual
   ## !!!
 
 

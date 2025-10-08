@@ -180,7 +180,63 @@
 </table></section><section class="section level2" data-number="3"><h2 data-number="3" id="time-periods">
 <span class="header-section-number">3</span> Time periods<a class="anchor" aria-label="anchor" href="#time-periods"></a>
 </h2>
-<p>Time period</p>
+<p>This table is used to specify the time periods of the different datasets used for activity data and emission factors. The reference and monitoring periods can be build for several time periods. For example:</p>
+<ul>
+<li><p>T1: 2006-2008, Reference Period,</p></li>
+<li><p>T2: 2009-2010, Reference Period,</p></li>
+<li><p>T3: 2011, Monitoring Period 1</p></li>
+<li><p>T4: 2012, Monitoring Period 2</p></li>
+<li><p>T5: 2013, Monitoring Period 2.</p></li>
+</ul>
+<p>In this case, the reference period’s baseline emission level is constructed from 2 time periods T1 and T2, and there are 2 monitoring periods, one build from T3 for one year, and one build from T4 adn T5 for two years.</p>
+<p>To allow the script to adjust to different scenario, the template requires a time period ID, the start and end years and a reference of monitoring code (REF is unique, but MON can be subdivided into MON1, MON2, etc.).</p>
+<table class="table caption-top">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 20%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 50%">
+</colgroup>
+<thead><tr class="header">
+<th>Col. name</th>
+<th>Label</th>
+<th>Type</th>
+<th>Example</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>period_no</td>
+<td>Time period ID</td>
+<td>text</td>
+<td>T1</td>
+<td>ID of the time period</td>
+</tr>
+<tr class="even">
+<td>year_start</td>
+<td>Start year</td>
+<td>integer</td>
+<td>2006</td>
+<td>What is the start year of the time period</td>
+</tr>
+<tr class="odd">
+<td>year_end</td>
+<td>End year</td>
+<td>integer</td>
+<td>2010</td>
+<td>What is the end year of the time period</td>
+</tr>
+<tr class="even">
+<td>period_type</td>
+<td>period type ID</td>
+<td>text</td>
+<td>REF</td>
+<td>Is the time period a reference period (REF) or monitoring (MON). And is it a subdivision of the monitoring period (MON1, MON2, etc.)</td>
+</tr>
+</tbody>
+</table>
+<p>NOTE: In case a time period doesn’t start for the beginning of the calendar year, adjust the year to match the duration. For example a time period of 1 year between 1st June 2005 to 31 May 2006 would have a start and end year of 2005 to be considered a one year period for the tool.</p>
 </section><section class="section level2" data-number="4"><h2 data-number="4" id="land-use-change-areas">
 <span class="header-section-number">4</span> Land use change areas<a class="anchor" aria-label="anchor" href="#land-use-change-areas"></a>
 </h2>

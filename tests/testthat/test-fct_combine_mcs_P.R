@@ -1,7 +1,7 @@
 
+library(mocaredd)
 library(readxl)
 library(dplyr)
-library(mocaredd)
 
 path <- system.file("extdata/example2-with-sims.xlsx", package = "mocaredd")
 
@@ -27,5 +27,5 @@ sim_FREL <- fct_combine_mcs_P(
 test_res <- round(median(sim_FREL$E))
 
 testthat::test_that("function doesn't work :P", {
-  testthat::expect_equal(test_res, 5649198)
+  testthat::expect_equal(test_res, 20713724)
 })

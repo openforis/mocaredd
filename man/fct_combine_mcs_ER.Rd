@@ -22,9 +22,9 @@ or not, calculate the Emission Level for a reference or monitoring period
 for each simulation.
 }
 \examples{
+library(mocaredd)
 library(readxl)
 library(dplyr)
-library(mocaredd)
 
 path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
 

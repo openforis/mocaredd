@@ -59,7 +59,7 @@ fct_combine_mcs_ER <- function(
 
   moni_combi <- unique(.sim_mon$period_type)
 
-  purrr::map(moni_combi, function(x){
+  sim_ER <- purrr::map(moni_combi, function(x){
 
     out <- .sim_mon |>
       dplyr::filter(.data$period_type == x) |>
@@ -67,6 +67,8 @@ fct_combine_mcs_ER <- function(
       dplyr::mutate(ER_sim = .data$E_R - .data$E)
 
   }) |> purrr::list_rbind()
+
+  sim_ER
 
   # res_ER <- sim_ER |>
   #   fct_calc_res(.id = period_type, .sim = ER_sim, .ci_alpha = ci_alpha)

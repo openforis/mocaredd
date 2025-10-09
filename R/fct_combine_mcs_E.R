@@ -65,21 +65,8 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   ## 3.2.4. Combine intact C with DG_ratio and calculate Cstock
   ## 3.2.5. Combine all land uses
 
-  ## 4. Make Cstock initial and final for each LU transition
+  ## 4. Make Cstock initial and final for each LU transition, calculate EF and E as ADxEF
 
-
-
-
-  ## 2. Make master data frame with all simulations per land use transition and time period
-  ## 2.1 Make long table with each row is a unique combination of time period, land use or land use transition and simulation number
-  ## 2.2 for Cstock, make formula based on c_elements reported
-
-
-  ## 3. Calculate Cstock for each time period and land use change
-  ## 3.1. Get Cstock formula from elements in the data.
-  ## 3.2. Calculate Cstock based on the formula for each simulation
-  ## 3.3. Calculate degraded C stocks if based on degradation ratios DG_ratio
-  ## 4. Calculate E as ADxEF
 
 
   ##
@@ -335,7 +322,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   # # hist(sims_cols$SIMS[[1]])
   # # hist(sims_C_noDG$AGB[1:.usr$n_iter])
   #
-  # ## 3. Calculate C stock - no degradation from ratios ####
+  # ## 3. Calculate C stock - no degradation from ratios
   #
   # ## + Get C elements for each period x lu
   # c_elements <- .cs |>
@@ -356,7 +343,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
   #   dplyr::select("sim_no", tidyr::everything())
   #
   #
-  # ## 4. Calculate C for degraded land uses using ratio ####
+  # ## 4. Calculate C for degraded land uses using ratio
   #
   # if (!"DG_ratio" %in% unique(sims_cols$c_element)) {
   #

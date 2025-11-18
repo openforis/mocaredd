@@ -1,118 +1,130 @@
+# {mocaredd}: Monte Carlo Simulations for REDD+ uncertainty analysis
+
 <!-- badges: start -->
+
 [![R-CMD-check](https://github.com/openforis/mocaredd/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/openforis/mocaredd/actions/workflows/R-CMD-check.yaml)
+
 <!-- badges: end -->
 
-**THIS TOOL IS UNDER DEVELOPMENT**
-**Current development version 0.3.0**
+#### {mocaredd} is a free and opensource application that aims at making simulation-based uncertainty calculations for REDD+ easier to process, report and verify.
 
-<i>
-Features:
+It works by combining the strengths of spreadsheet tools (XLSX) for templating and a statistical language (R) for running the simulations, aggregating results and producing helpful visuals.
 
-- Download a demo template with user inputs, time periods, land use change areas, carbon elements.
-- User filled template submission to the tool,
-- Verification of template integrity,
-- Build calculation chain from input data to greenhouse gas emission reductions (ER)
-- Calculate arithmetic mean ERs from input data
-- Run simulations for all variables and reproduce calculation chain for each simulation
-- Calculate the median of simulated ERs as a better estimate than the arithmetic mean
-- Calculate uncertainty as quantiles of simulations at the chosen level
-- Show medians and confidence intervals at intermediate level (REDD+ activities, activity data and emission factors) 
+<!-- new section -->
 
-Planned features:
+## What for?
 
-- Tutorial on filling in the template with examples for various country circumstances
-- Additional template tab and calculations for annual processes (removals, soil organic carbon degradation)
-- Sensitivity analysis for activity data vs emission factors, REDD+ activities, different land use changes
-</i>
+In the context of the REDD+ mechanism (Reducing emission from Deforestation and forest Degradation "plus"), countries can receive result-based payments for emission reductions and removal increases of greenhouse gas (GHG) from the forestry sector. Emission reductions are estimated by quantifying the amount of greenhouse gas emissions between a reference level (i.e baseline) and a monitorig period. These estimates come with a level of uncertainty due to the sampling methods and models used to generate the estimations.
 
+High integrity REDD+ standards, that set rules for the quantification of emissions and removals, and their uncertainties, increasingly require the use of Monte Carlo simulations for REDD+ uncertainties. These simulations are often run in spreadsheet tools, but the lack of structure and inherent disadvantage of spreadsheets for this task (error prone, difficulty to handle large amount of data) is becoming a barrier for the quality, reproducibility and verification of uncertainties based on simulations.
 
-# {mocaredd}:  Monte Carlo Simulations for REDD+ uncertainty analysis
+{mocaredd} provides a template for organizing data, and a tool that takes the data, runs Monte Carlo Simulations and produces improved estimates of and confidence intervals around greenhouse gas emissions and emission reductions from the forestry sector (REDD+).
 
-Contains functions and a shiny app for (1) setting up, (2) running Monte Carlo Simulations and (3) producing improved estimates of and confidence intervals around greenhouse gas emissions and emission reductions from the forestry sector.
+<!-- new section -->
 
-The apps takes an input XLSX file following a specific template meant to harmonize reporting of areas of land use transitions and associated carbon stocks. It then provides simulations, medians, percentage uncertainties and confidence intervals at various stages of aggregation from emissions related land use transitions to REDD+ activities and emission reductions between reference and monitoring periods.
+## How to run the application ?
 
-\  
+The application is available online (read-to-use) at: <https://openforis-shiny.shinyapps.io/mocaredd/>
 
-### Run the app
+It can also be installed for offline use (require installing R and Rstudio, may require administrator permission). The app require R version 3.4 minimum. RStudio is recommended as Integrated Development Environment. With Windows machines, Rtools should also be installed:
 
-#### Online (experimental)
+-   [https://cloud.r-project.org/]()
+-   [https://posit.co/download/rstudio-desktop/]()
+-   [https://cran.r-project.org/bin/windows/Rtools/]()
 
-https://gaelsola.shinyapps.io/mocaredd/
+R and Rstudio are installed, open R studio and run the folloing code in the terminal:
 
+```         
+if (!require(remotes)) install.packages("remotes")
+if (!require(mocaredd)) remotes::install_github("openforis/mocaredd@v1.0")
 
-#### Locally on your computer.
+mocaredd::shiny_run_mocaredd()
+```
 
-Although a bit ore cumbersome, the installation of R and Rstudio is now straightforward for the mast majority of computers.
+<!-- new section -->
 
-The app require R version 3.4 minimum. RStudio is recommended as Integrated Development Environment.
-With Windows machines, Rtools should also be installed:
+## Step-by-Step app workflow
 
-- [https://cloud.r-project.org/]()
-- [https://posit.co/download/rstudio-desktop/]()
-- [https://cran.r-project.org/bin/windows/Rtools/]()
+1.  The app provides a template spreadsheet to download, either directly in the app or here (see Resources below):
 
-Install the package and run the app:
+2.  The user fills in the spreadsheet 4 tabs:
 
-    if (!require(remotes)) install.packages("remotes")
-    if (!require(mocaredd)) remotes::install_github("openforis/mocaredd@v0.3.0")
-    
-    mocaredd::shiny_run_mocaredd()
+    1.  **User inputs** (user_inputs). Helps offering great flexibility with a minimum number of parameters.
 
+    2.  **Time periods** (time_periods). Describes the times periods covered by the data and how they are combined into reference or reporting.
 
+    3.  **Land use transitions** (AD_lu_transitions). Describes the probability density functions (PDFs) for the land use change areas for each time period
 
-### Workflow
+    4.  **Carbon stocks** (c_stocks). Contains the probability density functions for all the carbon elements necessary to associate emission or removal factors to all land use changes and time periods.
 
-1. Input XSLX file following provided template.
-1. Checks are run to ensure the entity codes are unique and matching between tables. 
-1. Simulations are produced and results can be seen as forest plots, simulations densities and comparison between simulations and arithmetic means for the final emission reductions.
-1. Sensitivity analysis shows the impact of AE vs EF, REDD+ activities, time periods.
+3.  The user upload the filled template into the tool.
 
+4.  The app run checks:
 
-### Calculation steps
+    1.  verifies that all connections between time periods, land use changes and carbon elements are correctly entered,
 
-1. Check that the template is followed correctly and that the tables are correctly linked (keys link time to land use changes and land use changes to carbon stock elements)
-2. Generate simulations for all probability distribution functions
-3. Calculate carbon stocks based on carbon stock elements reported.
-4. Calculate Emission factors for each land use change and time period
-5. Calculate Emissions from IPCC formula Eij = EFij x ADij for each land use change i and time period j.
-6. Aggregate Emissions per time period
-7. Aggregate Emissions for the reference and monitoring periods
-8. Calculate Emission Reductions as the difference between annualized emissions during the reference period and annualized emissions during each of the monitoring periods.
+    2.  provides an overview of the data (number of time periods, carbon pools, method for forest degradation, etc.),
 
+    3.  calculates the arithmetic mean of aggregated emission reductions (no simulation yet).
 
-### Template
+    4.  makes land use change matrices in ha.
 
-(ADD Link to a template from github here)
+5.  If all checks are passed, the app runs the simulations:
 
-The template includes 4 tabs:
+    1.  for each PDF, the determined number of simulations is randomly generated, then
 
-#### User inputs (user_inputs)
-They help offering great flexibility with a minimum number of parameters.
+    2.  the carbon accounting chain of calculations is created based on the data uploaded,
 
-- **trunc_pdf**: use truncated PDF to avoid negative simulated values were illogical (for ex. areas.). (Note for v2.0, currently only works for normal distributions).
-- **n_iter**: number of iterations. Most standards require 10,000 simulations.
-- **ran_seed**: rand seed for the simulation. If note specified, the first run sets a random seed and reports it for reproducing the same results. 
-- Carbon stocks are reported following many different methods and pools, to allow flexibility the next user inputs provide ways to customize what is reported and how. 
-    - **c_unit**: for AGB abd BGB, is the unit dry matter (DM) or carbon (C)?
-    - **c_fraction**: Carbon fraction to convert dry matter to carbon, if c_unit is "DM".
-    - **c_fraction_se**: standard error of the carbon fraction
-    - **c_fraction_pdf**: probability distribution function of the carbon fraction.
-    - **dg_pool**: If degradation is a ratio of intact forest Cstock, list of pools separated by coma to which the ratio applies.
-    - **dg_ext**: Extension used in the land use IDs for degraded land uses, for example if Evergreen forest is coded "EV" and degraded evergreen forest "EV_deg", dg_ext is "_deg". Necessary to automatically link intact forest carbon stock with its degradation ratio.
-- **ad_annual**: Is Activity Data reported annual or as a sum over the time period considered? (TRUE or FALSE).
-- **conf_level**: Confidence level (1 - alpha) for the uncertainty calculations.
+    3.  the simulations are aggregated to emissions per land use change, emissions and removals per REDD+ activity and time period, emissions reduction and increased removals for each monitoring period in the data.
 
+    4.  The improved estimates and their confidence intervals are reported as the median and quantiles of the simulations at each stage of the aggregation.
 
-#### Time periods (time_periods)
+6.  A sensitivity analysis is run to provide the respective contributions of REDD+ activities, activity data and emission factors, and time periods to the overall uncertainty.
 
-TBD
+<!-- new section -->
 
-#### land use transitions (AD_lu_transitions)
+## Resources
 
-TBD
+-   Online app: <https://openforis-shiny.shinyapps.io/mocaredd/>
 
-#### Carbon stocks (c_stocks)
+-   Online documentation: <https://openforis.github.io/mocaredd/>
 
-TBD
+-   Template guidelines: <https://openforis.github.io/mocaredd/articles/tuto-template.html>
 
+    -   Template simple (2 time periods, 12 land use changes classes, 2 carbon pools, inc. simulations in Excel for comparison): [Example2-with-sims.xlsx](https://docs.google.com/spreadsheets/d/19ySu_L4aI3tepq9FbYksbBa0yNi4s49c/edit?usp=sharing&ouid=104053208207168605668&rtpof=true&sd=true)
+
+    -   Template intermediate (4 time periods, 48 land use change classes, 4 carbon pools): [Example1-4pools.xlsx](https://docs.google.com/spreadsheets/d/1H9yfPCSfSELgW506OIHqS-15hJtTECHB/edit?usp=sharing&ouid=104053208207168605668&rtpof=true&sd=true)
+
+-   Github repository: <https://github.com/openforis/mocaredd>
+
+-   Contact form: [Contact us](https://forms.gle/YZy4xmviSMvUT8DJ9)
+
+<!-- new section -->
+
+## Planned features
+
+-   Improve the template guidelines with examples from real cases.
+-   Improve the sensitivity analysis.
+-   Develop the template tab and calculations for annual processes (removals, soil organic carbon).
+-   Develop the template and calculations for bootstrap from raw data.
+-   Add truncated PDFs support.
+-   Add IPCC tier 1 uncertainties propagation around the arithmetic means.
+
+```{=html}
+<!--
+
+Current features:
+
+-   Download a demo template with user inputs, time periods, land use change areas, carbon elements.
+-   User filled template submission to the tool,
+-   Verification of template integrity,
+-   Build calculation chain from input data to greenhouse gas emission reductions (ER)
+-   Calculate arithmetic mean ERs from input data
+-   Run simulations for all variables and reproduce calculation chain for each simulation
+-   Calculate the median of simulated ERs as a better estimate than the arithmetic mean
+-   Calculate uncertainty as quantiles of simulations at the chosen level
+-   Show medians and confidence intervals at intermediate level (REDD+ activities, activity data and emission factors)
+-   Show sansitivity analysis
+
+-->
+```

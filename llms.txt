@@ -53,12 +53,33 @@ the terminal:
 
     mocaredd::shiny_run_mocaredd()
 
+## Resources
+
+- Online app: <https://openforis-shiny.shinyapps.io/mocaredd/>
+
+- Online documentation: <https://openforis.github.io/mocaredd/>
+
+- Template guidelines:
+  <https://openforis.github.io/mocaredd/articles/tuto-template.html>
+
+  - Simple template (2 time periods, 12 land use changes classes, 2
+    carbon pools, inc. simulations in Excel for comparison):
+    [Example2-with-sims.xlsx](https://docs.google.com/spreadsheets/d/19ySu_L4aI3tepq9FbYksbBa0yNi4s49c/edit?usp=sharing&ouid=104053208207168605668&rtpof=true&sd=true)
+
+  - Intermediate template (4 time periods, 48 land use change classes, 4
+    carbon pools):
+    [Example1-4pools.xlsx](https://docs.google.com/spreadsheets/d/1H9yfPCSfSELgW506OIHqS-15hJtTECHB/edit?usp=sharing&ouid=104053208207168605668&rtpof=true&sd=true)
+
+- Github repository: <https://github.com/openforis/mocaredd>
+
+- Contact form: [Contact us](https://forms.gle/YZy4xmviSMvUT8DJ9)
+
 ## Step-by-Step app workflow
 
 1.  The app provides a template spreadsheet to download, either directly
-    in the app or here (see Resources below):
+    in the app or in the resources above.
 
-2.  The user fills in the spreadsheet 4 tabs:
+2.  The user fills in the spreadsheet’s 4 tabs:
 
     1.  **User inputs** (user_inputs). Helps offering great flexibility
         with a minimum number of parameters.
@@ -111,27 +132,6 @@ the terminal:
 6.  A sensitivity analysis is run to provide the respective
     contributions of REDD+ activities, activity data and emission
     factors, and time periods to the overall uncertainty.
-
-## Resources
-
-- Online app: <https://openforis-shiny.shinyapps.io/mocaredd/>
-
-- Online documentation: <https://openforis.github.io/mocaredd/>
-
-- Template guidelines:
-  <https://openforis.github.io/mocaredd/articles/tuto-template.html>
-
-  - Template simple (2 time periods, 12 land use changes classes, 2
-    carbon pools, inc. simulations in Excel for comparison):
-    [Example2-with-sims.xlsx](https://docs.google.com/spreadsheets/d/19ySu_L4aI3tepq9FbYksbBa0yNi4s49c/edit?usp=sharing&ouid=104053208207168605668&rtpof=true&sd=true)
-
-  - Template intermediate (4 time periods, 48 land use change classes, 4
-    carbon pools):
-    [Example1-4pools.xlsx](https://docs.google.com/spreadsheets/d/1H9yfPCSfSELgW506OIHqS-15hJtTECHB/edit?usp=sharing&ouid=104053208207168605668&rtpof=true&sd=true)
-
-- Github repository: <https://github.com/openforis/mocaredd>
-
-- Contact form: [Contact us](https://forms.gle/YZy4xmviSMvUT8DJ9)
 
 ## Planned features
 

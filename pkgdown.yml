@@ -3,7 +3,7 @@ pkgdown: 2.2.0.9000
 pkgdown_sha: 3cae9747776acb9a100d1035ce9f1ac27fcb9728
 articles:
   articles/tuto-template: tuto-template.html
-last_built: 2025-11-18T11:33Z
+last_built: 2025-11-18T11:40Z
 urls:
   reference: https://openforis.github.io/mocaredd/reference
   article: https://openforis.github.io/mocaredd/articles

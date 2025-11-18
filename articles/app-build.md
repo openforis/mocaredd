@@ -1,0 +1,84 @@
+# mocaredd - package creation steps
+
+``` r
+#library(mocaredd)
+```
+
+This page shows the different steps to create the package and the main
+function which is a shiny app, as well as how the app is loaded to
+shinyapp.io.
+
+Main source for info:
+
+- <https://r-pkgs.org/>
+- <https://rtask.thinkr.fr/building-a-shiny-app-as-a-package/>
+- <https://mastering-shiny.org/scaling-packaging.html>
+
+## Inital setup:
+
+1.  Create a Github repository.
+2.  Create a R project from Github (See <https://happygitwithr.com/> on
+    linking Github repos to Rstudio).
+3.  Create a package structure inside he project:
+    - `usethis::create_package("PATH/mocaredd")` with PATH the path to
+      the project folder set during the project creation.
+4.  Add vignettes and pkgdown setup:
+    - `usethis::use_pkgdown()`
+    - `usethis::use_vignette("app-generation", title = "MCredd - package creation steps")`
+5.  Add tests architecture:
+    - `usethis::use_testthat()`
+6.  Add license:
+    - `usethis::use_mit_license()`
+7.  Add R CMD check as Github action:
+    - `usethis::use_github_action()`
+    - More advanced workflow: `usethis::use_github_action("check-full")`
+8.  (optional) Add a fork repo in personnal github
+    - `usethis::create_from_github("openforis/mocaredd", fork = TRUE, destdir = "/Users/gaelsola/Github-repos")`
+
+## Barebone app
+
+Add dependencies to DESCRIPTION:
+
+``` r
+usethis::use_package("dplyr")
+```
+
+## Run all the time:
+
+``` r
+devtools::document()
+devtools::load_all()
+shiny_run_mocaredd()
+```
+
+``` r
+devtools::install()
+library(mocaredd)
+shiny_run_mocaredd()
+```
+
+## Checks
+
+``` r
+devtools::check()
+
+## Run one time 
+# usethis::use_testthat()
+# usethis::use_test("fct_combine_mcs_P")
+```
+
+## Build pkgdown website
+
+``` r
+#pkgdown::build_site() 
+usethis::use_pkgdown_github_pages()
+usethis::use_article("tuto-template.qmd")
+```
+
+## Install specific version
+
+``` r
+if (!require(remotes)) install.packages(remotes, dep = TRUE)
+remotes::install_github("openforis/mocaredd@v0.2.0")
+mocaredd::shiny_run_mocaredd()
+```

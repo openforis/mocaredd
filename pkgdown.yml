@@ -1,11 +1,11 @@
 pandoc: 3.1.11
-pkgdown: 2.1.3.9000
-pkgdown_sha: 1f2f7401ca3d9d1983eb705a2203c4c4abd4184d
+pkgdown: 2.2.0.9000
+pkgdown_sha: 3cae9747776acb9a100d1035ce9f1ac27fcb9728
 articles:
   app-build: app-build.html
   app-desc: app-desc.html
   articles/tuto-template: tuto-template.html
-last_built: 2025-10-09T21:17Z
+last_built: 2025-11-18T10:19Z
 urls:
   reference: https://openforis.github.io/mocaredd/reference
   article: https://openforis.github.io/mocaredd/articles

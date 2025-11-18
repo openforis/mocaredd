@@ -1,0 +1,127 @@
+# Guideline for building {mocaredd} workbook
+
+## Context
+
+In the context of greenhouse gas emission reductions from the forestry
+sector and REDD+, many countries and jurisdictions’ approach to
+uncertainty around estimates has focused on large spreadsheet tables
+that are near-impossible to navigate for anyone but their developers,
+reducing transparency and effectiveness of verification.
+
+Simplifying simulation-based uncertainty analysis of REDD+ greenhouse
+gas emission reductions may not be possible or desirable.
+Over-simplification could result in uncontrolled bias or misrepresent
+the actual uncertainty around volumes of emission reductions.
+
+The {mocaredd} tool aims at solving two critical issues with
+over-complicated spreadsheets-based calculations:
+
+1.  Split the information into several tables with keys to merge data
+    for calculations. Inspired for database management systems for their
+    efficiency and simplification of data structure.
+2.  Process the simulations with a statistical language rather that
+    spreadsheet tool, again for efficiency purpose. The authors also
+    believe that once the carbon accounting calculation chain is well
+    understood by parties, adding the simulations doesn’t need to be
+    visually highlighted, and are safer run programmatically than on
+    spreadsheets.
+
+To do so, {mocaredd} is built as a R package that provides calculation
+functions and a XLSX workbook that contain the initial data in a
+structured and easy to navigate way.
+
+This guideline provides instructions on how to fill in the template
+workbook to ensure all matrices of land use change are reported, with
+all their associated carbon elements, and for all the reported time
+periods.
+
+## 1 Overview of the template
+
+The template is built around four tables to encompass all the
+information necessary to:
+
+1.  re-construct the arithmetic means (not based on simulations) of all
+    emissions and removals and emission reductions (ERs).
+2.  run simulations for all the input variables of areas and carbon
+    elements,
+3.  Get simulation-based emission reductions with their associated
+    uncertainties.
+4.  Run sensitivity analysis to highlight the main contributors to the
+    ERs uncertainty.
+
+These four tables are designed to describe separately:
+
+1.  User inputs to bring flexibility to the calculation algorithm. For
+    example are the land use change expressed in hectares per year or in
+    hectares, or are the carbon stock expressed in tons of dry matter or
+    tons of carbon.
+2.  Time periods for the different datasets used in the calculations and
+    with REDD+ period do they belong to, reference or monitoring.
+3.  Areas of land use change, for each time period and each combination
+    of land use, what is the area and it’s standard error.
+4.  Carbon elements, combining carbon pools and other carbon related
+    elements such as carbon fraction, or degradation ratios if expressed
+    as a percentage of their intact land use.
+
+Detailed information for each table is presented in the following
+sections.
+
+## 2 User inputs
+
+This table contains a few parameters to allow the tool to handle as many
+configurations as possible. This is were users specify the number of
+simulation iterations, if there is a random seed to reproduce the same
+numbers and options regarding degradation, units and rounding digits.
+
+| Col. name    | Label                     | Type                         | Example  | Description                                                                                                                         |
+|--------------|---------------------------|------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------|
+| trunc_pdf    | use truncated PDFs?       | TRUE/FALSE                   | FALSE    | Specify if truncated PDFs should be used or not.                                                                                    |
+| n_iter       | Number of iterations      | integer                      | 10000    | Specify the number of simulations to run for each PDF.                                                                              |
+| ran_seed     | Random seed               | integer or NULL              | 31       | If NULL, the tool generates a random seed each time. Set a seed number to fix the random number and make the analysis reproducible. |
+| dg_ext       | Degradation extension     | text                         | “\_deg”  | Suffix used to differentiate degraded and intact versions of the same land use. Required if degradation is a carbon ratio.          |
+| dg_pool      | Degradation pools         | text, comma separated        | AGB, BGB | List the pools affected by degradation (experimental, should always be AGB, BGB, DW)                                                |
+| ad_annual    | Is AD annual              | TRUE/FALSE                   | TRUE     | Specify if the Activity Data is reported in hectares (ha) or ha/year                                                                |
+| conf_level   | Confidence level $\alpha$ | numeric $\rbrack 0,1\lbrack$ | 0.9      | Confidence level of the uncertainty. The quantiles representing the upper ad lower bound of the confidence interval.                |
+| round_digits | Rounding number of digits | integer                      | 3        | Number of digits to round calculations.                                                                                             |
+
+## 3 Time periods
+
+This table is used to specify the time periods of the different datasets
+used for activity data and emission factors. The reference and
+monitoring periods can be build for several time periods. For example:
+
+- T1: 2006-2008, Reference Period,
+
+- T2: 2009-2010, Reference Period,
+
+- T3: 2011, Monitoring Period 1
+
+- T4: 2012, Monitoring Period 2
+
+- T5: 2013, Monitoring Period 2.
+
+In this case, the reference period’s baseline emission level is
+constructed from 2 time periods T1 and T2, and there are 2 monitoring
+periods, one build from T3 for one year, and one build from T4 adn T5
+for two years.
+
+To allow the script to adjust to different scenario, the template
+requires a time period ID, the start and end years and a reference of
+monitoring code (REF is unique, but MON can be subdivided into MON1,
+MON2, etc.).
+
+| Col. name   | Label          | Type    | Example | Description                                                                                                                          |
+|-------------|----------------|---------|---------|--------------------------------------------------------------------------------------------------------------------------------------|
+| period_no   | Time period ID | text    | T1      | ID of the time period                                                                                                                |
+| year_start  | Start year     | integer | 2006    | What is the start year of the time period                                                                                            |
+| year_end    | End year       | integer | 2010    | What is the end year of the time period                                                                                              |
+| period_type | period type ID | text    | REF     | Is the time period a reference period (REF) or monitoring (MON). And is it a subdivision of the monitoring period (MON1, MON2, etc.) |
+
+NOTE: In case a time period doesn’t start for the beginning of the
+calendar year, adjust the year to match the duration. For example a time
+period of 1 year between 1st June 2005 to 31 May 2006 would have a start
+and end year of 2005 to be considered a one year period for the tool.
+
+## 4 Land use change areas
+
+## 5 Carbon elements

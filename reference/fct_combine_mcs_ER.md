@@ -1,0 +1,66 @@
+# Combine MCS of emissions from Reference and monitoring period into emission reductions
+
+Depending on how the period is defined and if the data are annualized or
+not, calculate the Emission Level for a reference or monitoring period
+for each simulation.
+
+## Usage
+
+``` r
+fct_combine_mcs_ER(.sim_ref, .sim_mon, .ad_annual)
+```
+
+## Arguments
+
+- .sim_ref:
+
+  simulation aggregated to reference period, output from
+  fct_combine_mcs_P()
+
+- .sim_mon:
+
+  simulation aggregated to monitoring period(s), output from
+  fct_combine_mcs_P()
+
+- .ad_annual:
+
+  TRUE or FALSE, is the activity data annualized or not.
+
+## Value
+
+A tibble with simulations at the final estimate per type of period.
+
+## Examples
+
+``` r
+library(mocaredd)
+library(readxl)
+library(dplyr)
+
+path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+
+cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
+ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
+usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
+time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
+
+time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
+
+sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .usr = usr)
+
+sim_REF <- fct_combine_mcs_P(
+  .data = sim_trans,
+  .time = time_clean,
+  .period_type = "REF",
+  .ad_annual = usr$ad_annual
+)
+
+sim_MON <- fct_combine_mcs_P(
+  .data = sim_trans,
+  .time = time_clean,
+  .period_type = "MON",
+  .ad_annual = usr$ad_annual
+)
+
+## !!! SIM MON and ER to be done
+```

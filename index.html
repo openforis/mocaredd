@@ -53,137 +53,127 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9">
-<p><strong>THIS TOOL IS UNDER DEVELOPMENT</strong> <strong>Current development version 0.3.0</strong></p>
-<p><i> Features:</i></p>
-<ul>
-<li>Download a demo template with user inputs, time periods, land use change areas, carbon elements.</li>
-<li>User filled template submission to the tool,</li>
-<li>Verification of template integrity,</li>
-<li>Build calculation chain from input data to greenhouse gas emission reductions (ER)</li>
-<li>Calculate arithmetic mean ERs from input data</li>
-<li>Run simulations for all variables and reproduce calculation chain for each simulation</li>
-<li>Calculate the median of simulated ERs as a better estimate than the arithmetic mean</li>
-<li>Calculate uncertainty as quantiles of simulations at the chosen level</li>
-<li>Show medians and confidence intervals at intermediate level (REDD+ activities, activity data and emission factors)</li>
-</ul>
-<p>Planned features:</p>
-<ul>
-<li>Tutorial on filling in the template with examples for various country circumstances</li>
-<li>Additional template tab and calculations for annual processes (removals, soil organic carbon degradation)</li>
-<li>Sensitivity analysis for activity data vs emission factors, REDD+ activities, different land use changes </li>
-</ul>
-<div class="section level1">
+  <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="mocaredd-monte-carlo-simulations-for-redd-uncertainty-analysis">{mocaredd}: Monte Carlo Simulations for REDD+ uncertainty analysis<a class="anchor" aria-label="anchor" href="#mocaredd-monte-carlo-simulations-for-redd-uncertainty-analysis"></a>
 </h1></div>
-<p>Contains functions and a shiny app for (1) setting up, (2) running Monte Carlo Simulations and (3) producing improved estimates of and confidence intervals around greenhouse gas emissions and emission reductions from the forestry sector.</p>
-<p>The apps takes an input XLSX file following a specific template meant to harmonize reporting of areas of land use transitions and associated carbon stocks. It then provides simulations, medians, percentage uncertainties and confidence intervals at various stages of aggregation from emissions related land use transitions to REDD+ activities and emission reductions between reference and monitoring periods.</p>
-<p> </p>
-<div class="section level3">
-<h3 id="run-the-app">Run the app<a class="anchor" aria-label="anchor" href="#run-the-app"></a>
-</h3>
+<!-- badges: start -->
+
+<!-- badges: end -->
 <div class="section level4">
-<h4 id="online-experimental">Online (experimental)<a class="anchor" aria-label="anchor" href="#online-experimental"></a>
+<h4 id="mocaredd-is-a-free-and-opensource-application-that-aims-at-making-simulation-based-uncertainty-calculations-for-redd-easier-to-process-report-and-verify">{mocaredd} is a free and opensource application that aims at making simulation-based uncertainty calculations for REDD+ easier to process, report and verify.<a class="anchor" aria-label="anchor" href="#mocaredd-is-a-free-and-opensource-application-that-aims-at-making-simulation-based-uncertainty-calculations-for-redd-easier-to-process-report-and-verify"></a>
 </h4>
-<p><a href="https://gaelsola.shinyapps.io/mocaredd/" class="external-link uri">https://gaelsola.shinyapps.io/mocaredd/</a></p>
+<p>It works by combining the strengths of spreadsheet tools (XLSX) for templating and a statistical language (R) for running the simulations, aggregating results and producing helpful visuals.</p>
+<!-- new section -->
 </div>
-<div class="section level4">
-<h4 id="locally-on-your-computer">Locally on your computer.<a class="anchor" aria-label="anchor" href="#locally-on-your-computer"></a>
-</h4>
-<p>Although a bit ore cumbersome, the installation of R and Rstudio is now straightforward for the mast majority of computers.</p>
-<p>The app require R version 3.4 minimum. RStudio is recommended as Integrated Development Environment. With Windows machines, Rtools should also be installed:</p>
+<div class="section level2">
+<h2 id="what-for">What for?<a class="anchor" aria-label="anchor" href="#what-for"></a>
+</h2>
+<p>In the context of the REDD+ mechanism (Reducing emission from Deforestation and forest Degradation “plus”), countries can receive result-based payments for emission reductions and removal increases of greenhouse gas (GHG) from the forestry sector. Emission reductions are estimated by quantifying the amount of greenhouse gas emissions between a reference level (i.e baseline) and a monitorig period. These estimates come with a level of uncertainty due to the sampling methods and models used to generate the estimations.</p>
+<p>High integrity REDD+ standards, that set rules for the quantification of emissions and removals, and their uncertainties, increasingly require the use of Monte Carlo simulations for REDD+ uncertainties. These simulations are often run in spreadsheet tools, but the lack of structure and inherent disadvantage of spreadsheets for this task (error prone, difficulty to handle large amount of data) is becoming a barrier for the quality, reproducibility and verification of uncertainties based on simulations.</p>
+<p>{mocaredd} provides a template for organizing data, and a tool that takes the data, runs Monte Carlo Simulations and produces improved estimates of and confidence intervals around greenhouse gas emissions and emission reductions from the forestry sector (REDD+).</p>
+<!-- new section -->
+</div>
+<div class="section level2">
+<h2 id="how-to-run-the-application-">How to run the application ?<a class="anchor" aria-label="anchor" href="#how-to-run-the-application-"></a>
+</h2>
+<p>The application is available online (read-to-use) at: <a href="https://openforis-shiny.shinyapps.io/mocaredd/" class="external-link uri">https://openforis-shiny.shinyapps.io/mocaredd/</a></p>
+<p>It can also be installed for offline use (require installing R and Rstudio, may require administrator permission). The app require R version 3.4 minimum. RStudio is recommended as Integrated Development Environment. With Windows machines, Rtools should also be installed:</p>
 <ul>
 <li><a href="">https://cloud.r-project.org/</a></li>
 <li><a href="">https://posit.co/download/rstudio-desktop/</a></li>
 <li><a href="">https://cran.r-project.org/bin/windows/Rtools/</a></li>
 </ul>
-<p>Install the package and run the app:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(remotes)) <span class="fu">install.packages</span>(<span class="st">"remotes"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(mocaredd)) remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"openforis/mocaredd@v0.3.0"</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>mocaredd<span class="sc">::</span><span class="fu">shiny_run_mocaredd</span>()</span></code></pre></div>
+<p>R and Rstudio are installed, open R studio and run the folloing code in the terminal:</p>
+<pre><code><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org" class="external-link">remotes</a></span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/openforis/mocaredd" class="external-link">mocaredd</a></span><span class="op">)</span><span class="op">)</span> <span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"openforis/mocaredd@v1.0"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">mocaredd</span><span class="fu">::</span><span class="fu"><a href="reference/shiny_run_mocaredd.html">shiny_run_mocaredd</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
+<!-- new section -->
 </div>
-</div>
-<div class="section level3">
-<h3 id="workflow">Workflow<a class="anchor" aria-label="anchor" href="#workflow"></a>
-</h3>
+<div class="section level2">
+<h2 id="step-by-step-app-workflow">Step-by-Step app workflow<a class="anchor" aria-label="anchor" href="#step-by-step-app-workflow"></a>
+</h2>
 <ol style="list-style-type: decimal">
-<li>Input XSLX file following provided template.</li>
-<li>Checks are run to ensure the entity codes are unique and matching between tables.</li>
-<li>Simulations are produced and results can be seen as forest plots, simulations densities and comparison between simulations and arithmetic means for the final emission reductions.</li>
-<li>Sensitivity analysis shows the impact of AE vs EF, REDD+ activities, time periods.</li>
-</ol>
-</div>
-<div class="section level3">
-<h3 id="calculation-steps">Calculation steps<a class="anchor" aria-label="anchor" href="#calculation-steps"></a>
-</h3>
+<li><p>The app provides a template spreadsheet to download, either directly in the app or here (see Resources below):</p></li>
+<li>
+<p>The user fills in the spreadsheet 4 tabs:</p>
 <ol style="list-style-type: decimal">
-<li>Check that the template is followed correctly and that the tables are correctly linked (keys link time to land use changes and land use changes to carbon stock elements)</li>
-<li>Generate simulations for all probability distribution functions</li>
-<li>Calculate carbon stocks based on carbon stock elements reported.</li>
-<li>Calculate Emission factors for each land use change and time period</li>
-<li>Calculate Emissions from IPCC formula Eij = EFij x ADij for each land use change i and time period j.</li>
-<li>Aggregate Emissions per time period</li>
-<li>Aggregate Emissions for the reference and monitoring periods</li>
-<li>Calculate Emission Reductions as the difference between annualized emissions during the reference period and annualized emissions during each of the monitoring periods.</li>
+<li><p><strong>User inputs</strong> (user_inputs). Helps offering great flexibility with a minimum number of parameters.</p></li>
+<li><p><strong>Time periods</strong> (time_periods). Describes the times periods covered by the data and how they are combined into reference or reporting.</p></li>
+<li><p><strong>Land use transitions</strong> (AD_lu_transitions). Describes the probability density functions (PDFs) for the land use change areas for each time period</p></li>
+<li><p><strong>Carbon stocks</strong> (c_stocks). Contains the probability density functions for all the carbon elements necessary to associate emission or removal factors to all land use changes and time periods.</p></li>
 </ol>
-</div>
-<div class="section level3">
-<h3 id="template">Template<a class="anchor" aria-label="anchor" href="#template"></a>
-</h3>
-<p>(ADD Link to a template from github here)</p>
-<p>The template includes 4 tabs:</p>
-<div class="section level4">
-<h4 id="user-inputs-user_inputs">User inputs (user_inputs)<a class="anchor" aria-label="anchor" href="#user-inputs-user_inputs"></a>
-</h4>
-<p>They help offering great flexibility with a minimum number of parameters.</p>
-<ul>
+</li>
+<li><p>The user upload the filled template into the tool.</p></li>
 <li>
-<strong>trunc_pdf</strong>: use truncated PDF to avoid negative simulated values were illogical (for ex. areas.). (Note for v2.0, currently only works for normal distributions).</li>
-<li>
-<strong>n_iter</strong>: number of iterations. Most standards require 10,000 simulations.</li>
-<li>
-<strong>ran_seed</strong>: rand seed for the simulation. If note specified, the first run sets a random seed and reports it for reproducing the same results.</li>
-<li>Carbon stocks are reported following many different methods and pools, to allow flexibility the next user inputs provide ways to customize what is reported and how.
-<ul>
-<li>
-<strong>c_unit</strong>: for AGB abd BGB, is the unit dry matter (DM) or carbon (C)?</li>
-<li>
-<strong>c_fraction</strong>: Carbon fraction to convert dry matter to carbon, if c_unit is “DM”.</li>
-<li>
-<strong>c_fraction_se</strong>: standard error of the carbon fraction</li>
-<li>
-<strong>c_fraction_pdf</strong>: probability distribution function of the carbon fraction.</li>
-<li>
-<strong>dg_pool</strong>: If degradation is a ratio of intact forest Cstock, list of pools separated by coma to which the ratio applies.</li>
-<li>
-<strong>dg_ext</strong>: Extension used in the land use IDs for degraded land uses, for example if Evergreen forest is coded “EV” and degraded evergreen forest “EV_deg”, dg_ext is “_deg”. Necessary to automatically link intact forest carbon stock with its degradation ratio.</li>
-</ul>
+<p>The app run checks:</p>
+<ol style="list-style-type: decimal">
+<li><p>verifies that all connections between time periods, land use changes and carbon elements are correctly entered,</p></li>
+<li><p>provides an overview of the data (number of time periods, carbon pools, method for forest degradation, etc.),</p></li>
+<li><p>calculates the arithmetic mean of aggregated emission reductions (no simulation yet).</p></li>
+<li><p>makes land use change matrices in ha.</p></li>
+</ol>
 </li>
 <li>
-<strong>ad_annual</strong>: Is Activity Data reported annual or as a sum over the time period considered? (TRUE or FALSE).</li>
+<p>If all checks are passed, the app runs the simulations:</p>
+<ol style="list-style-type: decimal">
+<li><p>for each PDF, the determined number of simulations is randomly generated, then</p></li>
+<li><p>the carbon accounting chain of calculations is created based on the data uploaded,</p></li>
+<li><p>the simulations are aggregated to emissions per land use change, emissions and removals per REDD+ activity and time period, emissions reduction and increased removals for each monitoring period in the data.</p></li>
+<li><p>The improved estimates and their confidence intervals are reported as the median and quantiles of the simulations at each stage of the aggregation.</p></li>
+</ol>
+</li>
+<li><p>A sensitivity analysis is run to provide the respective contributions of REDD+ activities, activity data and emission factors, and time periods to the overall uncertainty.</p></li>
+</ol>
+<!-- new section -->
+</div>
+<div class="section level2">
+<h2 id="resources">Resources<a class="anchor" aria-label="anchor" href="#resources"></a>
+</h2>
+<ul>
+<li><p>Online app: <a href="https://openforis-shiny.shinyapps.io/mocaredd/" class="external-link uri">https://openforis-shiny.shinyapps.io/mocaredd/</a></p></li>
+<li><p>Online documentation: <a href="https://openforis.github.io/mocaredd/" class="uri">https://openforis.github.io/mocaredd/</a></p></li>
 <li>
-<strong>conf_level</strong>: Confidence level (1 - alpha) for the uncertainty calculations.</li>
+<p>Template guidelines: <a href="https://openforis.github.io/mocaredd/articles/tuto-template.html" class="uri">https://openforis.github.io/mocaredd/articles/tuto-template.html</a></p>
+<ul>
+<li><p>Template simple (2 time periods, 12 land use changes classes, 2 carbon pools, inc. simulations in Excel for comparison): <a href="https://docs.google.com/spreadsheets/d/19ySu_L4aI3tepq9FbYksbBa0yNi4s49c/edit?usp=sharing&amp;ouid=104053208207168605668&amp;rtpof=true&amp;sd=true" class="external-link">Example2-with-sims.xlsx</a></p></li>
+<li><p>Template intermediate (4 time periods, 48 land use change classes, 4 carbon pools): <a href="https://docs.google.com/spreadsheets/d/1H9yfPCSfSELgW506OIHqS-15hJtTECHB/edit?usp=sharing&amp;ouid=104053208207168605668&amp;rtpof=true&amp;sd=true" class="external-link">Example1-4pools.xlsx</a></p></li>
 </ul>
+</li>
+<li><p>Github repository: <a href="https://github.com/openforis/mocaredd" class="external-link uri">https://github.com/openforis/mocaredd</a></p></li>
+<li><p>Contact form: <a href="https://forms.gle/YZy4xmviSMvUT8DJ9" class="external-link">Contact us</a></p></li>
+</ul>
+<!-- new section -->
 </div>
-<div class="section level4">
-<h4 id="time-periods-time_periods">Time periods (time_periods)<a class="anchor" aria-label="anchor" href="#time-periods-time_periods"></a>
-</h4>
-<p>TBD</p>
-</div>
-<div class="section level4">
-<h4 id="land-use-transitions-ad_lu_transitions">land use transitions (AD_lu_transitions)<a class="anchor" aria-label="anchor" href="#land-use-transitions-ad_lu_transitions"></a>
-</h4>
-<p>TBD</p>
-</div>
-<div class="section level4">
-<h4 id="carbon-stocks-c_stocks">Carbon stocks (c_stocks)<a class="anchor" aria-label="anchor" href="#carbon-stocks-c_stocks"></a>
-</h4>
-<p>TBD</p>
-</div>
-</div>
-</div>
+<div class="section level2">
+<h2 id="planned-features">Planned features<a class="anchor" aria-label="anchor" href="#planned-features"></a>
+</h2>
+<ul>
+<li>Improve the template guidelines with examples from real cases.</li>
+<li>Improve the sensitivity analysis.</li>
+<li>Develop the template tab and calculations for annual processes (removals, soil organic carbon).</li>
+<li>Develop the template and calculations for bootstrap from raw data.</li>
+<li>Add truncated PDFs support.</li>
+<li>Add IPCC tier 1 uncertainties propagation around the arithmetic means.</li>
+</ul>
+<!--
 
+Current features:
+
+-   Download a demo template with user inputs, time periods, land use change areas, carbon elements.
+-   User filled template submission to the tool,
+-   Verification of template integrity,
+-   Build calculation chain from input data to greenhouse gas emission reductions (ER)
+-   Calculate arithmetic mean ERs from input data
+-   Run simulations for all variables and reproduce calculation chain for each simulation
+-   Calculate the median of simulated ERs as a better estimate than the arithmetic mean
+-   Calculate uncertainty as quantiles of simulations at the chosen level
+-   Show medians and confidence intervals at intermediate level (REDD+ activities, activity data and emission factors)
+-   Show sansitivity analysis
+
+-->
+</div>
+</div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
@@ -234,7 +224,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.9000.</p>
 </div>
 
     </footer>

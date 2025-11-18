@@ -94,6 +94,17 @@ shiny_run_mocaredd <- function(...) {
   });
   "
 
+  ## + Javascript custom handler for PLAUSIBLE =================================
+  js_plausible_event <- "
+    window.addEventListener('shiny:connected', function() {
+      Shiny.addCustomMessageHandler('plausible', function(data) {
+        if (window.plausible) {
+          window.plausible(data.event);        // send event
+        }
+      });
+    });
+    "
+
 
   ## + UI Elements =============================================================
 
@@ -134,6 +145,16 @@ shiny_run_mocaredd <- function(...) {
     shinyjs::useShinyjs(),
     shinyWidgets::useSweetAlert(),
     shiny.i18n::usei18n(i18n),
+    tags$head(
+      # Load Plausible tracker
+      tags$script(
+        async = NA, defer = NA,
+        src = "https://plausible.io/js/script.js",
+        `data-domain` = "openforis-shiny.shinyapps.io/mocaredd"
+      ),
+      # Custom event handler for Shiny + Plausible
+      tags$script(HTML(js_plausible_event))
+    ),
     tags$head(tags$script(HTML(js_activate_tab))),
     tags$head(tags$link(rel = "stylesheet", type = "text/css", href = "assets/style.css")),
     htmltools::htmlDependency(

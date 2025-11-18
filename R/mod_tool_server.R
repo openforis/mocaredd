@@ -375,6 +375,9 @@ mod_tool_server <- function(id, rv) {
 
     observeEvent(input$btn_run_mcs, {
 
+      ## PLAUSIBLE - Send a Plausible event named "run_mcs" ----
+      session$sendCustomMessage("plausible", list(event = "run_mcs"))
+
       ## + 3.1.1 Move to tabset RES ----
       # updateTabsetPanel(
       #   session  = session,

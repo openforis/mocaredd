@@ -35,7 +35,8 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/tuto-template.html">Guideline for building {mocaredd} workbook</a></li>
+<li><a class="dropdown-item" href="articles/app-features.html">Application workflow and features development</a></li>
+    <li><a class="dropdown-item" href="articles/tuto-template.html">Guideline for building {mocaredd} workbook</a></li>
   </ul>
 </li>
       </ul>
@@ -73,7 +74,17 @@
 <div class="section level2">
 <h2 id="how-to-run-the-application-">How to run the application ?<a class="anchor" aria-label="anchor" href="#how-to-run-the-application-"></a>
 </h2>
-<p>The application is available online (read-to-use) at: <a href="https://openforis-shiny.shinyapps.io/mocaredd/" class="external-link uri">https://openforis-shiny.shinyapps.io/mocaredd/</a></p>
+<div class="section level3">
+<h3 id="online-app">Online app<a class="anchor" aria-label="anchor" href="#online-app"></a>
+</h3>
+<p>The application is available online (read-to-use) at:</p>
+<ul>
+<li><a href="https://openforis-shiny.shinyapps.io/mocaredd/" class="external-link uri">https://openforis-shiny.shinyapps.io/mocaredd/</a></li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="offline--local-installation">offline / local installation<a class="anchor" aria-label="anchor" href="#offline--local-installation"></a>
+</h3>
 <p>It can also be installed for offline use (require installing R and Rstudio, may require administrator permission). The app require R version 3.4 minimum. RStudio is recommended as Integrated Development Environment. With Windows machines, Rtools should also be installed:</p>
 <ul>
 <li><a href="">https://cloud.r-project.org/</a></li>
@@ -86,6 +97,7 @@
 <span></span>
 <span><span class="fu">mocaredd</span><span class="fu">::</span><span class="fu"><a href="reference/shiny_run_mocaredd.html">shiny_run_mocaredd</a></span><span class="op">(</span><span class="op">)</span></span></code></pre>
 <!-- new section -->
+</div>
 </div>
 <div class="section level2">
 <h2 id="resources">Resources<a class="anchor" aria-label="anchor" href="#resources"></a>
@@ -103,72 +115,6 @@
 <li><p>Github repository: <a href="https://github.com/openforis/mocaredd" class="external-link uri">https://github.com/openforis/mocaredd</a></p></li>
 <li><p>Contact form: <a href="https://forms.gle/YZy4xmviSMvUT8DJ9" class="external-link">Contact us</a></p></li>
 </ul>
-<!-- new section -->
-</div>
-<div class="section level2">
-<h2 id="step-by-step-app-workflow">Step-by-Step app workflow<a class="anchor" aria-label="anchor" href="#step-by-step-app-workflow"></a>
-</h2>
-<ol style="list-style-type: decimal">
-<li><p>The app provides a template spreadsheet to download, either directly in the app or in the resources above.</p></li>
-<li>
-<p>The user fills in the spreadsheet’s 4 tabs:</p>
-<ol style="list-style-type: decimal">
-<li><p><strong>User inputs</strong> (user_inputs). Helps offering great flexibility with a minimum number of parameters.</p></li>
-<li><p><strong>Time periods</strong> (time_periods). Describes the times periods covered by the data and how they are combined into reference or reporting.</p></li>
-<li><p><strong>Land use transitions</strong> (AD_lu_transitions). Describes the probability density functions (PDFs) for the land use change areas for each time period</p></li>
-<li><p><strong>Carbon stocks</strong> (c_stocks). Contains the probability density functions for all the carbon elements necessary to associate emission or removal factors to all land use changes and time periods.</p></li>
-</ol>
-</li>
-<li><p>The user upload the filled template into the tool.</p></li>
-<li>
-<p>The app run checks:</p>
-<ol style="list-style-type: decimal">
-<li><p>verifies that all connections between time periods, land use changes and carbon elements are correctly entered,</p></li>
-<li><p>provides an overview of the data (number of time periods, carbon pools, method for forest degradation, etc.),</p></li>
-<li><p>calculates the arithmetic mean of aggregated emission reductions (no simulation yet).</p></li>
-<li><p>makes land use change matrices in ha.</p></li>
-</ol>
-</li>
-<li>
-<p>If all checks are passed, the app runs the simulations:</p>
-<ol style="list-style-type: decimal">
-<li><p>for each PDF, the determined number of simulations is randomly generated, then</p></li>
-<li><p>the carbon accounting chain of calculations is created based on the data uploaded,</p></li>
-<li><p>the simulations are aggregated to emissions per land use change, emissions and removals per REDD+ activity and time period, emissions reduction and increased removals for each monitoring period in the data.</p></li>
-<li><p>The improved estimates and their confidence intervals are reported as the median and quantiles of the simulations at each stage of the aggregation.</p></li>
-</ol>
-</li>
-<li><p>A sensitivity analysis is run to provide the respective contributions of REDD+ activities, activity data and emission factors, and time periods to the overall uncertainty.</p></li>
-</ol>
-<!-- new section -->
-</div>
-<div class="section level2">
-<h2 id="planned-features">Planned features<a class="anchor" aria-label="anchor" href="#planned-features"></a>
-</h2>
-<ul>
-<li>Improve the template guidelines with examples from real cases.</li>
-<li>Improve the sensitivity analysis.</li>
-<li>Develop the template tab and calculations for annual processes (removals, soil organic carbon).</li>
-<li>Develop the template and calculations for bootstrap from raw data.</li>
-<li>Add truncated PDFs support.</li>
-<li>Add IPCC tier 1 uncertainties propagation around the arithmetic means.</li>
-</ul>
-<!--
-
-Current features:
-
--   Download a demo template with user inputs, time periods, land use change areas, carbon elements.
--   User filled template submission to the tool,
--   Verification of template integrity,
--   Build calculation chain from input data to greenhouse gas emission reductions (ER)
--   Calculate arithmetic mean ERs from input data
--   Run simulations for all variables and reproduce calculation chain for each simulation
--   Calculate the median of simulated ERs as a better estimate than the arithmetic mean
--   Calculate uncertainty as quantiles of simulations at the chosen level
--   Show medians and confidence intervals at intermediate level (REDD+ activities, activity data and emission factors)
--   Show sansitivity analysis
-
--->
 </div>
 </div>
 

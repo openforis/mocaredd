@@ -112,9 +112,10 @@ mod_home_UI <- function(id, i18n){
     br(),
 
     div(
-    "{mocaredd}  v1.0. Development supported by FAO and the Aim4Forest Programme",
-    style = "font-size: large; text-align: right; font-style: italic;font-family: serif;"
-    )
+      "{mocaredd}  current version: v1.0.", br(),
+      "Development supported by FAO and the Aim4Forest Programme",
+      style = "font-style: italic;"
+    ),
 
   ) ## END tagList
 

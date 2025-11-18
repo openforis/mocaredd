@@ -73,6 +73,7 @@ format:
 
 -   Add IPCC tier 1 uncertainties propagation around the arithmetic means.
 
+```{=html}
 <!--
 
 Current features:
@@ -89,3 +90,4 @@ Current features:
 -   Show sansitivity analysis
 
 -->
+```

@@ -147,10 +147,11 @@ shiny_run_mocaredd <- function(...) {
     shinyjs::useShinyjs(),
     shinyWidgets::useSweetAlert(),
     shiny.i18n::usei18n(i18n),
+    tags$head(includeHTML("plausible.html")),
     tags$head(
-      # Load Plausible tracker
-      tags$script(src="plausible.js"),
-      # Custom event handler for Shiny + Plausible
+      ## Load Plausible tracker
+      # tags$script(src="plausible.js"),
+      ## Custom event handler for Shiny + Plausible
       tags$script(HTML(js_plausible_event))
     ),
     tags$head(tags$script(HTML(js_activate_tab))),

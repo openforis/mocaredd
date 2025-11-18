@@ -1,12 +1,14 @@
-# {mocaredd}: Monte Carlo Simulations for REDD+ uncertainty analysis
-
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/openforis/mocaredd/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/openforis/mocaredd/actions/workflows/R-CMD-check.yaml)
 
 <!-- badges: end -->
 
-#### {mocaredd} is a free and opensource application that aims at making simulation-based uncertainty calculations for REDD+ easier to process, report and verify.
+# Welcome to {mocaredd} v1.0!
+
+{mocaredd} = Monte Carlo Simulations for REDD+ uncertainty analysis
+
+### {mocaredd} is a free and opensource application that aims at making simulation-based uncertainty calculations for REDD+ easier to process, report and verify.
 
 It works by combining the strengths of spreadsheet tools (XLSX) for templating and a statistical language (R) for running the simulations, aggregating results and producing helpful visuals.
 

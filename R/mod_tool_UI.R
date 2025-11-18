@@ -354,7 +354,7 @@ mod_tool_UI <- function(id, i18n){
 
       nav_panel(
         title = i18n$t("Check your data"),
-        value = ns("check_panel"),
+        value = "check_tab",
         icon = icon("circle-check"),
         #submod_check_UI("tab_check", i18n = i18n)
         ## Initial msg
@@ -372,7 +372,7 @@ mod_tool_UI <- function(id, i18n){
 
       nav_panel(
         title = i18n$t("Results"),
-        value = ns("res_panel"),
+        value = "res_tab",
         icon = icon("chart-simple"),
         #submod_res_UI("tab_res", i18n = i18n)
         div_res_init,
@@ -387,7 +387,7 @@ mod_tool_UI <- function(id, i18n){
 
       nav_panel(
         title = i18n$t("Sensitivity"),
-        value = ns("sensi_panel"),
+        value = "sensi_tab",
         icon = icon("magnifying-glass"),
         div_trans_forestplot
       )

@@ -124,8 +124,10 @@ shiny_run_mocaredd <- function(...) {
   language_selector <- shinyWidgets::pickerInput(
     inputId = "language",
     label = NULL,
-    choices = c("en", "fr", "sp"),
-    choicesOpt =  list(content = c('<i class="fi fi-gb"></i> EN', '<i class="fi fi-fr"></i> FR', '<i class="fi fi-es"></i> ES')),
+    choices = c("en"),
+    choicesOpt =  list(content = c('<i class="fi fi-gb"></i> EN')),
+    # choices = c("en", "fr", "sp"),
+    # choicesOpt =  list(content = c('<i class="fi fi-gb"></i> EN', '<i class="fi fi-fr"></i> FR', '<i class="fi fi-es"></i> ES')),
     selected = "en",
     width = "auto",
     option = shinyWidgets::pickerOptions(style = "z-index:10000;")
@@ -206,12 +208,12 @@ shiny_run_mocaredd <- function(...) {
         mod_tool_UI("tab_tool", i18n = i18n)
       ),
 
-      nav_panel(
-        title = i18n$t("About"),
-        value = "about",
-       #icon = icon("info"),
-        mod_about_UI("tab_about", i18n = i18n)
-      ),
+      # nav_panel(
+      #   title = i18n$t("About"),
+      #   value = "about",
+      #  #icon = icon("info"),
+      #   mod_about_UI("tab_about", i18n = i18n)
+      # ),
 
       nav_item(language_selector)
 

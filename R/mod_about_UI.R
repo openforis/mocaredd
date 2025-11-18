@@ -48,7 +48,7 @@ mod_about_UI <- function(id, i18n){
 
     br(),
 
-    "Workflow, package list, Link to Arena"
+    #"Workflow, package list, Link to Arena"
 
   ) ## END tagList
 

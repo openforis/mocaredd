@@ -13,7 +13,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/openforis/mocaredd/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/openforis/mocaredd/blob/v1.0/DESCRIPTION)
 
 Sola G, Garcia Perez J (2025). *mocaredd: Monte Carlo Simulation for
 REDD+ uncertainty analysis*. R package version 0.3.0,

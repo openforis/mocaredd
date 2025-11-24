@@ -424,23 +424,24 @@ mod_tool_server <- function(id, rv) {
       )
 
       ## Annualize REDD+ activity data
-      if (!rv$inputs$usr$ad_annual) {
-        time_periods <- unique(rv$inputs$time$period_type)
-        rv$mcs$sim_trans2 <- purrr::map(time_periods, function(x){
-          nb_years <- rv$inputs$time |>
-            dplyr::filter(period_type == x) |>
-            dplyr::pull("nb_years") |>
-            sum()
-          period_ids <- rv$inputs$time |>
-            dplyr::filter(period_type == x) |>
-            dplyr::pull("period_no")
-          rv$mcs$sim_trans |>
-            dplyr::filter(.data$time_period %in% period_ids) |>
-            dplyr::mutate(E = round(E / nb_years, 0))
-        }) |> purrr::list_rbind()
-      } else {
-        tt <- rv$mcs$sim_trans2 <- rv$mcs$sim_trans
-      }
+      # if (!rv$inputs$usr$ad_annual) {
+      #   time_periods <- unique(rv$inputs$time$period_type)
+      #   rv$mcs$sim_trans2 <- purrr::map(time_periods, function(x){
+      #     nb_years <- rv$inputs$time |>
+      #       dplyr::filter(period_type == x) |>
+      #       dplyr::pull("nb_years") |>
+      #       sum()
+      #     period_ids <- rv$inputs$time |>
+      #       dplyr::filter(period_type == x) |>
+      #       dplyr::pull("period_no")
+      #     rv$mcs$sim_trans |>
+      #       dplyr::filter(.data$time_period %in% period_ids) |>
+      #       dplyr::mutate(E = round(E / nb_years, 0))
+      #   }) |> purrr::list_rbind()
+      # } else {
+      #   tt <- rv$mcs$sim_trans2 <- rv$mcs$sim_trans
+      # }
+      rv$mcs$sim_trans2 <- rv$mcs$sim_trans
 
       Sys.sleep(0.1)
 

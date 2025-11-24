@@ -35,7 +35,7 @@
 #'   .ad_annual = usr$ad_annual
 #' )
 #'
-#'sim_MON <- fct_combine_mcs_P(
+#' sim_MON <- fct_combine_mcs_P(
 #'   .data = sim_trans,
 #'   .time = time_clean,
 #'   .period_type = "MON",

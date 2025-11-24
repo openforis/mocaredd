@@ -17,9 +17,6 @@
   emission reductions
 - [`fct_combine_mcs_P()`](https://openforis.github.io/mocaredd/reference/fct_combine_mcs_P.md)
   : Combine MCS of emissions to a defined time period
-- [`fct_combine_mcs_cstock()`](https://openforis.github.io/mocaredd/reference/fct_combine_mcs_cstock.md)
-  : Generate and propagate Monte Carlo Simulations based on a template
-  input file.
 - [`fct_forestplot()`](https://openforis.github.io/mocaredd/reference/fct_forestplot.md)
   : Make a forest plot to show Monte Carlo simulation results
 - [`fct_histogram()`](https://openforis.github.io/mocaredd/reference/fct_histogram.md)

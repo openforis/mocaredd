@@ -708,7 +708,7 @@ mod_tool_server <- function(id, rv) {
 
       sims <- rv$mcs$sim_redd |> dplyr::filter(.data$redd_id == sel_redd_id)
       res  <- rv$mcs$res_redd |> dplyr::filter(.data$redd_id == sel_redd_id)
-      value <- rlang::quo(E)
+      value <- rlang::quo(E_year)
       value_type <- "E"
 
 

@@ -8,6 +8,7 @@
 #' @param .usr User inputs' table for the shiny app (user_inputs). Contains the number
 #'             of iterations of the MCS, carbon fraction if needed and if truncated PDFs
 #'             should be used when necessary.
+#' @param .time the time period table from the input file (see template)
 #'
 #' @return A data frame with Monte Carlo simulations of CO2 emissions for each land use
 #'         transition, REDD+ activity or emission reductions level.
@@ -21,13 +22,15 @@
 #'
 #' path <- system.file("extdata/example2-with-sims.xlsx", package = "mocaredd")
 #'
-#' cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
-#' ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
-#' usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
+#' cs   <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
+#' ad   <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
+#' usr  <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
+#' time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
 #'
 #' cs_clean <- cs |> filter(!is.na(c_value) | !is.na(c_pdf_a))
+#' time_p   <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
 #'
-#' res <- fct_combine_mcs_E(.ad = ad, .cs = cs_clean, .usr = usr)
+#' res      <- fct_combine_mcs_E(.ad = ad, .cs = cs_clean, .usr = usr, .time = time_p)
 #'
 #' get_trans <- sample(res$trans_id, 1)
 #' res_sub <- res |> filter(trans_id == get_trans)
@@ -35,12 +38,13 @@
 #' hist(res_sub$E)
 #'
 #' @export
-fct_combine_mcs_E <- function(.ad, .cs, .usr){
+fct_combine_mcs_E <- function(.ad, .cs, .usr, .time){
 
   ## !!! FOR TESTING ONLY - run example then assign ad, cs and usr to the input vars.
   # .ad <- ad
   # .cs <- cs
   # .usr <- usr
+  # .time <- time_p
   ## !!!
 
 
@@ -189,7 +193,7 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
 
   if ("DG_ratio" %in% .cs$c_element) {
 
-    ## ++ 3.2.1. If DG_ratio used calulate Cstock of other land uses ####
+    ## ++ 3.2.1. If DG_ratio used calculate Cstock of other land uses ####
     sims_C_nodegrat <- sims_CEL_long |>
       dplyr::filter(is.na(.data$DG_ratio)) |>
       dplyr::left_join(c_formula, by = c("time_period", "lu_id")) |>
@@ -300,7 +304,55 @@ fct_combine_mcs_E <- function(.ad, .cs, .usr){
 
   }
 
-  sims_E
+
+  ##
+  ## 5. prepare annualized emissions E_year ####
+  ##
+  if (.usr$ad_annual) {
+    sims_Eannual <- sims_E |>
+      dplyr::mutate(time_period_length = 1, E_year = .data$E) |>
+      dplyr::select(
+        "time_period", "time_period_length", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity",
+        "sim_no", "E_year", "E", dplyr::everything()
+      )
+    } else {
+      sims_Eannual <- sims_E |>
+        dplyr::left_join(
+          dplyr::select(.time, "period_no", time_period_length = "nb_years"),
+          by = dplyr::join_by("time_period" == "period_no")
+          ) |>
+        dplyr::mutate(
+          E_year = round(.data$E / .data$time_period_length, .usr$round_digits)
+        ) |>
+        dplyr::select(
+          "time_period", "time_period_length", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity",
+          "sim_no", "E_year", "E", dplyr::everything()
+        )
+
+    }
+    #   time_periods <- unique(rv$inputs$time$period_type)
+    #   rv$mcs$sim_trans2 <- purrr::map(time_periods, function(x){
+    #     nb_years <- rv$inputs$time |>
+    #       dplyr::filter(period_type == x) |>
+    #       dplyr::pull("nb_years") |>
+    #       sum()
+    #     period_ids <- rv$inputs$time |>
+    #       dplyr::filter(period_type == x) |>
+    #       dplyr::pull("period_no")
+    #     rv$mcs$sim_trans |>
+    #       dplyr::filter(.data$time_period %in% period_ids) |>
+    #       dplyr::mutate(E = round(E / nb_years, 0))
+    #   }) |> purrr::list_rbind()
+    # } else {
+    #   tt <- rv$mcs$sim_trans2 <- rv$mcs$sim_trans
+    # }
+
+
+
+  ##
+  ## 6. Output simulation table ####
+  ##
+  sims_Eannual
 
 } ## END FUNCTION
 

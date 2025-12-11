@@ -4,7 +4,7 @@
 \alias{fct_combine_mcs_E}
 \title{Generate and propagate Monte Carlo Simulations based on a template input file.}
 \usage{
-fct_combine_mcs_E(.ad, .cs, .usr)
+fct_combine_mcs_E(.ad, .cs, .usr, .time)
 }
 \arguments{
 \item{.ad}{Activity Data input table for the shiny app (AD_lu_transitions)}
@@ -14,6 +14,8 @@ fct_combine_mcs_E(.ad, .cs, .usr)
 \item{.usr}{User inputs' table for the shiny app (user_inputs). Contains the number
 of iterations of the MCS, carbon fraction if needed and if truncated PDFs
 should be used when necessary.}
+
+\item{.time}{the time period table from the input file (see template)}
 }
 \value{
 A data frame with Monte Carlo simulations of CO2 emissions for each land use
@@ -29,13 +31,15 @@ library(dplyr)
 
 path <- system.file("extdata/example2-with-sims.xlsx", package = "mocaredd")
 
-cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
-ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
-usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
+cs   <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
+ad   <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
+usr  <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
+time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
 
 cs_clean <- cs |> filter(!is.na(c_value) | !is.na(c_pdf_a))
+time_p   <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
 
-res <- fct_combine_mcs_E(.ad = ad, .cs = cs_clean, .usr = usr)
+res      <- fct_combine_mcs_E(.ad = ad, .cs = cs_clean, .usr = usr, .time = time_p)
 
 get_trans <- sample(res$trans_id, 1)
 res_sub <- res |> filter(trans_id == get_trans)

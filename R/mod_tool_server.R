@@ -77,7 +77,7 @@ mod_tool_server <- function(id, rv) {
 
       Sys.sleep(0.1)
 
-      ## FOR TESTING ONLY
+      ## !!! FOR TESTING ONLY
       # rv <- list()
       # rv$inputs <- list()
       # rv$mcs <- list()
@@ -87,7 +87,7 @@ mod_tool_server <- function(id, rv) {
       # .ad <- rv$inputs$ad <- readxl::read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
       # .usr <- rv$inputs$usr <- readxl::read_xlsx(path = path, sheet = "user_inputs", na = "NA")
       # .time <- rv$inputs$time <- readxl::read_xlsx(path = path, sheet = "time_periods", na = "NA")
-      ##
+      ## !!!
 
 
       ## + 1.3.4 Run checks -----
@@ -241,8 +241,11 @@ mod_tool_server <- function(id, rv) {
       req(rv$checks$check_data$all_ok)
       if (rv$checks$check_data$all_ok) {
         pools <- unique(rv$inputs$cs$c_element)
-        pools <- pools[pools %in% c("AGB", "BGB", "DW", "LI", "SOC")]
-        HTML(paste0(length(pools), "&nbsp;Carbon pools"))
+        real_pools <- pools[pools %in% c("AGB", "BGB", "DW", "LI", "SOC")]
+        n_pools <- length(real_pools)
+        if ("RS" %in% pools) n_pools <- n_pools + 1
+        if(length(pools) == 1) if (pools == "ALL") n_pools <- 1
+        HTML(paste0(n_pools, "&nbsp;Carbon pools"))
       }
     })
 
@@ -250,8 +253,10 @@ mod_tool_server <- function(id, rv) {
       req(rv$checks$check_data$all_ok)
       if (rv$checks$check_data$all_ok) {
         pools <- unique(rv$inputs$cs$c_element)
-        pools <- pools[pools %in% c("AGB", "BGB", "DW", "LI", "SOC")]
-        paste(pools, collapse = ", ")
+        real_pools <- pools[pools %in% c("AGB", "BGB", "DW", "LI", "SOC")]
+        if ("RS" %in% pools) real_pools <- c(real_pools, "BGB via R:S")
+        if(length(pools) == 1) if (pools == "ALL") real_pools <- "Ctotal"
+        paste(real_pools, collapse = ", ")
       }
     })
 

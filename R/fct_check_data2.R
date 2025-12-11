@@ -33,6 +33,10 @@
 fct_check_data2 <- function(.usr, .time, .ad, .cs){
 
   ## !! FOR TESTING ONLY
+  # cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
+  # ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
+  # usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
+  # time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
   # .usr <- usr
   # .time <- time
   # .ad <- ad
@@ -293,7 +297,7 @@ fct_check_data2 <- function(.usr, .time, .ad, .cs){
   } else if (is.na(.usr$dg_ext) & "DG_ratio" %in% unique(.cs$c_element)) {
     tmp$match_dg_ok <- FALSE
   } else {
-    tmp$match_dg_ok <- FALSE
+    tmp$match_dg_ok <- TRUE
   }
 
   ## - DG method: either (1) dg_ratio applied to all pools, (2) dg_ratio applied to some pools other kept intact (dg_expool == T), (3) diff in Cstocks.

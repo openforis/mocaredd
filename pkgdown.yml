@@ -4,7 +4,7 @@ pkgdown_sha: c07d935583c90125586821e3b39ed52f16593e42
 articles:
   articles/app-features: app-features.html
   articles/tuto-template: tuto-template.html
-last_built: 2025-12-11T04:50Z
+last_built: 2025-12-11T05:25Z
 urls:
   reference: https://openforis.github.io/mocaredd/reference
   article: https://openforis.github.io/mocaredd/articles

@@ -50,7 +50,7 @@ fct_arithmetic_mean <- function(.ad, .cs, .usr, .time){
 
   .time <- .time |> dplyr::mutate(nb_years = .data$year_end - .data$year_start + 1)
 
-  ari_trans <- fct_combine_mcs_E(.ad = ad_ari, .cs = cs_ari, .usr = usr_ari)
+  ari_trans <- fct_combine_mcs_E(.ad = ad_ari, .cs = cs_ari, .usr = usr_ari, .time = .time)
 
   ari_REF <- fct_combine_mcs_P(
     .data = ari_trans,

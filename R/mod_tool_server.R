@@ -425,28 +425,9 @@ mod_tool_server <- function(id, rv) {
       rv$mcs$sim_trans <- fct_combine_mcs_E(
         .ad = rv$inputs$ad,
         .cs = rv$inputs$cs,
-        .usr = rv$inputs$usr
+        .usr = rv$inputs$usr,
+        .time = rv$inputs$time
       )
-
-      ## Annualize REDD+ activity data
-      # if (!rv$inputs$usr$ad_annual) {
-      #   time_periods <- unique(rv$inputs$time$period_type)
-      #   rv$mcs$sim_trans2 <- purrr::map(time_periods, function(x){
-      #     nb_years <- rv$inputs$time |>
-      #       dplyr::filter(period_type == x) |>
-      #       dplyr::pull("nb_years") |>
-      #       sum()
-      #     period_ids <- rv$inputs$time |>
-      #       dplyr::filter(period_type == x) |>
-      #       dplyr::pull("period_no")
-      #     rv$mcs$sim_trans |>
-      #       dplyr::filter(.data$time_period %in% period_ids) |>
-      #       dplyr::mutate(E = round(E / nb_years, 0))
-      #   }) |> purrr::list_rbind()
-      # } else {
-      #   tt <- rv$mcs$sim_trans2 <- rv$mcs$sim_trans
-      # }
-      rv$mcs$sim_trans2 <- rv$mcs$sim_trans
 
       Sys.sleep(0.1)
 
@@ -456,15 +437,15 @@ mod_tool_server <- function(id, rv) {
         session = session, id = "prog_res", value = 40, status = "primary"
       )
 
-      rv$mcs$sim_redd <- rv$mcs$sim_trans2 |>
+      rv$mcs$sim_redd <- rv$mcs$sim_trans |>
         dplyr::group_by(.data$sim_no, .data$time_period, .data$redd_activity) |>
-        dplyr::summarise(E = sum(.data$E), .groups = "drop") |>
+        dplyr::summarise(E_year = sum(.data$E_year), E = sum(.data$E), .groups = "drop") |>
         dplyr::mutate(redd_id = paste0(.data$time_period, " - ", .data$redd_activity))
 
-      rv$mcs$sim_REF <- rv$mcs$sim_trans2 |>
+      rv$mcs$sim_REF <- rv$mcs$sim_trans |>
         fct_combine_mcs_P(.time = rv$inputs$time, .period_type = "REF", .ad_annual = rv$inputs$usr$ad_annual)
 
-      rv$mcs$sim_MON <- rv$mcs$sim_trans2 |>
+      rv$mcs$sim_MON <- rv$mcs$sim_trans |>
         fct_combine_mcs_P(.time = rv$inputs$time, .period_type = "MON", .ad_annual = rv$inputs$usr$ad_annual)
 
       rv$mcs$sim_ER <- fct_combine_mcs_ER(.sim_ref = rv$mcs$sim_REF, .sim_mon = rv$mcs$sim_MON, .ad_annual = rv$inputs$usr$ad_annual)
@@ -479,16 +460,16 @@ mod_tool_server <- function(id, rv) {
 
       ## LU transition level results
       rv$mcs$res_trans <- fct_calc_res(
-        .data = rv$mcs$sim_trans2,
+        .data = rv$mcs$sim_trans,
         .id = .data$trans_id,
-        .sim = .data$E,
+        .sim = .data$E_year,
         .ci_alpha = rv$inputs$usr$ci_alpha
       )
 
       rv$mcs$res_redd <- fct_calc_res(
         .data = rv$mcs$sim_redd,
         .id = .data$redd_id,
-        .sim = .data$E,
+        .sim = .data$E_year,
         .ci_alpha = rv$inputs$usr$ci_alpha
       )
 
@@ -536,7 +517,7 @@ mod_tool_server <- function(id, rv) {
       ## no binding hack in R cmd check
       trans_id <- redd_id <- period_type <- NULL
       E <- E_ari <- E_U <- E_cilower <- E_ciupper <- NULL
-      E <- ER_sim <- NULL
+      E_year <- ER_sim <- NULL
 
 
       rv$mcs$fp_trans <- fct_forestplot(

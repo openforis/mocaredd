@@ -83,6 +83,7 @@ mod_tool_server <- function(id, rv) {
       # rv$mcs <- list()
       # path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
       # path <- system.file("extdata/example2-with-sims.xlsx", package = "mocaredd")
+      # path <- "/Users/gaelsola/Documents/FAO-2025/missions/2025-12-COG-ZMB NFI and Uncertainty/Uncertainty WS/KEN-2025-UNFCCC-mocaredd-2017-2023.xlsx"
       # .cs <- rv$inputs$cs <- readxl::read_xlsx(path = path, sheet = "c_stocks", na = "NA")
       # .ad <- rv$inputs$ad <- readxl::read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
       # .usr <- rv$inputs$usr <- readxl::read_xlsx(path = path, sheet = "user_inputs", na = "NA")

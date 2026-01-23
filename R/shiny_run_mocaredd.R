@@ -147,6 +147,10 @@ shiny_run_mocaredd <- function(...) {
     shinyjs::useShinyjs(),
     shinyWidgets::useSweetAlert(),
     shiny.i18n::usei18n(i18n),
+    tags$head(HTML(
+      '<!-- 100% privacy-first analytics -->
+      <script data-collect-dnt="true" async src="https://scripts.simpleanalyticscdn.com/latest.js"></script>'
+      )),
     tags$head(includeHTML("plausible.html")),
     tags$head(
       ## Load Plausible tracker

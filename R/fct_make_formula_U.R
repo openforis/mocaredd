@@ -21,7 +21,7 @@
 #' @return A character value with the standard error formula of the carbon stock.
 #'
 #' @examples
-#' fct_make_formula_U(.c_el = c("AGB", "RS"), .c_unit = c("DM", "ratio"))
+#' fct_make_formula_U(.c_el = c("AGB", "RS"), .c_unit = "DM")
 #' #> "AGB * (1 + RS) * CF * sqrt((AGB_se / AGB)^2 + (RS_se / (1 + RS))^2 + (CF_se / CF)^2)"
 #'
 #' fct_make_formula_U(.c_el = c("AGB", "RS", "DW"), .c_unit = c("DM", NA, "C"), .version = 2)
@@ -31,7 +31,7 @@
 #' eval(parse(text = fct_make_formula_U(c("AGB", "RS"), "DM")), env)
 #'
 #' @export
-fct_make_formula_U <- function(.c_el, .c_unit, .version = 2){
+fct_make_formula_U <- function(.c_el, .c_unit, .version = 1){
 
   ## Carbon stock formula, composite factors as single placeholders
   c_form <- fct_make_formula2(.c_el = .c_el, .c_unit = .c_unit, .version = .version)

@@ -435,8 +435,8 @@ body > .container-fluid {
   margin-top: 0 !important;
 }
 .hero-banner {
+  position: relative;
   margin-inline: calc(var(--bs-gutter-x, 1.5rem) * -0.5);
-  border-bottom: 6px solid var(--app-secondary);
 }
 .hero-banner img {
   display: block;
@@ -444,23 +444,43 @@ body > .container-fluid {
   height: clamp(180px, 32vw, 440px);
   object-fit: cover;
   object-position: 50% 70%; /* keep the sun and the forest edge when cropped */
+  border-bottom: 6px solid var(--app-secondary);
 }
 
-/* Intro under the banner: title left, text and button right */
-.hero-intro {
-  padding-top: 2.5rem;
+/* Title and button box over the banner image, aligned with the page container */
+.hero-overlay {
+  position: absolute;
+  inset: 0 0 6px 0; /* stop above the green strip */
+  display: flex;
+  align-items: center;
+}
+
+.hero-box {
+  max-width: 34rem;
+  padding: 1.75rem 2rem;
+  background-color: color-mix(in srgb, var(--bs-body-bg) 40%, transparent); /* 60% transparent, text stays opaque */
+  border-radius: 0.5rem;
+  box-shadow: 0 1rem 2rem rgba(0,0,0,0.15);
 }
 
 .hero-title {
   font-weight: 700;
-  font-size: 2rem;
-  line-height: 1.25;
-  margin-bottom: 0;
+  font-size: clamp(1.5rem, 2.6vw, 2.25rem);
+  line-height: 1.2;
+  margin-bottom: 1.25rem;
 }
 
-.hero-subtitle {
-  font-size: 1.25rem;
-  color: var(--bs-secondary-color);
+/* Small screens: banner too short for the box, which moves under the image */
+@media (max-width: 767.98px) {
+  .hero-overlay {
+    position: static;
+  }
+  .hero-box {
+    max-width: none;
+    padding: 1.5rem calc(var(--bs-gutter-x, 1.5rem) * 0.5) 0; /* align with the cards */
+    background-color: transparent;
+    box-shadow: none;
+  }
 }
 
 

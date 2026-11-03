@@ -21,16 +21,15 @@ element; CF applies to each element in DM. RS takes the unit of AGB.}
 A character value with the carbon stock formula.
 }
 \description{
-Successor of \code{fct_make_formula()}. Same inputs, but the
-biomass part is written so each input appears once:
+The biomass part is written so each input appears once:
 - AGB + RS:  \code{AGB * (1 + RS)} (BGB derived from AGB),
 - AGB + BGB: \code{(AGB + BGB)},
 multiplied by \code{CF} when biomass is in dry matter (DM).
 DW, LI and SOC are added as separate terms.
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{         Both versions give the same carbon stock. The factored form makes
-         the AGB/BGB dependence explicit, which matters when uncertainty is
-         propagated term by term with IPCC Approach 1 rules.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{         The factored form makes the AGB/BGB dependence explicit, which
+         matters when uncertainty is propagated term by term with IPCC
+         Approach 1 rules.
 }\if{html}{\out{</div>}}
 }
 \examples{

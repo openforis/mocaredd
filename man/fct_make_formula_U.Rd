@@ -4,7 +4,7 @@
 \alias{fct_make_formula_U}
 \title{Make the carbon stock uncertainty formula of a land use (IPCC Approach 1)}
 \usage{
-fct_make_formula_U(.c_el, .c_unit, .version = 2)
+fct_make_formula_U(.c_el, .c_unit, .version = 1)
 }
 \arguments{
 \item{.c_el}{Vector of carbon elements, among "AGB", "BGB", "RS", "DW", "LI",
@@ -39,7 +39,7 @@ terms of \code{fct_make_formula2()} with the IPCC Approach 1 rules
 }\if{html}{\out{</div>}}
 }
 \examples{
-fct_make_formula_U(.c_el = c("AGB", "RS"), .c_unit = c("DM", "ratio"))
+fct_make_formula_U(.c_el = c("AGB", "RS"), .c_unit = "DM")
 #> "AGB * (1 + RS) * CF * sqrt((AGB_se / AGB)^2 + (RS_se / (1 + RS))^2 + (CF_se / CF)^2)"
 
 fct_make_formula_U(.c_el = c("AGB", "RS", "DW"), .c_unit = c("DM", NA, "C"), .version = 2)

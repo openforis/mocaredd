@@ -1,6 +1,5 @@
 ^mocaredd\.Rproj$
 ^\.Rproj\.user$
-^\tests\workbooks\.xlsx$
 
 ^checks$
 ^_pkgdown\.yml$
@@ -14,3 +13,10 @@
 ^vignettes/articles/\.quarto$
 ^vignettes/articles/*_files$
 ^vignettes/articles$
+^\.vscode$
+^data-raw$
+^tests/.*\.xlsx$
+^tests/running-core-functions\.R$
+^tests/tuto-pkg\.R$
+^tests/experimental$
+^tests/sensitivity$

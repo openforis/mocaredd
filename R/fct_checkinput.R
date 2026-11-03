@@ -670,7 +670,7 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
   ## ADD calculated elements to data
   time$nb_years  <- time$year_end - time$year_start + 1
   #setup$ci_alpha <- 1 - setup$conf_level
-  setup$z_score        <- qnorm(1 - (1 - setup$conf_level) / 2)
+  setup$z_score        <- stats::qnorm(1 - (1 - setup$conf_level) / 2)
   setup$conf_level_txt <- paste0(setup$conf_level * 100, "%")
 
 

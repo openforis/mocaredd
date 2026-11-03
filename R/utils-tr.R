@@ -18,7 +18,6 @@
     hero_title = "Reliable uncertainty estimates for REDD+ emission reductions",
     hero_txt = "Organize your activity data and carbon stocks in the {mocaredd} template, run Monte Carlo simulations and get emissions, emission reductions and their confidence intervals.",
     hero_btn = "Get Started",
-    feat1_p1 = "An R package and a Shiny app, {mocaredd}, that propagates the uncertainty of activity data and emission factors to REDD+ emissions and emission reductions with Monte Carlo simulations.",
     feat1_p2 = "For more details about the app development or if any issue, find us on:",
     feat1_p3 = "Start with your data in the Tool section!",
     feat2_title = "The template",

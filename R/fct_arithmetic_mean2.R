@@ -24,7 +24,8 @@
 #' @return A list with elements \code{ER} (reference / monitoring levels and emission
 #'         reductions with mean, se, U\% and confidence bounds), \code{emissions}
 #'         (per time period, with uncertainty), \code{gg_emissions} (figure with
-#'         confidence intervals, ER as areas with their confidence interval) and
+#'         emissions as lines with confidence interval areas, and emission
+#'         reductions as points with error bars) and
 #'         \code{emissions_table} (a tidy tibble ready to
 #'         be turned into a gt table by the app).
 #'
@@ -239,103 +240,16 @@ fct_arithmetic_mean2 <- function(.checked_data){
     dplyr::ungroup()
 
   ##
-  ## 7. Figure: annual emissions per period with confidence intervals #########
+  ## 7. Figure: emissions (top) and emission reductions (bottom) ###############
   ##
-  ref_mean <- stat_of(paste0("PT.", ref_types[1]))$mean
-  out_yearly <- purrr::map(seq_len(nrow(period_meta)), function(i){
-    r <- period_meta[i, ]
-    s <- stat_of(paste0("PN.", r$period_no))
-    dplyr::tibble(
-      year        = r$year_start:r$year_end,
-      E           = round(s$mean  / 1e6, 2),
-      E_lower     = round(s$lower / 1e6, 2),
-      E_upper     = round(s$upper / 1e6, 2),
-      period_type = r$period_type,
-      FREL        = round(ref_mean / 1e6, 2)
-    )
-  }) |> purrr::list_rbind()
+  ## Top panel: each period as its mean emissions (line) and confidence interval
+  ## (area), with the reference level (FREL) extended over the whole time line.
+  ## Bottom panel: emission reductions per monitoring type as a point with its
+  ## confidence interval (error bar), on their own axis.
+  FREL <- stat_of(paste0("PT.", ref_types[1]))$mean / 1e6
 
-  out_yearly_mon <- out_yearly |> dplyr::filter(stringr::str_detect(.data$period_type, "MON"))
+  panel_lab <- c("Emissions\n(MtCO2e/y)", "Emission reductions\n(MtCO2e/y)")
 
-  ## Former figure: ER as arrows, hidden by the error bars
-  out_gg_old <- out_yearly |>
-    ggplot2::ggplot(ggplot2::aes(x = .data$year)) +
-    ggplot2::geom_line(ggplot2::aes(y = .data$FREL), col = "pink", linewidth = 1) +
-    ggplot2::geom_segment(
-      data = out_yearly_mon,
-      ggplot2::aes(xend = .data$year, y = .data$FREL, yend = .data$E),
-      col = "limegreen", linewidth = 2,
-      arrow = grid::arrow(length = grid::unit(0.2, "cm"), ends = "both")
-    ) +
-    ggplot2::geom_point(ggplot2::aes(y = .data$E, colour = .data$period_type), size = 4) +
-    ggplot2::geom_errorbar(
-      ggplot2::aes(ymin = .data$E_lower, ymax = .data$E_upper, colour = .data$period_type),
-      width = 0.2, linewidth = 0.8
-    ) +
-    ggplot2::scale_colour_discrete(na.value = "gray50") +
-    ggplot2::scale_x_continuous(breaks = min(out_yearly$year):max(out_yearly$year), minor_breaks = NULL) +
-    ggplot2::scale_y_continuous(limits = c(0, NA)) +
-    ggplot2::theme_bw(base_size = 20) +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
-                   legend.position = "bottom") +
-    ggplot2::labs(x = "Years", y = "Emissions (MtCO2e/y)", color = "")
-
-  FREL <- ref_mean / 1e6
-
-  ## ER per monitoring type: rate (MtCO2e/y) sets the areas, volume (MtCO2e) the label
-  out_er <- ari_combi |>
-    dplyr::filter(stringr::str_detect(.data$period_type, "^ER-")) |>
-    dplyr::mutate(
-      period_type = stringr::str_remove(.data$period_type, "^ER-"),
-      n_years     = purrr::map_dbl(.data$period_type, \(m) sum(time$nb_years[time$period_type %in% m])),
-      ER_vol      = .data$E * .data$n_years / 1e6,
-      y_mean      = FREL - .data$E       / 1e6,
-      y_lower     = FREL - .data$E_upper / 1e6,
-      y_upper     = FREL - .data$E_lower / 1e6,
-      label       = paste0(round(.data$ER_vol, 2), " Mt\n±", round(.data$E_U), "%")
-    )
-
-  ## ER areas span each monitoring period
-  er_rect <- period_meta |>
-    dplyr::filter(.data$period_type %in% mon_types) |>
-    dplyr::transmute(
-      period_type = .data$period_type,
-      xmin        = .data$year_start - 0.5,
-      xmax        = .data$year_end + 0.5
-    ) |>
-    dplyr::inner_join(out_er, by = "period_type")
-
-  ## One label per monitoring type, above FREL and the ER interval
-  er_lab <- er_rect |>
-    dplyr::summarise(
-      x     = (min(.data$xmin) + max(.data$xmax)) / 2,
-      y     = max(FREL, .data$y_upper),
-      label = dplyr::first(.data$label),
-      .by   = "period_type"
-    )
-
-  ## Colours (Okabe-Ito, no green: green is kept for ER)
-  # col_ref <- "#0072B2"
-  # col_mon <- c("#E69F00", "#D55E00", "#CC79A7", "#56B4E9", "#F0E442")
-
-  ## Opaque ER tints: no alpha blending, so exactly two shades
-  # col_er_dark  <- "#80CEB9"
-  # col_er_light <- "#D9F0EA"
-  # col_er_dots  <- "#009E73"
-
-  ## Nearest xterm-256 colours (xterm id)
-  col_ref <- "#005FAF"                                                    # 25
-  col_mon <- c("#D7AF00", "#D75F00", "#D787AF", "#5FAFD7", "#FFD75F")     # 178, 166, 175, 74, 221
-  col_er_dark  <- "#87D7AF"                                               # 115
-  col_er_light <- "#D7FFD7"                                               # 2"#E4E4E4" = 54, gray; nearest green: "#D7FFD7" (194)
-  col_er_dots  <- "#00875F"                                               # 29, darker than dark tint
-
-  pal <- c(
-    stats::setNames(rep(col_ref, length(ref_types)), ref_types),
-    stats::setNames(rep_len(col_mon, length(mon_types)), mon_types)
-  )
-
-  ## One mark per period: band for multi-year non-MON periods, point + error bar otherwise
   out_mark <- period_meta |>
     dplyr::mutate(
       s       = purrr::map(.data$period_no, \(p) stat_of(paste0("PN.", p))),
@@ -344,83 +258,89 @@ fct_arithmetic_mean2 <- function(.checked_data){
       E_upper = purrr::map_dbl(.data$s, "upper") / 1e6,
       xmin    = .data$year_start - 0.5,
       xmax    = .data$year_end + 0.5,
-      x_mid   = (.data$year_start + .data$year_end) / 2,
-      is_band = .data$year_end > .data$year_start & !(.data$period_type %in% mon_types)
+      panel   = factor(panel_lab[1], levels = panel_lab)
     ) |>
     dplyr::select(-"s")
-  out_band  <- dplyr::filter(out_mark, .data$is_band)
-  out_point <- dplyr::filter(out_mark, !.data$is_band)
 
-  out_gg <- out_yearly |>
-    ggplot2::ggplot(ggplot2::aes(x = .data$year)) +
-    ## ER uncertainty: light area over the ER confidence interval
+  ## ER per monitoring type, centred on the span of its periods
+  out_er <- ari_combi |>
+    dplyr::filter(stringr::str_detect(.data$period_type, "^ER-")) |>
+    dplyr::mutate(period_type = stringr::str_remove(.data$period_type, "^ER-")) |>
+    dplyr::inner_join(
+      dplyr::summarise(period_meta, x = (min(.data$year_start) + max(.data$year_end)) / 2, .by = "period_type"),
+      by = "period_type"
+    ) |>
+    dplyr::mutate(
+      ER       = .data$E / 1e6,
+      ER_lower = .data$E_lower / 1e6,
+      ER_upper = .data$E_upper / 1e6,
+      label    = paste0(round(.data$ER, 2), " \u00b1", round(.data$E_U), "%"),
+      panel    = factor(panel_lab[2], levels = panel_lab)
+    )
+
+  ## Zero in both panels, zero line in the ER panel
+  zero <- dplyr::tibble(panel = factor(panel_lab, levels = panel_lab), y = 0)
+
+  ## Nearest xterm-256 colours (xterm id); green is kept for ER
+  col_ref <- "#005FAF"                                                    # 25
+  col_mon <- c("#D7AF00", "#D75F00", "#D787AF", "#5FAFD7", "#FFD75F")     # 178, 166, 175, 74, 221
+  col_er  <- "#00875F"                                                    # 29
+
+  pal <- c(
+    stats::setNames(rep(col_ref, length(ref_types)), ref_types),
+    stats::setNames(rep_len(col_mon, length(mon_types)), mon_types)
+  )
+
+  out_gg <- ggplot2::ggplot() +
+    ggplot2::geom_blank(data = zero, ggplot2::aes(x = min(out_mark$xmin), y = .data$y)) +
+    ggplot2::geom_hline(data = zero[2, ], ggplot2::aes(yintercept = .data$y), colour = "gray50", linetype = "dashed") +
+    ## Emissions: confidence interval as area, mean as line
     ggplot2::geom_rect(
-      data = er_rect, inherit.aes = FALSE,
-      ggplot2::aes(xmin = .data$xmin, xmax = .data$xmax, ymin = .data$y_lower, ymax = .data$y_upper),
-      fill = col_er_light
-    ) +
-    ## ER value: dark area between FREL and FREL - ER
-    ggplot2::geom_rect(
-      data = er_rect, inherit.aes = FALSE,
-      ggplot2::aes(xmin = .data$xmin, xmax = .data$xmax, ymin = .data$y_mean, ymax = FREL),
-      fill = col_er_dark
-    ) +
-    ## ER confidence bounds, visible across both areas
-    ggplot2::geom_segment(
-      data = er_rect, inherit.aes = FALSE,
-      ggplot2::aes(x = .data$xmin, xend = .data$xmax, y = .data$y_lower, yend = .data$y_lower),
-      colour = col_er_dots, linewidth = 0.6, linetype = "dotted"
-    ) +
-    ggplot2::geom_segment(
-      data = er_rect, inherit.aes = FALSE,
-      ggplot2::aes(x = .data$xmin, xend = .data$xmax, y = .data$y_upper, yend = .data$y_upper),
-      colour = col_er_dots, linewidth = 0.6, linetype = "dotted"
-    ) +
-    ## Multi-year non-MON periods: CI band and mean line
-    ggplot2::geom_rect(
-      data = out_band, inherit.aes = FALSE,
+      data = out_mark,
       ggplot2::aes(xmin = .data$xmin, xmax = .data$xmax, ymin = .data$E_lower, ymax = .data$E_upper,
                    fill = .data$period_type),
       alpha = 0.2
     ) +
     ggplot2::geom_segment(
-      data = out_band, inherit.aes = FALSE,
+      data = dplyr::mutate(out_mark, FREL = FREL),
+      ggplot2::aes(x = min(out_mark$xmin), xend = max(out_mark$xmax), y = .data$FREL, yend = .data$FREL),
+      colour = col_ref, linewidth = 0.8, linetype = "dashed"
+    ) +
+    ggplot2::geom_segment(
+      data = out_mark,
       ggplot2::aes(x = .data$xmin, xend = .data$xmax, y = .data$E, yend = .data$E, colour = .data$period_type),
       linewidth = 1.2
     ) +
-    ## FREL across the full extent of the periods
-    ggplot2::annotate(
-      "segment", x = min(out_mark$xmin), xend = max(out_mark$xmax), y = FREL, yend = FREL,
-      colour = col_ref, linewidth = 1
-    ) +
-    ## Other periods: point + error bar at period centre
-    ggplot2::geom_point(
-      data = out_point, inherit.aes = FALSE,
-      ggplot2::aes(x = .data$x_mid, y = .data$E, colour = .data$period_type), size = 4
-    ) +
+    ## Emission reductions: point and confidence interval
     ggplot2::geom_errorbar(
-      data = out_point, inherit.aes = FALSE,
-      ggplot2::aes(x = .data$x_mid, ymin = .data$E_lower, ymax = .data$E_upper, colour = .data$period_type),
-      width = 0.2, linewidth = 0.8
+      data = out_er,
+      ggplot2::aes(x = .data$x, ymin = .data$ER_lower, ymax = .data$ER_upper),
+      colour = col_er, width = 0.2, linewidth = 0.8
     ) +
-    ## ER volume label
-    # ggplot2::geom_label(
-    #   data = er_lab, inherit.aes = FALSE,
-    #   ggplot2::aes(x = .data$x, y = .data$y, label = .data$label),
-    #   vjust = -0.15, colour = col_er, fontface = "bold", size = 4, label.size = 0
-    # ) +
+    ggplot2::geom_point(data = out_er, ggplot2::aes(x = .data$x, y = .data$ER), colour = col_er, size = 4) +
+    ggplot2::geom_text(
+      data = out_er,
+      ggplot2::aes(x = .data$x, y = .data$ER, label = .data$label),
+      colour = col_er, fontface = "bold", size = 5, hjust = -0.25
+    ) +
+    ggplot2::facet_grid(rows = ggplot2::vars(.data$panel), scales = "free_y", switch = "y") +
     ggplot2::scale_colour_manual(values = pal, na.value = "gray50", aesthetics = c("colour", "fill")) +
-    ggplot2::scale_x_continuous(breaks = min(out_yearly$year):max(out_yearly$year), minor_breaks = NULL) +
-    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.15))) +
-    ggplot2::expand_limits(y = 0) +
+    ggplot2::scale_x_continuous(breaks = min(period_meta$year_start):max(period_meta$year_end), minor_breaks = NULL) +
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.1))) +
     ggplot2::theme_bw(base_size = 20) +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
                    legend.position = "bottom",
-                   plot.caption = ggplot2::element_text(size = ggplot2::rel(0.7 * 0.8))) +
+                   strip.placement = "outside",
+                   strip.background = ggplot2::element_blank(),
+                   strip.text.y.left = ggplot2::element_text(angle = 90),
+                   plot.caption = ggplot2::element_text(size = ggplot2::rel(0.56))) +
     ggplot2::labs(
-      x = "Years", y = "Emissions (MtCO2e/y)", colour = "", fill = "",
-      caption = "light bar and dotted segments: \nconfidence interval of the emission reductions"
-        )
+      x = "Years", y = NULL, colour = "", fill = "",
+      caption = paste0(
+        "Lines: mean annual emissions, dashed: reference level. Areas and error bars: ",
+        setup$conf_level * 100, "% confidence intervals."
+      )
+    )
 
   ##
   ## 8. Result table (tidy data; gt is built in the server) ####################

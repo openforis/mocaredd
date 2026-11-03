@@ -11,28 +11,23 @@ mod_home_UI2 <- function(id, i18n, .tr){
   ##
 
   ## + Hero section ============================================================
-  ## Full-width banner as on openforis.org, then the intro: title left, text and
-  ## button right (stacked on small screens)
+  ## Full-width banner as on openforis.org, with the title and button in a box
+  ## over the image (box under the image on small screens)
   hero_banner <- div(
     class = "hero-banner",
-    tags$img(src = "assets/hero-olive-amber.svg", alt = "Illustration of a forest landscape")
-  )
-
-  hero_intro <- div(
-    class = "container hero-intro",
+    tags$img(src = "assets/hero-olive-amber.svg", alt = "Illustration of a forest landscape"),
     div(
-      class = "row g-4 align-items-center",
+      class = "hero-overlay",
       div(
-        class = "col-lg-5",
-        h1(class = "hero-title", i18n$t(.tr$hero_title))
-      ),
-      div(
-        class = "col-lg-7",
-        p(class = "hero-subtitle", i18n$t(.tr$hero_txt)),
-        actionButton(
-          inputId = ns("to_tool"),
-          label = tagList(i18n$t(.tr$hero_btn), bsicons::bs_icon("chevron-right")),
-          class = "btn-primary btn-icon" ## FAO Design System primary button with chevron
+        class = "container",
+        div(
+          class = "hero-box",
+          h1(class = "hero-title", i18n$t(.tr$hero_title)),
+          actionButton(
+            inputId = ns("to_tool"),
+            label = tagList(i18n$t(.tr$hero_btn), bsicons::bs_icon("chevron-right")),
+            class = "btn-primary btn-icon" ## FAO Design System primary button with chevron
+          )
         )
       )
     )
@@ -44,7 +39,7 @@ mod_home_UI2 <- function(id, i18n, .tr){
     class = "feature-card shadow-sm",
     card_body(
       h3("{mocaredd}", style = "font-weight:700;"),
-      p(i18n$t(.tr$feat1_p1)),
+      p(i18n$t(.tr$hero_txt)),
       p(
         i18n$t(.tr$feat1_p2),
         tags$a(
@@ -93,7 +88,6 @@ mod_home_UI2 <- function(id, i18n, .tr){
 
     ## Hero section
     hero_banner,
-    hero_intro,
 
     ## Features section
     div(

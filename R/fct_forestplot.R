@@ -217,6 +217,9 @@ fct_forestplot <- function(
 
   ## Save the table as img is path specified
   if (is.character(.filename)) {
+    if (!requireNamespace("chromote", quietly = TRUE) || !requireNamespace("webshot2", quietly = TRUE)) {
+      stop("Saving the table requires the 'chromote' and 'webshot2' packages.")
+    }
     gt::gtsave(gt_out, filename = .filename)
 
     ## Workaround gtsave not working on linux/macos

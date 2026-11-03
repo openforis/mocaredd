@@ -42,11 +42,6 @@
       "sp": "Comenzar"
     },
     {
-      "en": "An R package and a Shiny app, {mocaredd}, that propagates the uncertainty of activity data and emission factors to REDD+ emissions and emission reductions with Monte Carlo simulations.",
-      "fr": "Un package R et une application Shiny, {mocaredd}, qui propage l'incertitude des données d'activité et des facteurs d'émission aux émissions et réductions d'émissions REDD+ par simulations de Monte Carlo.",
-      "sp": "Un paquete R y una aplicación Shiny, {mocaredd}, que propaga la incertidumbre de los datos de actividad y de los factores de emisión a las emisiones y reducciones de emisiones REDD+ mediante simulaciones de Monte Carlo."
-    },
-    {
       "en": "For more details about the app development or if any issue, find us on:",
       "fr": "Pour plus de détails sur le développement de l'application ou en cas de problème, retrouvez-nous sur :",
       "sp": "Para más detalles sobre el desarrollo de la aplicación o en caso de problema, encuéntrenos en:"

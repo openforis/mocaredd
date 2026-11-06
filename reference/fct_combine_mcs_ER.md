@@ -33,34 +33,30 @@ A tibble with simulations at the final estimate per type of period.
 ## Examples
 
 ``` r
-library(mocaredd)
-library(readxl)
-library(dplyr)
+path <- system.file("extdata/mocaredd-templatev2-simple.xlsx", package = "mocaredd")
 
-path <- system.file("extdata/example1-4pools.xlsx", package = "mocaredd")
+checked <- fct_checkinput(.path = path)
+#> Loading data... - progress: 0%.
+#> ✓ Tables loaded successfully from template v2
+#> Checking column names... - progress: 14%.
+#> ✓ Column names: all required columns present
+#> Checking table dimensions... - progress: 29%.
+#> ✓ Table sizes: all tables have sufficient rows
+#> Checking column data types... - progress: 43%.
+#> ✓ Data types: all columns have correct data types
+#> Checking category values... - progress: 57%.
+#> ✓ Category values: all categories are valid
+#> Checking unique IDs... - progress: 71%.
+#> ✓ Unique IDs: no duplicates or missing IDs found
+#> Checking cross-table and intra_table consistency... - progress: 86%.
+#> ✓ Cross-table consistency: all references match
+#> -- All checks passed.
 
-cs <- read_xlsx(path = path, sheet = "c_stocks", na = "NA")
-ad <- read_xlsx(path = path, sheet = "AD_lu_transitions", na = "NA")
-usr <- read_xlsx(path = path, sheet = "user_inputs", na = "NA")
-time <- read_xlsx(path = path, sheet = "time_periods", na = "NA")
+sim_trans <- fct_combine_mcs_E(.checked_data = checked)
 
-time_clean <- time |> dplyr::mutate(nb_years = year_end - year_start + 1)
+sim_REF <- fct_combine_mcs_P(.data = sim_trans, .period_type = "REF")
 
-sim_trans <- fct_combine_mcs_E(.ad = ad, .cs = cs, .usr = usr)
-
-sim_REF <- fct_combine_mcs_P(
-  .data = sim_trans,
-  .time = time_clean,
-  .period_type = "REF",
-  .ad_annual = usr$ad_annual
-)
-
-sim_MON <- fct_combine_mcs_P(
-  .data = sim_trans,
-  .time = time_clean,
-  .period_type = "MON",
-  .ad_annual = usr$ad_annual
-)
+sim_MON <- fct_combine_mcs_P(.data = sim_trans, .period_type = "MON")
 
 ## !!! SIM MON and ER to be done
 ```

@@ -13,13 +13,13 @@ fct_forestplot(
   .data,
   .id,
   .value_ari = NULL,
+  .uperc_ari = NULL,
   .value,
   .uperc,
   .cilower,
   .ciupper,
   .id_colname,
-  .conflevel,
-  .filename = NA
+  .conflevel
 )
 ```
 
@@ -37,6 +37,11 @@ fct_forestplot(
 
   NULL if not relevant (most cases) or a column name with the arithmetic
   mean of Emission or emission reductions.
+
+- .uperc_ari:
+
+  NULL if not relevant or a column name with the percentage uncertainty
+  of the arithmetic mean. Only used with `.value_ari`.
 
 - .value:
 
@@ -64,10 +69,6 @@ fct_forestplot(
 - .conflevel:
 
   character text to specify what confidence level was used, ex. "90%".
-
-- .filename:
-
-  path to save the table or NA.
 
 ## Value
 

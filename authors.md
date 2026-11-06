@@ -16,13 +16,13 @@ Source:
 [`DESCRIPTION`](https://github.com/openforis/mocaredd/blob/main/DESCRIPTION)
 
 Sola G, Garcia Perez J (2026). *mocaredd: Monte Carlo Simulation for
-REDD+ uncertainty analysis*. R package version 1.0,
+REDD+ uncertainty analysis*. R package version 2.0,
 <https://github.com/openforis/mocaredd>.
 
     @Manual{,
       title = {mocaredd: Monte Carlo Simulation for REDD+ uncertainty analysis},
       author = {Gael Sola and Javier {Garcia Perez}},
       year = {2026},
-      note = {R package version 1.0},
+      note = {R package version 2.0},
       url = {https://github.com/openforis/mocaredd},
     }

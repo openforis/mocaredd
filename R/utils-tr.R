@@ -57,7 +57,7 @@
     step_check = "Check",
     step_mcs = "Monte Carlo",
     step_todo = "To do",
-    step_running = "Running…",
+    step_running = "Running\u2026",
     step_done = "Done",
     step_error = "Needs attention",
     check_msg_init = " Start with uploading your data in the sidebar.",

@@ -563,8 +563,7 @@ mod_tool_server2 <- function(id, rv, i18n, .tr) {
         .cilower    = E_cilower,
         .ciupper    = E_ciupper,
         .id_colname = i18n$t(.tr$res_fp_time),
-        .conflevel  = rv$inputs$setup$conf_level_txt,
-        .filename   = NA
+        .conflevel  = rv$inputs$setup$conf_level_txt
       )
 
       ## Finalise ---------------------------------------------------------------

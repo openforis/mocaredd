@@ -14,8 +14,7 @@ fct_forestplot(
   .cilower,
   .ciupper,
   .id_colname,
-  .conflevel,
-  .filename = NA
+  .conflevel
 )
 }
 \arguments{
@@ -39,8 +38,6 @@ Only used with \code{.value_ari}.}
 \item{.id_colname}{character text for the ID column names. goes to \code{\link[gt:md]{gt::md()}} in \code{\link[gt:cols_label]{gt::cols_label()}}}
 
 \item{.conflevel}{character text to specify what confidence level was used, ex. "90\%".}
-
-\item{.filename}{path to save the table or NA.}
 }
 \value{
 A character value with the formula for calculating total carbon stock for a specific land use.

@@ -257,7 +257,7 @@ mod_about_UI <- function(id, i18n, .tr){
           c("shiny", "bslib", "bsicons", "shinyWidgets", "shinyjs", "shiny.i18n", "htmltools"),
           c("readxl", "dplyr", "tidyr", "purrr", "stringr", "rlang"),
           c("stats"),
-          c("ggplot2", "gt", "scales", "chromote")
+          c("ggplot2", "gt", "scales")
         ),
         \(group, pkgs) div(
           class = "about-dep-group",

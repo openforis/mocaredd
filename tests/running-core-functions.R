@@ -394,8 +394,7 @@ observeEvent(input$btn_run_mcs, {
     .cilower    = E_cilower,
     .ciupper    = E_ciupper,
     .id_colname = "Time periods",
-    .conflevel  = rv$inputs$setup$conf_level_txt,
-    .filename   = NA
+    .conflevel  = rv$inputs$setup$conf_level_txt
   )
 
   ## Finalise ---------------------------------------------------------------

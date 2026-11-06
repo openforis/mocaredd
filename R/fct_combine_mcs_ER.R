@@ -71,8 +71,7 @@ fct_combine_mcs_ER <- function(
   #   .cilower = E_cilower,
   #   .ciupper = E_ciupper,
   #   .id_colname = "Monitoring period",
-  #   .conflevel = "90%",
-  #   .filename = NA
+  #   .conflevel = "90%"
   # )
   #
   # gg_ER <- fct_histogram(

@@ -16,7 +16,6 @@
 #' @param .ciupper the name of the higher end of the confidence interval
 #' @param .id_colname character text for the ID column names. goes to [gt::md()] in [gt::cols_label()]
 #' @param .conflevel character text to specify what confidence level was used, ex. "90%".
-#' @param .filename path to save the table or NA.
 #'
 #' @return A character value with the formula for calculating total carbon stock for a specific land use.
 #'
@@ -37,8 +36,7 @@ fct_forestplot <- function(
     .cilower,
     .ciupper,
     .id_colname,
-    .conflevel,
-    .filename = NA
+    .conflevel
     ){
 
   ## Defuse col names to avoid input characters
@@ -214,17 +212,6 @@ fct_forestplot <- function(
 
   }
 
-
-  ## Save the table as img is path specified
-  if (is.character(.filename)) {
-    if (!requireNamespace("chromote", quietly = TRUE) || !requireNamespace("webshot2", quietly = TRUE)) {
-      stop("Saving the table requires the 'chromote' and 'webshot2' packages.")
-    }
-    gt::gtsave(gt_out, filename = .filename)
-
-    ## Workaround gtsave not working on linux/macos
-    f <- chromote::default_chromote_object(); f$close()
-  }
 
   gt_out
 

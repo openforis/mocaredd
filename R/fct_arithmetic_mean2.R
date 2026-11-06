@@ -123,6 +123,7 @@ fct_arithmetic_mean2 <- function(.checked_data){
     if (lu %in% degrat_lu) {
       dg     <- pm[[paste0(lu, "..DG_ratio")]]
       intact <- to_intact(lu)
+      if (intact == lu) stop("dg_ext '", setup$dg_ext, "' not found in degraded land use '", lu, "'")
       c_int  <- C_of(intact, pm)
       if (dg_is_all) return(dg * c_int)
       ## Pools not affected by degradation keep their intact value.
@@ -248,7 +249,7 @@ fct_arithmetic_mean2 <- function(.checked_data){
   ## confidence interval (error bar), on their own axis.
   FREL <- stat_of(paste0("PT.", ref_types[1]))$mean / 1e6
 
-  panel_lab <- c("Emissions\n(MtCO2e/y)", "Emission reductions\n(MtCO2e/y)")
+  panel_lab <- c("Emissions\n(MtCO2e/y)", "Reductions\n(MtCO2e/y)")
 
   out_mark <- period_meta |>
     dplyr::mutate(
@@ -258,7 +259,9 @@ fct_arithmetic_mean2 <- function(.checked_data){
       E_upper = purrr::map_dbl(.data$s, "upper") / 1e6,
       xmin    = .data$year_start - 0.5,
       xmax    = .data$year_end + 0.5,
-      panel   = factor(panel_lab[1], levels = panel_lab)
+      panel   = factor(panel_lab[1], levels = panel_lab),
+      ## Periods outside REF and MON (e.g. a gap year) are drawn in grey
+      period_type = dplyr::coalesce(.data$period_type, "Not used")
     ) |>
     dplyr::select(-"s")
 
@@ -274,7 +277,7 @@ fct_arithmetic_mean2 <- function(.checked_data){
       ER       = .data$E / 1e6,
       ER_lower = .data$E_lower / 1e6,
       ER_upper = .data$E_upper / 1e6,
-      label    = paste0(round(.data$ER, 2), " \u00b1", round(.data$E_U), "%"),
+      label    = paste0(round(.data$ER, 2), "\n\u00b1", round(.data$E_U), "%"),
       panel    = factor(panel_lab[2], levels = panel_lab)
     )
 
@@ -288,7 +291,8 @@ fct_arithmetic_mean2 <- function(.checked_data){
 
   pal <- c(
     stats::setNames(rep(col_ref, length(ref_types)), ref_types),
-    stats::setNames(rep_len(col_mon, length(mon_types)), mon_types)
+    stats::setNames(rep_len(col_mon, length(mon_types)), mon_types),
+    "Not used" = "gray60"
   )
 
   out_gg <- ggplot2::ggplot() +
@@ -320,14 +324,14 @@ fct_arithmetic_mean2 <- function(.checked_data){
     ggplot2::geom_point(data = out_er, ggplot2::aes(x = .data$x, y = .data$ER), colour = col_er, size = 4) +
     ggplot2::geom_text(
       data = out_er,
-      ggplot2::aes(x = .data$x, y = .data$ER, label = .data$label),
-      colour = col_er, fontface = "bold", size = 5, hjust = -0.25
+      ggplot2::aes(x = .data$x, y = .data$ER_upper, label = .data$label),
+      colour = col_er, fontface = "bold", size = 4, vjust = -0.3, lineheight = 0.9
     ) +
     ggplot2::facet_grid(rows = ggplot2::vars(.data$panel), scales = "free_y", switch = "y") +
     ggplot2::scale_colour_manual(values = pal, na.value = "gray50", aesthetics = c("colour", "fill")) +
     ggplot2::scale_x_continuous(breaks = min(period_meta$year_start):max(period_meta$year_end), minor_breaks = NULL) +
-    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.1))) +
-    ggplot2::theme_bw(base_size = 20) +
+    ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.3))) +
+    ggplot2::theme_bw(base_size = 16) +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
                    legend.position = "bottom",
                    strip.placement = "outside",

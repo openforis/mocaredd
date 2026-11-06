@@ -151,6 +151,40 @@ mod_tool_UI2 <- function(id, i18n, .tr){
   )
 
 
+  ## + Step status bar =========================================================
+  ## One box per step. The server sets its state class (step-todo, step-running,
+  ## step-done, step-error) and style.css shows the matching icon and status.
+  step_box <- function(step, num, label) {
+    div(
+      id    = ns(paste0("step_", step)),
+      class = "step-box step-todo",
+      span(
+        class = "step-icon", `aria-hidden` = "true",
+        span(class = "step-num", num),
+        bsicons::bs_icon("check-lg", class = "step-tick"),
+        bsicons::bs_icon("exclamation-lg", class = "step-cross"),
+        span(class = "step-spin")
+      ),
+      div(
+        class = "step-text",
+        span(class = "step-label", label),
+        span(class = "step-status st-todo",    i18n$t(.tr$step_todo)),
+        span(class = "step-status st-running", i18n$t(.tr$step_running)),
+        span(class = "step-status st-done",    i18n$t(.tr$step_done)),
+        span(class = "step-status st-error",   i18n$t(.tr$step_error))
+      )
+    )
+  }
+
+  div_steps <- div(
+    class = "step-bar", `aria-live` = "polite",
+    step_box("data",  1, i18n$t(.tr$step_data)),
+    step_box("check", 2, i18n$t(.tr$step_check)),
+    step_box("mcs",   3, i18n$t(.tr$step_mcs)),
+    step_box("sens",  4, i18n$t(.tr$tab_sens))
+  )
+
+
   ## + Check panel =============================================================
 
   ## ++ Initial message --------------------------------------------------------
@@ -230,7 +264,7 @@ mod_tool_UI2 <- function(id, i18n, .tr){
 
   card_arithmetic_gg <- card(
     card_header(i18n$t(.tr$check_card_gg)),
-    plotOutput(ns("check_arithmetic_gg"))
+    plotOutput(ns("check_arithmetic_gg"), height = "500px")
   )
 
   card_lumatrix <- card(
@@ -405,12 +439,6 @@ mod_tool_UI2 <- function(id, i18n, .tr){
     )
   )
 
-  div_sens_cards <- shinyjs::hidden(div(
-    id = ns("sens_cards"),
-    card_sens_dl,
-    layout_columns(col_widths = c(5, 7), card_sens_var, card_sens_tornado)
-  ))
-
   ## ++ Transition details (from the simulations) ------------------------------
   card_sens_trans <- card(
     full_screen = TRUE,
@@ -424,6 +452,13 @@ mod_tool_UI2 <- function(id, i18n, .tr){
     gt::gt_output(ns("sens_trans_fp"))
   )
 
+  div_sens_cards <- shinyjs::hidden(div(
+    id = ns("sens_cards"),
+    card_sens_dl,
+    layout_columns(col_widths = c(5, 7), card_sens_var, card_sens_tornado),
+    card_sens_trans
+  ))
+
 
   ##
   ## Layout ####################################################################
@@ -431,7 +466,7 @@ mod_tool_UI2 <- function(id, i18n, .tr){
 
   tagList(
 
-    br(),
+    div_steps,
 
     navset_card_tab(
       id = ns("tool_tabs"),
@@ -474,8 +509,7 @@ mod_tool_UI2 <- function(id, i18n, .tr){
         value = "sensi_tab",
         icon  = icon("magnifying-glass"),
         div_sens_init,
-        div_sens_cards,
-        card_sens_trans
+        div_sens_cards
       )
 
     ) ## END navset_card_tab()

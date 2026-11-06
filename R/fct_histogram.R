@@ -45,6 +45,10 @@ fct_histogram <- function(.data, .res, .id, .value, .value_type, ...){
     res2 <- res |> dplyr::filter(!!id == x)
     brk <- sort(c(0, res2$E_cilower, res2$E, res2$E_ciupper))
 
+    ## Number of bins from the Freedman-Diaconis rule, kept between 10 and 100
+    n_bins <- grDevices::nclass.FD(stats::na.omit(dat2[[rlang::as_name(value)]]))
+    n_bins <- min(max(n_bins, 10), 100)
+
     if (.value_type == "ER") {
       cols <- c("darkseagreen1", "darkseagreen", "forestgreen")
       subt <- paste0("Emission reductions for: ", x, " (tCO2e/year)")
@@ -55,7 +59,7 @@ fct_histogram <- function(.data, .res, .id, .value, .value_type, ...){
 
 
     ggplot(dat2, aes(x = !!value)) +
-      geom_histogram(aes(y = after_stat(.data$density)), fill = cols[1], color = cols[2]) +
+      geom_histogram(aes(y = after_stat(.data$density)), bins = n_bins, fill = cols[1], color = cols[2]) +
       ## approximated normal dist. replaced by density.
       # stat_function(
       #   fun = stats::dnorm,

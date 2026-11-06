@@ -122,7 +122,7 @@ fct_forestplot <- function(
               scale_y_discrete(breaks = NULL) +
               scale_x_continuous(breaks = NULL) +
               theme(axis.text = element_text(size = 120)) +
-              labs(x = element_blank(), y = element_blank()) +
+              labs(x = NULL, y = NULL) +
               coord_cartesian(xlim = plot_range)
 
           }) |>
@@ -203,7 +203,7 @@ fct_forestplot <- function(
               scale_y_discrete(breaks = NULL) +
               scale_x_continuous(breaks = NULL) +
               theme(axis.text = element_text(size = 120)) +
-              labs(x = element_blank(), y = element_blank()) +
+              labs(x = NULL, y = NULL) +
               coord_cartesian(xlim = plot_range)
 
           }) |>

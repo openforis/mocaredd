@@ -59,24 +59,48 @@ shiny_run_mocaredd <- function(...) {
     es = "La FAO y los Objetivos de Desarrollo Sostenible"
   )
 
-  ## FAO logo, official 3-line English files for all languages (inst/assets/branding):
-  ## black on light, white on dark (CSS). Used unmodified, height only.
-  logo_imgs <- purrr::imap(c(light = "Black", dark = "White"), \(colour, mode) {
+  ## !!! FAO BRANDING ON HOLD, pending authorisation: the FAO logos below are
+  ## commented out and replaced by empty placeholders of the same size
+  ## (inst/assets/branding/placeholder_logo_*.svg). To revert, uncomment the two
+  ## original blocks and delete the two placeholder blocks.
+  ## !!!
+
+  # ## FAO logo, official 3-line English files for all languages (inst/assets/branding):
+  # ## black on light, white on dark (CSS). Used unmodified, height only.
+  # logo_imgs <- purrr::imap(c(light = "Black", dark = "White"), \(colour, mode) {
+  #   tags$img(
+  #     class = paste0("header-logo header-logo-", mode),
+  #     src   = sprintf("assets/branding/FAO_Logo_English_%s_three_lines_25mm.svg", colour),
+  #     alt   = "Food and Agriculture Organization of the United Nations"
+  #   )
+  # })
+
+  # ## FAO Global Goals visual identity with the four betters (footer), official files,
+  # ## same in all languages: black on light, white on dark (CSS). Used unmodified.
+  # gg_imgs <- purrr::imap(c(light = "black", dark = "white"), \(colour, mode) {
+  #   tags$img(
+  #     class = paste0("gg-logo gg-logo-", mode),
+  #     src   = sprintf("assets/branding/FAO_GG_icons_H_%s.svg", colour),
+  #     alt   = gg_name[["en"]],
+  #     !!!as.list(purrr::set_names(unname(gg_name[lang_iso]), paste0("data-alt-", lang_iso)))
+  #   )
+  # })
+
+  ## Placeholder for the FAO logo: empty, same size, light and dark (CSS)
+  logo_imgs <- purrr::map(c("light", "dark"), \(mode) {
     tags$img(
       class = paste0("header-logo header-logo-", mode),
-      src   = sprintf("assets/branding/FAO_Logo_English_%s_three_lines_25mm.svg", colour),
-      alt   = "Food and Agriculture Organization of the United Nations"
+      src   = sprintf("assets/branding/placeholder_logo_header_%s.svg", mode),
+      alt   = ""
     )
   })
 
-  ## FAO Global Goals visual identity with the four betters (footer), official files,
-  ## same in all languages: black on light, white on dark (CSS). Used unmodified.
-  gg_imgs <- purrr::imap(c(light = "black", dark = "white"), \(colour, mode) {
+  ## Placeholder for the FAO Global Goals identity: empty, same size, light and dark (CSS)
+  gg_imgs <- purrr::map(c("light", "dark"), \(mode) {
     tags$img(
       class = paste0("gg-logo gg-logo-", mode),
-      src   = sprintf("assets/branding/FAO_GG_icons_H_%s.svg", colour),
-      alt   = gg_name[["en"]],
-      !!!as.list(purrr::set_names(unname(gg_name[lang_iso]), paste0("data-alt-", lang_iso)))
+      src   = sprintf("assets/branding/placeholder_logo_footer_%s.svg", mode),
+      alt   = ""
     )
   })
 
@@ -186,10 +210,62 @@ shiny_run_mocaredd <- function(...) {
     )
   )
 
-  ## Footer: FAO Design System application footer, FAO Global Goals visual identity
-  ## bottom left, six FAO links in the active language, (c) FAO, then the app credit
-  ## (version from DESCRIPTION)
-  ## (as function because i18n$t() needs to be inside page_navbar())
+  ## !!! FAO BRANDING ON HOLD, pending authorisation: the FAO footer below is
+  ## commented out and replaced by a placeholder footer with the same FAO texts,
+  ## invisible (.footer-placeholder in assets/style.css) and without links.
+  ## To revert, uncomment the original app_footer() and delete the placeholder one.
+  ## !!!
+
+  # ## Footer: FAO Design System application footer, FAO Global Goals visual identity
+  # ## bottom left, six FAO links in the active language, (c) FAO, then the app credit
+  # ## (version from DESCRIPTION)
+  # ## (as function because i18n$t() needs to be inside page_navbar())
+  # app_footer <- function() {
+  #   tags$footer(
+  #     class = "footer footer-app",
+  #     div(
+  #       class = "container-fluid",
+  #       div(
+  #         class = "row align-items-center",
+  #         div(class = "footer-logo col-lg-auto", gg_imgs),
+  #         div(
+  #           class = "footer-links col-lg",
+  #           tags$ul(
+  #             class = "list-inline mb-2",
+  #             purrr::map2(footer_links$key, footer_links$href, \(key, href) {
+  #               tags$li(
+  #                 class = "list-inline-item",
+  #                 tags$a(
+  #                   href = href[[1]],
+  #                   target = "_blank",
+  #                   !!!as.list(href),
+  #                   i18n$t(key)
+  #                 )
+  #               )
+  #             })
+  #           ),
+  #           tags$small(
+  #             paste0("{mocaredd} v", utils::packageVersion("mocaredd"), " - "),
+  #             i18n$t(.tr$footer_credit),
+  #             " ",
+  #             tags$a(
+  #               "AIM4Forests",
+  #               href = "https://www.fao.org/in-action/aim4forests/en",
+  #               target = "_blank"
+  #             )
+  #           )
+  #         ),
+  #         div(
+  #           class = "col-lg-auto text-lg-end",
+  #           paste0("\u00a9 FAO\u00a0", format(Sys.Date(), "%Y"))
+  #         )
+  #       )
+  #     )
+  #   )
+  # }
+
+  ## Placeholder footer: same layout and texts as the FAO footer, FAO texts invisible
+  ## and not links; only the app name and version stay visible
   app_footer <- function() {
     tags$footer(
       class = "footer footer-app",
@@ -201,32 +277,21 @@ shiny_run_mocaredd <- function(...) {
           div(
             class = "footer-links col-lg",
             tags$ul(
-              class = "list-inline mb-2",
-              purrr::map2(footer_links$key, footer_links$href, \(key, href) {
-                tags$li(
-                  class = "list-inline-item",
-                  tags$a(
-                    href = href[[1]],
-                    target = "_blank",
-                    !!!as.list(href),
-                    i18n$t(key)
-                  )
-                )
+              class = "list-inline mb-2 footer-placeholder",
+              purrr::map(footer_links$key, \(key) {
+                tags$li(class = "list-inline-item", i18n$t(key))
               })
             ),
             tags$small(
-              paste0("{mocaredd} v", utils::packageVersion("mocaredd"), " - "),
-              i18n$t(.tr$footer_credit),
-              " ",
-              tags$a(
-                "AIM4Forests",
-                href = "https://www.fao.org/in-action/aim4forests/en",
-                target = "_blank"
+              paste0("{mocaredd} v", utils::packageVersion("mocaredd")),
+              tags$span(
+                class = "footer-placeholder",
+                " - ", i18n$t(.tr$footer_credit), " AIM4Forests"
               )
             )
           ),
           div(
-            class = "col-lg-auto text-lg-end",
+            class = "col-lg-auto text-lg-end footer-placeholder",
             paste0("\u00a9 FAO\u00a0", format(Sys.Date(), "%Y"))
           )
         )
@@ -270,9 +335,15 @@ shiny_run_mocaredd <- function(...) {
         }) |>
           paste(collapse = "")
       )),
-      ## Favicon: FAO emblem (design-system.fao.org); assets/js_brand.js switches to
-      ## the white version when the browser uses a dark theme
-      tags$link(id = "favicon", rel = "icon", type = "image/x-icon", href = "assets/branding/favicon.ico"),
+      ## !!! FAO BRANDING ON HOLD, pending authorisation: the FAO favicon is commented
+      ## out (here and in assets/js_brand.js) and replaced by an empty icon. To revert,
+      ## uncomment both and delete the placeholder link.
+      ## !!!
+      # ## Favicon: FAO emblem (design-system.fao.org); assets/js_brand.js switches to
+      # ## the white version when the browser uses a dark theme
+      # tags$link(id = "favicon", rel = "icon", type = "image/x-icon", href = "assets/branding/favicon.ico"),
+      ## Placeholder favicon: empty, also stops the browser requesting /favicon.ico
+      tags$link(rel = "icon", href = "data:,"),
       tags$meta(name = "apple-mobile-web-app-title", content = "mocaredd")
     ),
 

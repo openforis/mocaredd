@@ -243,6 +243,10 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
     check_version <- 1
 
     setup  <- readxl::read_xlsx(.path, sheet = "user_inputs",       na = "NA")
+    ## Older v1 templates name 'digits' 'round_digits'
+    if (!"digits" %in% names(setup) && "round_digits" %in% names(setup)) {
+      setup <- dplyr::rename(setup, digits = "round_digits")
+    }
     time   <- readxl::read_xlsx(.path, sheet = "time_periods",      na = "NA")
     area   <- readxl::read_xlsx(.path, sheet = "AD_lu_transitions", na = "NA")
     carbon <- readxl::read_xlsx(.path, sheet = "c_stocks",          na = "NA")
@@ -490,6 +494,10 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
         c_plu_id = if (unique_c_period) .data$c_lu_id else paste(.data$c_period, .data$c_lu_id, sep = "*"),
         c_id = if (unique_c_period) paste(.data$c_lu_id, .data$c_element, sep = "*") else paste(.data$c_period, .data$c_lu_id, .data$c_element, sep = "*")
       )
+  } else {
+    ## v1: IDs are in the template, only the period x LU ID is added (RS / AGB match)
+    carbon <- carbon |>
+      dplyr::mutate(c_plu_id = paste(.data$c_period, .data$c_lu_id, sep = "*"))
   }
 
 
@@ -599,14 +607,22 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
 
   ## + Match degraded and intact LU ------
   ## If DG_ratio is used, dg_ext must strip degraded LU names back to intact LUs
+  dg_lu_bad <- character(0)
   if (!is.na(setup$dg_ext) && "DG_ratio" %in% unique(carbon$c_element)) {
-    dg_lu_intact <- carbon |>
+    dg_lu <- carbon |>
       dplyr::filter(.data$c_element == "DG_ratio") |>
       dplyr::pull("c_lu_id") |>
+      unique()
+    dg_lu_intact <- dg_lu |>
       stringr::str_remove(pattern = setup$dg_ext) |>
       stringr::str_replace("[^A-Za-z]$", "") ## Remove trailing special character if any
 
-    check_match_dg <- all(dg_lu_intact %in% unique(carbon$c_lu_id))
+    ## The intact LU must exist and not be degraded itself. If dg_ext is not found in
+    ## a degraded LU ID, the 'intact' LU is the degraded LU and the C stock calculation
+    ## would never end.
+    dg_ok     <- dg_lu_intact %in% unique(carbon$c_lu_id) & !dg_lu_intact %in% dg_lu
+    dg_lu_bad <- dg_lu[!dg_ok]
+    check_match_dg <- all(dg_ok)
   } else if (is.na(setup$dg_ext) && "DG_ratio" %in% unique(carbon$c_element)) {
     check_match_dg <- FALSE   # DG_ratio used but no extension provided
   } else {
@@ -625,7 +641,10 @@ fct_checkinput <- function(.path, .pb_session = NULL, .pb_id = NULL, .pb_max = 1
     "land use IDs present in AD/area but missing from c_stocks/carbon",
     "c_unit is 'DM' but CF is missing in usr(v1)/carbon(v2)",
     "RS defined for land uses with no AGB values or mismatch C unit",
-    "DG_ratio used but dg_ext does not resolve to existing LU IDs"
+    paste0(
+      "DG_ratio used but dg_ext does not resolve to existing LU IDs",
+      if (length(dg_lu_bad) > 0) paste0(" (dg_ext: '", setup$dg_ext, "', LUs: ", paste(dg_lu_bad, collapse = ", "), ")")
+    )
   )
 
   check_match_all <- all(match_flags)

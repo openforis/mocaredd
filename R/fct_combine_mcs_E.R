@@ -363,9 +363,10 @@ fct_combine_mcs_E <- function(.checked_data){
       dplyr::select(.time, "period_no", period_length = "nb_years", "period_type"),
       by = dplyr::join_by("time_period" == "period_no")
     ) |>
+    ## E_year first: mutate() is sequential, so it must read E before E is rescaled
     dplyr::mutate(
-      E =      if (.setup$ad_annual) .data$E * .data$period_length else .data$E,
-      E_year = if (.setup$ad_annual) .data$E                       else round(.data$E / .data$period_length, .setup$digits)
+      E_year = if (.setup$ad_annual) .data$E                       else round(.data$E / .data$period_length, .setup$digits),
+      E =      if (.setup$ad_annual) .data$E * .data$period_length else .data$E
     ) |>
     dplyr::select(
       "time_period", "period_length", "period_type", "trans_id", "lu_initial_id", "lu_final_id", "redd_activity",

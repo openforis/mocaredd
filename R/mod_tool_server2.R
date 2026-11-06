@@ -29,6 +29,13 @@ mod_tool_server2 <- function(id, rv, i18n, .tr) {
     ## To run test on core elements, see tests/running-core-functions
     ## !!!
 
+    ## Step status bar: set one step's state class (todo, running, done, error).
+    ## shinyjs messages are sent right away, so "running" shows during a process.
+    set_step <- function(step, state) {
+      shinyjs::removeClass(paste0("step_", step), "step-todo step-running step-done step-error")
+      shinyjs::addClass(paste0("step_", step), paste0("step-", state))
+    }
+
     ##
     ## 1. SIDEBAR - LOAD & CHECK ###############################################
     ##
@@ -80,6 +87,33 @@ mod_tool_server2 <- function(id, rv, i18n, .tr) {
       shinyjs::toggle("msg_data_tabs_wrong", condition = !rv$inputs$xlsx_tabs_ok)
       shinyjs::toggleState("btn_run_checks", condition =  rv$inputs$xlsx_tabs_ok)
 
+      ## New data: reset checks, simulations and sensitivity, and their panels
+      rv$checks$all_ok  <- NULL
+      rv$checks$ari_res <- NULL
+      rv$mcs            <- NULL
+      rv$sens           <- NULL
+
+      shinyjs::show("check_init_msg")
+      shinyjs::hide("check_progress")
+      shinyjs::hide("check_panel")
+      shinyjs::show("res_init")
+      shinyjs::hide("res_progress")
+      shinyjs::hide("res_show")
+      shinyjs::hide("res_cards")
+      shinyjs::show("sens_init")
+      shinyjs::hide("sens_cards")
+
+      shinyjs::show("msg_no_check")
+      shinyjs::hide("msg_checks_ok")
+      shinyjs::hide("msg_checks_wrong")
+      shinyjs::disable("btn_run_mcs")
+      shinyjs::show("msg_sens_no_check")
+      shinyjs::hide("msg_sens_ready")
+      shinyjs::disable("btn_run_sens")
+
+      set_step("data", if (rv$inputs$xlsx_tabs_ok) "done" else "error")
+      purrr::walk(c("check", "mcs", "sens"), set_step, state = "todo")
+
     })
 
     ## 1.3 Run checks ==========================================================
@@ -105,12 +139,11 @@ mod_tool_server2 <- function(id, rv, i18n, .tr) {
         status  = "primary"
       )
 
-      ## Reset downstream state
+      ## Reset the check results only: simulations and sensitivity are reset on
+      ## new data (1.2), not when checks are run again on the same file
       rv$checks$all_ok  <- NULL
       rv$checks$ari_res <- NULL
-      rv$sens           <- NULL
-      shinyjs::show("sens_init")
-      shinyjs::hide("sens_cards")
+      set_step("check", "running")
 
       ## 1.3.2 Check and read tables ------
       ## Run fct_checkinput(): each message() call is appended to the console
@@ -135,7 +168,14 @@ mod_tool_server2 <- function(id, rv, i18n, .tr) {
 
       rv$checks$all_ok <- isTRUE(check_result$all_ok)
       rv$checked <- check_result       # full fct_checkinput() output (incl. template_version)
-      rv$inputs  <- check_result$data  # tables, for value boxes and period/ER aggregation
+      ## Tables, for value boxes and period/ER aggregation; keep the uploaded file
+      ## info so checks can run again on the same file
+      rv$inputs  <- c(
+        check_result$data,
+        list(xlsx_path = rv$inputs$xlsx_path, xlsx_tabs_ok = rv$inputs$xlsx_tabs_ok)
+      )
+
+      set_step("check", if (rv$checks$all_ok) "done" else "error")
 
       ## 1.3.3 Make calc chain and calc arithmetic mean ------
       if (rv$checks$all_ok) {
@@ -373,6 +413,7 @@ mod_tool_server2 <- function(id, rv, i18n, .tr) {
       shinyjs::hide("res_cards")
 
       rv$mcs$all_done <- NULL
+      set_step("mcs", "running")
 
       ## Set seed ---------------------------------------------------------------
       shinyWidgets::updateProgressBar(
@@ -533,6 +574,7 @@ mod_tool_server2 <- function(id, rv, i18n, .tr) {
       )
 
       rv$mcs$all_done <- TRUE
+      set_step("mcs", "done")
 
     }) ## END observeEvent btn_run_mcs
 
@@ -676,6 +718,7 @@ mod_tool_server2 <- function(id, rv, i18n, .tr) {
     observeEvent(input$btn_run_sens, {
 
       session$sendCustomMessage("activate-tab", list(id = ns("tool_tabs"), value = "sensi_tab"))
+      set_step("sens", "running")
 
       rv$sens <- tryCatch(
         fct_sensitivity2(.checked_data = rv$checked),
@@ -684,6 +727,11 @@ mod_tool_server2 <- function(id, rv, i18n, .tr) {
           NULL
         }
       )
+      if (is.null(rv$sens)) {
+        shinyjs::show("sens_init")
+        shinyjs::hide("sens_cards")
+        set_step("sens", "error")
+      }
       req(rv$sens)
 
       ## Default result: first emission reduction, else first output
@@ -693,6 +741,7 @@ mod_tool_server2 <- function(id, rv, i18n, .tr) {
 
       shinyjs::hide("sens_init")
       shinyjs::show("sens_cards")
+      set_step("sens", "done")
 
     })
 

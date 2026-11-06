@@ -14,20 +14,23 @@ Shiny.addCustomMessageHandler('app-locale', function(msg) {
   });
 });
 
-// Favicon: white FAO emblem when the browser or OS uses a dark theme.
-// Chrome ignores a changed href on the existing <link>, so the element is replaced.
-(function() {
-  var dark = window.matchMedia('(prefers-color-scheme: dark)');
-  var setFavicon = function() {
-    var old = document.getElementById('favicon');
-    var link = document.createElement('link');
-    link.id = 'favicon';
-    link.rel = 'icon';
-    link.type = 'image/x-icon';
-    link.href = dark.matches ? 'assets/branding/favicon-white.ico' : 'assets/branding/favicon.ico';
-    if (old) old.remove();
-    document.head.appendChild(link);
-  };
-  document.addEventListener('DOMContentLoaded', setFavicon);
-  dark.addEventListener('change', setFavicon);
-})();
+// !!! FAO BRANDING ON HOLD, pending authorisation: the FAO favicon switch below is
+// commented out (see R/shiny_run_mocaredd.R). To revert, uncomment it.
+// !!!
+// // Favicon: white FAO emblem when the browser or OS uses a dark theme.
+// // Chrome ignores a changed href on the existing <link>, so the element is replaced.
+// (function() {
+//   var dark = window.matchMedia('(prefers-color-scheme: dark)');
+//   var setFavicon = function() {
+//     var old = document.getElementById('favicon');
+//     var link = document.createElement('link');
+//     link.id = 'favicon';
+//     link.rel = 'icon';
+//     link.type = 'image/x-icon';
+//     link.href = dark.matches ? 'assets/branding/favicon-white.ico' : 'assets/branding/favicon.ico';
+//     if (old) old.remove();
+//     document.head.appendChild(link);
+//   };
+//   document.addEventListener('DOMContentLoaded', setFavicon);
+//   dark.addEventListener('change', setFavicon);
+// })();

@@ -398,6 +398,16 @@ body > .container-fluid {
   content: none;
 }
 
+/* !!! FAO branding on hold, pending authorisation: FAO footer texts kept but
+   invisible, link separators too (placeholder footer in R/shiny_run_mocaredd.R).
+   Remove this block when reverting to the FAO footer. */
+.footer-app .footer-placeholder {
+  color: transparent;
+}
+.footer-app .footer-placeholder li:after {
+  background: transparent;
+}
+
 .footer-app .copyright {
   font-size: 13px;
   color: inherit;
@@ -717,6 +727,110 @@ body > .container-fluid {
 }
 [data-bs-theme=dark] .plot-themed-dark {
   visibility: visible;
+}
+
+/* Tool step status bar: one box per step, state class set by the server */
+.step-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.step-box {
+  flex: 1 1 200px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.5rem;
+  background-color: var(--bs-body-bg);
+}
+.step-icon {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--bs-border-color);
+  color: var(--bs-secondary-color);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+.step-icon > * {
+  grid-area: 1 / 1; /* number, tick, cross and spinner share one cell */
+}
+.step-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.3;
+}
+.step-label {
+  font-weight: 700;
+}
+.step-status {
+  font-size: 0.8125rem;
+  color: var(--bs-secondary-color);
+}
+
+/* Only the icon and status of the current state show */
+.step-num, .step-tick, .step-cross, .step-spin, .step-status {
+  display: none;
+}
+.step-todo .step-num, .step-running .step-spin, .step-done .step-tick, .step-error .step-cross,
+.step-todo .st-todo, .step-running .st-running, .step-done .st-done, .step-error .st-error {
+  display: inline-block;
+}
+
+.step-running {
+  border-color: var(--app-primary);
+}
+.step-running .st-running {
+  color: var(--app-primary);
+  font-weight: 600;
+}
+.step-spin {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--bs-border-color);
+  border-top-color: var(--app-primary);
+  border-radius: 50%;
+  animation: step-spin 0.9s linear infinite;
+}
+@keyframes step-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .step-spin { animation: none; }
+}
+
+/* Done: Open Foris green; dark tick for contrast on the green disc */
+.step-done {
+  border-color: var(--app-secondary);
+  background-color: var(--app-secondary-tint);
+}
+.step-done .step-icon {
+  border-color: var(--app-secondary);
+  background-color: var(--app-secondary);
+  color: #1e2a12;
+}
+.step-done .st-done {
+  color: var(--bs-body-color);
+}
+
+.step-error {
+  border-color: var(--app-danger);
+}
+.step-error .step-icon {
+  border-color: var(--app-danger);
+  background-color: var(--app-danger);
+  color: #ffffff;
+}
+.step-error .st-error {
+  color: var(--bs-body-color);
+  font-weight: 600;
 }
 
 /* Progress consoles (check and simulation logs) */

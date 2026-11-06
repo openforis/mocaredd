@@ -197,6 +197,41 @@
       "sp": "Sensibilidad"
     },
     {
+      "en": "Upload data",
+      "fr": "Charger les données",
+      "sp": "Cargar los datos"
+    },
+    {
+      "en": "Check",
+      "fr": "Vérification",
+      "sp": "Verificación"
+    },
+    {
+      "en": "Monte Carlo",
+      "fr": "Monte Carlo",
+      "sp": "Monte Carlo"
+    },
+    {
+      "en": "To do",
+      "fr": "À faire",
+      "sp": "Pendiente"
+    },
+    {
+      "en": "Running…",
+      "fr": "En cours…",
+      "sp": "En curso…"
+    },
+    {
+      "en": "Done",
+      "fr": "Terminé",
+      "sp": "Completado"
+    },
+    {
+      "en": "Needs attention",
+      "fr": "À vérifier",
+      "sp": "Requiere atención"
+    },
+    {
       "en": " Start with uploading your data in the sidebar.",
       "fr": " Commencez par charger vos données dans le panneau latéral.",
       "sp": " Comience cargando sus datos en el panel lateral."
